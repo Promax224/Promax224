@@ -175,6 +175,7 @@
         .status-icon.completed { background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #276749; }
         .status-icon.delivered { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .status-icon.failed { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
+		.status-icon.abandoned { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
 
         .result-status h2 { font-size: 19px; color: #2d3748; margin-bottom: 6px; word-break: break-word; }
 
@@ -189,6 +190,7 @@
         .status-badge.completed { background: #c6f6d5; color: #276749; }
         .status-badge.delivered { background: #e9d8fd; color: #553c9a; }
         .status-badge.failed { background: #fed7d7; color: #c53030; }
+		.status-badge.abandoned { background: #fed7d7; color: #c53030; }
 
         .status-message {
             color: #718096; font-size: 13px; margin-top: 10px; line-height: 1.5;
@@ -249,6 +251,13 @@
         }
 
         .failed-reason {
+            background: #fff5f5; padding: 12px 14px; border-radius: 10px;
+            font-size: 13px; color: #742a2a; line-height: 1.6;
+            border-left: 3px solid #fc8181; margin-top: 8px;
+            word-break: break-word;
+        }
+		
+		.abandoned-reason {
             background: #fff5f5; padding: 12px 14px; border-radius: 10px;
             font-size: 13px; color: #742a2a; line-height: 1.6;
             border-left: 3px solid #fc8181; margin-top: 8px;
@@ -659,6 +668,7 @@ function showResults(client) {
         'completed':   { icon: 'fa-check-circle',   label: 'Ready for Pickup',  msg: '&#127881; Great news! Your device is repaired and ready for pickup!' },
         'delivered':   { icon: 'fa-handshake',       label: 'Delivered',         msg: 'Your device has been collected. Thank you for choosing us!' },
         'failed':      { icon: 'fa-times-circle',    label: 'Repair Failed',     msg: 'Unfortunately, the repair could not be completed. Please contact us for details.' }
+		'abandoned':      { icon: 'fa-times-circle',    label: 'Abandoned Device',     msg: 'You have failed to pickup the device passed the set date. Please contact as for updates. We are nolonger responsible for any damages that may occour to your device from now!' }
     };
 
     var st = statusMap[client.status] || statusMap['pending'];
@@ -717,6 +727,9 @@ function showResults(client) {
     }
     if (client.additionalNotes) {
         repairHtml += '<div class="repair-issue" style="margin-top:8px;border-left-color:#ed8936;"><strong>Notes:</strong> ' + escHtml(client.additionalNotes) + '</div>';
+    }
+	if (client.status === 'abandoned' && client.failedComment) {
+        repairHtml += '<div class="abandoned-reason"><i class="fas fa-exclamation-triangle"></i> <strong>Failure Reason:</strong> ' + '</div>';
     }
 
     if (repairHtml) {
