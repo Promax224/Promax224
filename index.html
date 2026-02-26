@@ -31,7 +31,6 @@
             animation: slideUp 0.5s ease;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Space out header, main content, and footer */
         }
 
         @keyframes slideUp {
@@ -68,7 +67,11 @@
         .portal-header p { font-size: 13px; opacity: 0.85; }
 
         /* Body */
-        .portal-body { padding: 30px 25px; flex-grow: 1; } /* Allow body to grow and take available space */
+        .portal-body { 
+            padding: 30px 25px; 
+            flex-grow: 1; /* Allow body to grow and take available space */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
 
         .portal-input-group { margin-bottom: 20px; }
 
