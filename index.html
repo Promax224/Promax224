@@ -17,7 +17,6 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            min-height: -webkit-fill-available;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -30,9 +29,12 @@
             border-radius: 20px;
             width: 100%;
             max-width: 480px;
+            height: 100vh; /* Make the main section take up full height */
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.25);
             animation: slideUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         @keyframes slideUp {
@@ -69,7 +71,11 @@
         .portal-header p { font-size: 12px; opacity: 0.85; }
 
         /* Body */
-        .portal-body { padding: 24px 18px; }
+        .portal-body { 
+            padding: 24px 18px; 
+            flex-grow: 1; /* Allow body to grow and take available space */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
 
         .portal-input-group { margin-bottom: 18px; }
 
@@ -175,7 +181,7 @@
         .status-icon.completed { background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #276749; }
         .status-icon.delivered { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .status-icon.failed { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
-		.status-icon.abandoned { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
+        .status-icon.abandoned { background: linear-gradient(135deg, #e2e8f0, #edf2f7); color: #718096; }
 
         .result-status h2 { font-size: 19px; color: #2d3748; margin-bottom: 6px; word-break: break-word; }
 
@@ -190,7 +196,7 @@
         .status-badge.completed { background: #c6f6d5; color: #276749; }
         .status-badge.delivered { background: #e9d8fd; color: #553c9a; }
         .status-badge.failed { background: #fed7d7; color: #c53030; }
-		.status-badge.abandoned { background: #fed7d7; color: #c53030; }
+        .status-badge.abandoned { background: #e2e8f0; color: #718096; }
 
         .status-message {
             color: #718096; font-size: 13px; margin-top: 10px; line-height: 1.5;
@@ -251,13 +257,6 @@
         }
 
         .failed-reason {
-            background: #fff5f5; padding: 12px 14px; border-radius: 10px;
-            font-size: 13px; color: #742a2a; line-height: 1.6;
-            border-left: 3px solid #fc8181; margin-top: 8px;
-            word-break: break-word;
-        }
-		
-		.abandoned-reason {
             background: #fff5f5; padding: 12px 14px; border-radius: 10px;
             font-size: 13px; color: #742a2a; line-height: 1.6;
             border-left: 3px solid #fc8181; margin-top: 8px;
@@ -667,8 +666,8 @@ function showResults(client) {
         'in-progress': { icon: 'fa-tools',          label: 'In Progress',       msg: 'Your device is currently being repaired! We are working on it.' },
         'completed':   { icon: 'fa-check-circle',   label: 'Ready for Pickup',  msg: '&#127881; Great news! Your device is repaired and ready for pickup!' },
         'delivered':   { icon: 'fa-handshake',       label: 'Delivered',         msg: 'Your device has been collected. Thank you for choosing us!' },
-        'failed':      { icon: 'fa-times-circle',    label: 'Repair Failed',     msg: 'Unfortunately, the repair could not be completed. Please contact us for details.' }
-		'abandoned':      { icon: 'fa-times-circle',    label: 'Abandoned Device',     msg: 'You have failed to pickup the device passed the set date. Please contact as for updates. We are nolonger responsible for any damages that may occour to your device from now!' }
+        'failed':      { icon: 'fa-times-circle',    label: 'Repair Failed',     msg: 'Unfortunately, the repair could not be completed. Please contact us for details.' },
+        'abandoned':    { icon: 'fa-archive',         label: 'Abandoned',        msg: 'This repair has been abandoned. Please contact us for further assistance.' }
     };
 
     var st = statusMap[client.status] || statusMap['pending'];
@@ -727,9 +726,6 @@ function showResults(client) {
     }
     if (client.additionalNotes) {
         repairHtml += '<div class="repair-issue" style="margin-top:8px;border-left-color:#ed8936;"><strong>Notes:</strong> ' + escHtml(client.additionalNotes) + '</div>';
-    }
-	if (client.status === 'abandoned' && client.failedComment) {
-        repairHtml += '<div class="abandoned-reason"><i class="fas fa-exclamation-triangle"></i> <strong>Failure Reason:</strong> ' + '</div>';
     }
 
     if (repairHtml) {
