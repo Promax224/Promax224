@@ -1,705 +1,705 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-      <title>Repair Status Check</title>
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
-      <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-  
-          body {
-              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              min-height: 100vh;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 20px;
-          }
-  
-          .portal-card {
-              background: rgba(255,255,255,0.97);
-              border-radius: 24px;
-              width: 100%;
-              max-width: 480px;
-              overflow: hidden;
-              box-shadow: 0 25px 80px rgba(0,0,0,0.3);
-              animation: slideUp 0.5s ease;
-          }
-  
-          @keyframes slideUp {
-              from { opacity: 0; transform: translateY(30px); }
-              to { opacity: 1; transform: translateY(0); }
-         }
-  
-          /* Header */
-          .portal-header {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              padding: 30px 25px;
-              text-align: center;
-              color: white;
-          }
-  
-          .portal-logo {
-              width: 80px; height: 80px;
-              border-radius: 20px;
-              background: rgba(255,255,255,0.2);
-              display: flex; align-items: center; justify-content: center;
-              margin: 0 auto 15px;
-              overflow: hidden;
-              border: 3px solid rgba(255,255,255,0.3);
-          }
-  
-          .portal-logo img {
-              width: 100%; height: 100%;
-              object-fit: cover; border-radius: 17px;
-          }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Repair Status Check</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .portal-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            width: 100%;
+            height: 100vh; /* Make the main section take up full height */
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space out header, main content, and footer */
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+       }
+
+        /* Header */
+        .portal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 25px;
+            text-align: center;
+            color: white;
+        }
+
+        .portal-logo {
+            width: 80px; height: 80px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .portal-logo img {
+            width: 100%; height: 100%;
+            object-fit: cover; border-radius: 17px;
+        }
  
-          .portal-logo i { font-size: 36px; color: white; }
-  
-          .portal-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
-          .portal-header p { font-size: 13px; opacity: 0.85; }
-  
-          /* Body */
-          .portal-body { padding: 30px 25px; }
-  
-          .portal-input-group { margin-bottom: 20px; }
-  
-          .portal-input-group label {
-              display: block; font-size: 14px; font-weight: 600;
-              color: #2d3748; margin-bottom: 8px;
-          }
-  
-          .portal-input-group input {
-              width: 100%; padding: 16px 20px;
-              border: 2px solid #e2e8f0; border-radius: 14px;
-              font-size: 20px; text-align: center;
-              letter-spacing: 4px; font-weight: 700;
-              text-transform: uppercase; color: #2d3748;
-              transition: all 0.3s ease; background: #f7fafc;
-          }
-  
-          .portal-input-group input:focus {
-              outline: none; border-color: #667eea;
-              box-shadow: 0 0 0 4px rgba(102,126,234,0.15);
-              background: white;
-          }
-  
-          .portal-input-group input::placeholder {
-              letter-spacing: 1px; text-transform: none;
-              font-weight: 400; font-size: 14px; color: #a0aec0;
-          }
-  
-          .submit-btn {
-              width: 100%; padding: 16px;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white; border: none; border-radius: 14px;
-              font-size: 16px; font-weight: 700; cursor: pointer;
-              transition: all 0.3s ease;
-              box-shadow: 0 4px 15px rgba(102,126,234,0.4);
-              display: flex; align-items: center; justify-content: center; gap: 10px;
-          }
-  
-          .submit-btn:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 6px 25px rgba(102,126,234,0.5);
-          }
-  
-          .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-  
-          /* Error */
-          .error-msg {
-              background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
-             color: #c53030; padding: 14px 18px; border-radius: 12px;
-              font-size: 14px; margin-top: 15px; display: none;
-              text-align: center; font-weight: 500;
-          }
-  
-          /* Loading */
-          .loading-state {
-              text-align: center; padding: 50px 20px; display: none;
-          }
-  
-          .spinner {
-              width: 50px; height: 50px;
-              border: 4px solid #e2e8f0; border-top: 4px solid #667eea;
-              border-radius: 50%; animation: spin 0.8s linear infinite;
-              margin: 0 auto 15px;
-          }
-  
-          @keyframes spin { to { transform: rotate(360deg); } }
-  
-          /* Connection loading */
-          .connecting-state {
-              text-align: center; padding: 50px 20px;
-         }
-  
-          .connecting-state .spinner {
-              border-top-color: white;
-              border-color: rgba(255,255,255,0.3);
-          }
-  
-          /* Results */
-          .results-section { display: none; animation: slideUp 0.4s ease; }
-  
-          .result-status {
-              text-align: center; padding: 25px;
-              border-bottom: 1px solid #e2e8f0;
-          }
-  
-          .status-icon {
-              width: 80px; height: 80px; border-radius: 50%;
-              display: flex; align-items: center; justify-content: center;
-              margin: 0 auto 15px; font-size: 34px;
-          }
-  
-          .status-icon.pending { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #9c4221; }
-          .status-icon.in-progress { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #2b6cb0; }
-          .status-icon.completed { background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #276749; }
-          .status-icon.delivered { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-          .status-icon.failed { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
-  
-          .result-status h2 { font-size: 22px; color: #2d3748; margin-bottom: 8px; }
-  
-          .status-badge {
-              display: inline-block; padding: 6px 20px;
-              border-radius: 20px; font-size: 13px;
-              font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-          }
-  
-          .status-badge.pending { background: #ffecd2; color: #9c4221; }
-          .status-badge.in-progress { background: #bee3f8; color: #2b6cb0; }
-          .status-badge.completed { background: #c6f6d5; color: #276749; }
-          .status-badge.delivered { background: #e9d8fd; color: #553c9a; }
-          .status-badge.failed { background: #fed7d7; color: #c53030; }
-  
-          .status-message {
-              color: #718096; font-size: 14px; margin-top: 12px; line-height: 1.5;
-          }
-  
-          /* Detail rows */
-          .detail-row {
-              display: flex; justify-content: space-between; align-items: center;
-              padding: 16px 25px; border-bottom: 1px solid #f0f4f8;
-          }
-  
-          .detail-row:last-child { border-bottom: none; }
-  
-          .detail-row .label {
-              font-size: 13px; color: #718096;
-              display: flex; align-items: center; gap: 8px;
-          }
-  
-          .detail-row .label i { width: 18px; color: #667eea; }
-  
-          .detail-row .value {
-              font-size: 15px; font-weight: 700; color: #2d3748; text-align: right;
-          }
-  
-          .balance-row {
-              background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-              border-radius: 12px; margin: 15px 20px; padding: 18px 20px !important;
-          }
-  
-          .balance-row .value.owed { color: #e53e3e; font-size: 20px; }
-          .balance-row .value.paid { color: #38a169; font-size: 20px; }
-  
-          /* Repair details section */
-          .repair-details {
-              padding: 15px 25px;
-              border-top: 1px solid #e2e8f0;
-          }
-  
-          .repair-details h4 {
-              font-size: 14px; color: #667eea; margin-bottom: 12px;
-              display: flex; align-items: center; gap: 8px;
-          }
-  
-          .repair-issue {
-              background: #f7fafc; padding: 14px 16px; border-radius: 12px;
-              font-size: 14px; color: #4a5568; line-height: 1.6;
-              border-left: 4px solid #667eea;
-          }
-  
-          .failed-reason {
-              background: #fff5f5; padding: 14px 16px; border-radius: 12px;
-              font-size: 14px; color: #742a2a; line-height: 1.6;
-              border-left: 4px solid #fc8181; margin-top: 10px;
-          }
-  
-          /* Warranty */
-          .warranty-badge {
-             display: inline-flex; align-items: center; gap: 6px;
-              padding: 8px 16px; border-radius: 20px;
-              font-size: 13px; font-weight: 600; margin-top: 10px;
-          }
-  
-          .warranty-badge.active { background: #c6f6d5; color: #276749; }
-          .warranty-badge.expired { background: #fed7d7; color: #c53030; }
-          .warranty-badge.pending { background: #e2e8f0; color: #718096; }
+        .portal-logo i { font-size: 36px; color: white; }
+
+        .portal-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .portal-header p { font-size: 13px; opacity: 0.85; }
+
+        /* Body */
+        .portal-body { padding: 30px 25px; flex-grow: 1; } /* Allow body to grow and take available space */
+
+        .portal-input-group { margin-bottom: 20px; }
+
+        .portal-input-group label {
+            display: block; font-size: 14px; font-weight: 600;
+            color: #2d3748; margin-bottom: 8px;
+        }
+
+        .portal-input-group input {
+            width: 100%; padding: 16px 20px;
+            border: 2px solid #e2e8f0; border-radius: 14px;
+            font-size: 20px; text-align: center;
+            letter-spacing: 4px; font-weight: 700;
+            text-transform: uppercase; color: #2d3748;
+            transition: all 0.3s ease; background: #f7fafc;
+        }
+
+        .portal-input-group input:focus {
+            outline: none; border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.15);
+            background: white;
+        }
+
+        .portal-input-group input::placeholder {
+            letter-spacing: 1px; text-transform: none;
+            font-weight: 400; font-size: 14px; color: #a0aec0;
+        }
+
+        .submit-btn {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 14px;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102,126,234,0.5);
+        }
+
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* Error */
+        .error-msg {
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+           color: #c53030; padding: 14px 18px; border-radius: 12px;
+            font-size: 14px; margin-top: 15px; display: none;
+            text-align: center; font-weight: 500;
+        }
+
+        /* Loading */
+        .loading-state {
+            text-align: center; padding: 50px 20px; display: none;
+        }
+
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #e2e8f0; border-top: 4px solid #667eea;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Connection loading */
+        .connecting-state {
+            text-align: center; padding: 50px 20px;
+       }
+
+        .connecting-state .spinner {
+            border-top-color: white;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* Results */
+        .results-section { display: none; animation: slideUp 0.4s ease; }
+
+        .result-status {
+            text-align: center; padding: 25px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .status-icon {
+            width: 80px; height: 80px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px; font-size: 34px;
+        }
+
+        .status-icon.pending { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #9c4221; }
+        .status-icon.in-progress { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #2b6cb0; }
+        .status-icon.completed { background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #276749; }
+        .status-icon.delivered { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .status-icon.failed { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
+
+        .result-status h2 { font-size: 22px; color: #2d3748; margin-bottom: 8px; }
+
+        .status-badge {
+            display: inline-block; padding: 6px 20px;
+            border-radius: 20px; font-size: 13px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .status-badge.pending { background: #ffecd2; color: #9c4221; }
+        .status-badge.in-progress { background: #bee3f8; color: #2b6cb0; }
+        .status-badge.completed { background: #c6f6d5; color: #276749; }
+        .status-badge.delivered { background: #e9d8fd; color: #553c9a; }
+        .status-badge.failed { background: #fed7d7; color: #c53030; }
+
+        .status-message {
+            color: #718096; font-size: 14px; margin-top: 12px; line-height: 1.5;
+        }
+
+        /* Detail rows */
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 25px; border-bottom: 1px solid #f0f4f8;
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-row .label {
+            font-size: 13px; color: #718096;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .detail-row .label i { width: 18px; color: #667eea; }
+
+        .detail-row .value {
+            font-size: 15px; font-weight: 700; color: #2d3748; text-align: right;
+        }
+
+        .balance-row {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px; margin: 15px 20px; padding: 18px 20px !important;
+        }
+
+        .balance-row .value.owed { color: #e53e3e; font-size: 20px; }
+        .balance-row .value.paid { color: #38a169; font-size: 20px; }
+
+        /* Repair details section */
+        .repair-details {
+            padding: 15px 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .repair-details h4 {
+            font-size: 14px; color: #667eea; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .repair-issue {
+            background: #f7fafc; padding: 14px 16px; border-radius: 12px;
+            font-size: 14px; color: #4a5568; line-height: 1.6;
+            border-left: 4px solid #667eea;
+        }
+
+        .failed-reason {
+            background: #fff5f5; padding: 14px 16px; border-radius: 12px;
+            font-size: 14px; color: #742a2a; line-height: 1.6;
+            border-left: 4px solid #fc8181; margin-top: 10px;
+        }
+
+        /* Warranty */
+        .warranty-badge {
+           display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 20px;
+            font-size: 13px; font-weight: 600; margin-top: 10px;
+        }
+
+        .warranty-badge.active { background: #c6f6d5; color: #276749; }
+        .warranty-badge.expired { background: #fed7d7; color: #c53030; }
+        .warranty-badge.pending { background: #e2e8f0; color: #718096; }
  
-          /* Photos */
-          .photos-section {
-              padding: 20px 25px; display: none;
-              border-top: 1px solid #e2e8f0;
-          }
+        /* Photos */
+        .photos-section {
+            padding: 20px 25px; display: none;
+            border-top: 1px solid #e2e8f0;
+        }
  
-         .photos-section h4 {
-             font-size: 14px; color: #718096; margin-bottom: 12px;
-              display: flex; align-items: center; gap: 8px;
-          }
-  
-          .photos-grid {
-              display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-          }
-  
-          .photos-grid img {
-              width: 100%; aspect-ratio: 1; object-fit: cover;
-              border-radius: 12px; border: 2px solid #e2e8f0;
-              cursor: pointer; transition: transform 0.2s ease;
-          }
-  
-          .photos-grid img:hover { transform: scale(1.03); }
-  
-          /* Back button */
-          .back-btn {
-              width: calc(100% - 50px); padding: 14px;
-              background: #f7fafc; border: 2px solid #e2e8f0;
-              border-radius: 14px; font-size: 14px; font-weight: 600;
-              color: #718096; cursor: pointer; margin: 20px 25px;
-              transition: all 0.2s ease; text-align: center;
-          }
-  
-         .back-btn:hover { background: #edf2f7; color: #2d3748; }
-  
-          /* Footer */
-          .portal-footer {
-              text-align: center; padding: 25px; color: rgba(255,255,255,0.7);
-              font-size: 12px;
-          }
-  
-          .portal-footer strong { color: white; }
-  
-          /* Connection error full page */
-          .connection-error {
-              text-align: center; padding: 40px 25px; display: none;
-          }
-  
-          .connection-error i { font-size: 50px; color: #fc8181; margin-bottom: 15px; }
-          .connection-error h3 { color: #2d3748; margin-bottom: 10px; }
-          .connection-error p { color: #718096; font-size: 14px; line-height: 1.6; }
-  
-          .retry-btn {
-              margin-top: 20px; padding: 12px 30px;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white; border: none; border-radius: 12px;
-              font-size: 14px; font-weight: 600; cursor: pointer;
-          }
-  
-          /* Image lightbox */
-          .lightbox {
-              position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-              background: rgba(0,0,0,0.9); z-index: 9999;
-              display: none; align-items: center; justify-content: center;
-              cursor: pointer; padding: 20px;
-          }
-  
-          .lightbox.active { display: flex; }
-  
-          .lightbox img {
-              max-width: 100%; max-height: 90vh;
-              border-radius: 12px; object-fit: contain;
-          }
-      </style>
-  </head>
-  <body>
-  
-  <div class="portal-card" id="portalCard">
-      <!-- Header -->
-      <div class="portal-header" id="portalHeader">
-          <div class="portal-logo" id="portalLogo">
-              <i class="fas fa-mobile-alt"></i>
-          </div>
-          <h1 id="workshopName">Repair Workshop</h1>
-          <p>Client Repair Status Portal</p>
-      </div>
-  
-      <!-- Connecting state -->
-      <div class="connecting-state" id="connectingState">
-          <div class="spinner"></div>
-          <p style="color: #718096;">Connecting to workshop...</p>
-      </div>
+       .photos-section h4 {
+           font-size: 14px; color: #718096; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .photos-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        }
+
+        .photos-grid img {
+            width: 100%; aspect-ratio: 1; object-fit: cover;
+            border-radius: 12px; border: 2px solid #e2e8f0;
+            cursor: pointer; transition: transform 0.2s ease;
+        }
+
+        .photos-grid img:hover { transform: scale(1.03); }
+
+        /* Back button */
+        .back-btn {
+            width: calc(100% - 50px); padding: 14px;
+            background: #f7fafc; border: 2px solid #e2e8f0;
+            border-radius: 14px; font-size: 14px; font-weight: 600;
+            color: #718096; cursor: pointer; margin: 20px 25px;
+            transition: all 0.2s ease; text-align: center;
+        }
+
+       .back-btn:hover { background: #edf2f7; color: #2d3748; }
+
+        /* Footer */
+        .portal-footer {
+            text-align: center; padding: 15px; color: rgba(255,255,255,0.7);
+            font-size: 12px;
+        }
+
+        .portal-footer strong { color: #667eea; }
+
+        /* Connection error full page */
+        .connection-error {
+            text-align: center; padding: 40px 25px; display: none;
+        }
+
+        .connection-error i { font-size: 50px; color: #fc8181; margin-bottom: 15px; }
+        .connection-error h3 { color: #2d3748; margin-bottom: 10px; }
+        .connection-error p { color: #718096; font-size: 14px; line-height: 1.6; }
+
+        .retry-btn {
+            margin-top: 20px; padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+
+        /* Image lightbox */
+        .lightbox {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9999;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; padding: 20px;
+        }
+
+        .lightbox.active { display: flex; }
+
+        .lightbox img {
+            max-width: 100%; max-height: 90vh;
+            border-radius: 12px; object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+<div class="portal-card" id="portalCard">
+    <!-- Header -->
+    <div class="portal-header" id="portalHeader">
+        <div class="portal-logo" id="portalLogo">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h1 id="workshopName">Repair Workshop</h1>
+        <p>Client Repair Status Portal</p>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.7);">Powered by <strong>RepairPro</strong></p> <!-- Added powered by text -->
+    </div>
+
+    <!-- Connecting state -->
+    <div class="connecting-state" id="connectingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Connecting to workshop...</p>
+    </div>
  
-      <!-- Connection error -->
-      <div class="connection-error" id="connectionError">
-          <i class="fas fa-exclamation-circle"></i>
-          <h3>Connection Failed</h3>
-          <p id="connectionErrorMsg">Could not connect to the workshop database. Please check your internet connection and try again.</p>
-          <button class="retry-btn" onclick="location.reload()">
-              <i class="fas fa-redo"></i> Try Again
-          </button>
-      </div>
-  
-      <!-- Lookup Form -->
-      <div class="portal-body" id="lookupForm" style="display:none;">
-          <div class="portal-input-group">
-              <label><i class="fas fa-id-badge"></i> Enter Your Client ID</label>
-              <input type="text" id="clientIdInput" placeholder="e.g. A3B7X2K" maxlength="10" autocomplete="off">
-              <p style="font-size: 12px; color: #a0aec0; margin-top: 8px; text-align: center;">
-                  Your Client ID is on the receipt you received at the workshop
-              </p>
-          </div>
-          <button class="submit-btn" id="submitBtn" onclick="lookupClient()">
-              <i class="fas fa-search"></i> Check My Repair Status
-          </button>
-          <div class="error-msg" id="errorMsg"></div>
-      </div>
-  
-      <!-- Loading -->
-      <div class="loading-state" id="loadingState">
-          <div class="spinner"></div>
-          <p style="color: #718096;">Looking up your repair...</p>
-      </div>
-  
-      <!-- Results -->
-      <div class="results-section" id="resultsSection">
-          <div class="result-status" id="resultStatus"></div>
-          <div id="resultDetails"></div>
-          <div class="repair-details" id="repairDetailsSection" style="display:none;">
-              <h4><i class="fas fa-tools"></i> Repair Details</h4>
-              <div id="repairDetailsContent"></div>
-          </div>
-          <div class="photos-section" id="photosSection">
-              <h4><i class="fas fa-camera"></i> Device Photos</h4>
-              <div class="photos-grid" id="photosGrid"></div>
-          </div>
-          <button class="back-btn" onclick="goBack()">
-              <i class="fas fa-arrow-left"></i> Look Up Another ID
-          </button>
-      </div>
-  </div>
-  
-  <div class="portal-footer" id="portalFooter">
-      <p>Powered by <strong>RepairPro</strong></p>
-  </div>
-  
-  <!-- Lightbox for photos -->
-  <div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
-      <img id="lightboxImg" src="" alt="Photo">
-  </div>
-  
-  <script>
-  // ============ READ CONFIG FROM URL ============
-  var fbDb = null;
-  var fbAuth = null;
-  var workshopUid = null;
-  var workshopData = null;
-  
-  (function init() {
-      var params = new URLSearchParams(window.location.search);
-      var encoded = params.get('d');
-  
-      if (!encoded) {
-          showConnectionError('Invalid link. Please scan the QR code at the workshop.');
-          return;
-      }
-  
-      try {
-          var config = JSON.parse(atob(decodeURIComponent(encoded)));
-          connectToFirebase(config);
-      } catch(e) {
-          showConnectionError('Invalid QR code data. Please ask the workshop for a new QR code.');
-      }
-  })();
-  
-  // ============ CONNECT TO FIREBASE ============
-  function connectToFirebase(config) {
-      try {
-          var fbConfig = {
-              apiKey: config.k,
-              databaseURL: config.u,
-              projectId: config.p,
-              authDomain: config.p + '.firebaseapp.com'
-          };
-  
-          if (!firebase.apps.length) {
-              firebase.initializeApp(fbConfig);
-          }
-          fbDb = firebase.database();
-          fbAuth = firebase.auth();
-          workshopUid = config.i;
-  
-          // Sign in with embedded credentials
-          fbAuth.signInWithEmailAndPassword(config.e, config.w)
-              .then(function() {
-                  // Load workshop info
-                  return fbDb.ref('workshops/' + workshopUid + '/settings').once('value');
-              })
-              .then(function(snapshot) {
-                  var ws = snapshot.val() || {};
-  
-                  // Set workshop name
-                  if (ws.workshopName) {
-                      document.getElementById('workshopName').textContent = ws.workshopName;
-                      document.title = ws.workshopName + ' - Repair Status';
-                  }
-  
-                  // Set logo
-                  if (ws.workshopLogo) {
-                      document.getElementById('portalLogo').innerHTML =
-                          '<img src="' + ws.workshopLogo + '" alt="Logo">';
-                  }
-  
-                  // Show lookup form
-                  document.getElementById('connectingState').style.display = 'none';
-                  document.getElementById('lookupForm').style.display = 'block';
-  
-                  // Focus input
-                  setTimeout(function() {
-                      document.getElementById('clientIdInput').focus();
-                  }, 300);
-              })
-              .catch(function(err) {
-                  console.error('Auth error:', err);
-                  var msg = 'Could not connect to workshop.';
-                  if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-                      msg = 'Workshop credentials have changed. Please ask for a new QR code.';
-                  } else if (err.code === 'auth/user-not-found') {
-                      msg = 'Workshop account not found. Please ask for a new QR code.';
-                  } else if (err.code === 'auth/network-request-failed') {
-                      msg = 'No internet connection. Please check your connection and try again.';
-                  }
-                  showConnectionError(msg);
-              });
-  
-      } catch(e) {
-          showConnectionError('Connection error: ' + e.message);
-      }
-  }
-  
-  // ============ SHOW CONNECTION ERROR ============
-  function showConnectionError(msg) {
-      document.getElementById('connectingState').style.display = 'none';
-      document.getElementById('connectionError').style.display = 'block';
-      document.getElementById('connectionErrorMsg').textContent = msg;
-  }
-  
-  // ============ CLIENT LOOKUP ============
-  function lookupClient() {
-      var input = document.getElementById('clientIdInput');
-      var clientId = input.value.trim().toUpperCase();
-  
-      if (!clientId || clientId.length < 3) {
-          showError('Please enter a valid Client ID (from your receipt)');
-          return;
-      }
-  
-      // Show loading
-      document.getElementById('lookupForm').style.display = 'none';
-      document.getElementById('loadingState').style.display = 'block';
-      document.getElementById('resultsSection').style.display = 'none';
-  
-      fbDb.ref('workshops/' + workshopUid + '/clients').once('value')
-          .then(function(snapshot) {
-              var allClients = snapshot.val() || [];
-             var client = null;
-  
-              for (var i = 0; i < allClients.length; i++) {
-                 if (allClients[i] && allClients[i].id && allClients[i].id.toUpperCase() === clientId) {
-                      client = allClients[i];
-                      break;
-                  }
-              }
-  
-              document.getElementById('loadingState').style.display = 'none';
-  
-              if (!client) {
-                  document.getElementById('lookupForm').style.display = 'block';
-                  showError('No repair found with ID: ' + clientId + '. Please check the ID on your receipt.');
-                  return;
-              }
-  
-             showResults(client);
-          })
-          .catch(function(err) {
-              console.error('Lookup error:', err);
-              document.getElementById('loadingState').style.display = 'none';
-              document.getElementById('lookupForm').style.display = 'block';
-              showError('Could not fetch data. Please check your internet and try again.');
-          });
-  }
-  
-  // ============ SHOW RESULTS ============
-  function showResults(client) {
-      var statusMap = {
-          'pending':     { icon: 'fa-clock',         label: 'Pending',           msg: 'Your device is waiting to be repaired. We will get to it as soon as possible.' },
-          'in-progress': { icon: 'fa-tools',          label: 'In Progress',       msg: 'Your device is currently being repaired! We are working on it.' },
-          'completed':   { icon: 'fa-check-circle',   label: 'Ready for Pickup',  msg: '&#127881; Great news! Your device is repaired and ready for pickup!' },
-          'delivered':   { icon: 'fa-handshake',       label: 'Delivered',         msg: 'Your device has been collected. Thank you for choosing us!' },
-          'failed':      { icon: 'fa-times-circle',    label: 'Repair Failed',     msg: 'Unfortunately, the repair could not be completed. Please contact us for details.' }
-      };
-  
-      var st = statusMap[client.status] || statusMap['pending'];
-      var agreed = parseFloat(client.agreedAmount) || 0;
-      var deposited = parseFloat(client.depositedAmount) || 0;
-      var balance = agreed - deposited;
-  
-      // Status section
-      var warrantyHtml = getWarrantyHtml(client);
-  
-      document.getElementById('resultStatus').innerHTML =
-          '<div class="status-icon ' + client.status + '"><i class="fas ' + st.icon + '"></i></div>' +
-          '<h2>' + escHtml(client.name) + '</h2>' +
-          '<span class="status-badge ' + client.status + '">' + st.label + '</span>' +
-          '<p class="status-message">' + st.msg + '</p>' +
-          warrantyHtml +
-          '<p style="color:#a0aec0;font-size:11px;margin-top:12px;font-family:monospace;">ID: ' + client.id + '</p>';
-  
-      // Details
-      var html = '';
-  
-      html += detailRow('fa-mobile-alt', 'Device',
-          escHtml((client.deviceBrand || 'N/A') + ' ' + (client.deviceModel || '')));
-  
-      html += detailRow('fa-calendar-check', 'Sign-in Date', fmtDate(client.signInDate));
-  
-      if (client.estimatedCompletion && client.status !== 'completed' && client.status !== 'delivered') {
-          var eta = getETA(client);
-          html += detailRow('fa-hourglass-half', 'Est. Completion',
-              fmtDate(client.estimatedCompletion) +
-              (eta ? ' <span style="font-size:12px;color:' + (eta.overdue ? '#e53e3e' : '#38a169') + ';">(' + eta.text + ')</span>' : ''));
-      }
-  
-      if (client.technicianId) {
-          html += detailRow('fa-user-cog', 'Technician ID', client.technicianId);
-      }
-  
-      html += detailRow('fa-money-bill-wave', 'Agreed Amount', 'UGX ' + agreed.toLocaleString());
-      html += detailRow('fa-hand-holding-usd', 'Deposited',
-          '<span style="color:#38a169;">UGX ' + deposited.toLocaleString() + '</span>');
-  
-      // Balance (highlighted)
-      html += '<div class="balance-row detail-row">' +
-          '<span class="label"><i class="fas fa-wallet" style="width:18px;color:#667eea;"></i> <strong>Balance Due</strong></span>' +
-          '<span class="value ' + (balance > 0 ? 'owed' : 'paid') + '">UGX ' + balance.toLocaleString() + '</span></div>';
-  
-      document.getElementById('resultDetails').innerHTML = html;
-  
-      // Repair details (issue description, failed reason, notes)
-      var repairHtml = '';
-      if (client.issueDescription) {
-          repairHtml += '<div class="repair-issue"><strong>Issue:</strong> ' + escHtml(client.issueDescription) + '</div>';
-      }
-      if (client.status === 'failed' && client.failedComment) {
-          repairHtml += '<div class="failed-reason"><i class="fas fa-exclamation-triangle"></i> <strong>Failure Reason:</strong> ' + escHtml(client.failedComment) + '</div>';
-      }
-      if (client.additionalNotes) {
-          repairHtml += '<div class="repair-issue" style="margin-top:10px;border-left-color:#ed8936;"><strong>Notes:</strong> ' + escHtml(client.additionalNotes) + '</div>';
-      }
-  
-      if (repairHtml) {
-          document.getElementById('repairDetailsSection').style.display = 'block';
-          document.getElementById('repairDetailsContent').innerHTML = repairHtml;
-      } else {
-          document.getElementById('repairDetailsSection').style.display = 'none';
-      }
-  
-      // Photos
-      var photosSection = document.getElementById('photosSection');
-      var photosGrid = document.getElementById('photosGrid');
-  
-      if (client.photos && client.photos.length > 0) {
-          photosSection.style.display = 'block';
-          photosGrid.innerHTML = client.photos.map(function(photo, i) {
-              return '<img src="' + photo + '" alt="Photo ' + (i+1) + '" onclick="openLightbox(this.src)">';
-          }).join('');
-      } else {
-          photosSection.style.display = 'none';
-      }
-  
-      // Show results
-      document.getElementById('resultsSection').style.display = 'block';
-  
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  
-  // ============ HELPERS ============
-  function detailRow(icon, label, value) {
-      return '<div class="detail-row">' +
-          '<span class="label"><i class="fas ' + icon + '" style="width:18px;color:#667eea;"></i> ' + label + '</span>' +
-          '<span class="value">' + value + '</span></div>';
-  }
-  
-  function fmtDate(d) {
-      if (!d) return 'N/A';
-      return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  }
-  
-  function escHtml(str) {
-      if (!str) return '';
-      var div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-  }
-  
-  function getETA(client) {
-      if (!client.estimatedCompletion) return null;
-      var eta = new Date(client.estimatedCompletion);
-      var now = new Date();
-      var daysLeft = Math.ceil((eta - now) / (1000*60*60*24));
-      if (daysLeft > 0) return { overdue: false, text: daysLeft + ' day' + (daysLeft > 1 ? 's' : '') + ' left' };
-      if (daysLeft === 0) return { overdue: false, text: 'Due today' };
-      return { overdue: true, text: Math.abs(daysLeft) + ' day' + (Math.abs(daysLeft) > 1 ? 's' : '') + ' overdue' };
-  }
-  
-  function getWarrantyHtml(client) {
-      if (!client.warrantyDays || client.warrantyDays === 0) return '';
-      if (client.status !== 'completed' && client.status !== 'delivered') {
-          return '<div style="margin-top:10px;"><span class="warranty-badge pending"><i class="fas fa-shield-alt"></i> ' + client.warrantyDays + '-day warranty (starts after repair)</span></div>';
-      }
-      var completedDate = new Date(client.updatedAt || client.createdAt);
-      var expiry = new Date(completedDate);
-      expiry.setDate(expiry.getDate() + client.warrantyDays);
-      var daysLeft = Math.ceil((expiry - new Date()) / (1000*60*60*24));
-      if (daysLeft > 0) {
-          return '<div style="margin-top:10px;"><span class="warranty-badge active"><i class="fas fa-shield-alt"></i> Warranty: ' + daysLeft + ' days remaining</span></div>';
-      }
-      return '<div style="margin-top:10px;"><span class="warranty-badge expired"><i class="fas fa-shield-alt"></i> Warranty expired</span></div>';
-  }
-  
-  function showError(msg) {
-      var el = document.getElementById('errorMsg');
-      el.textContent = msg;
-      el.style.display = 'block';
-      setTimeout(function() { el.style.display = 'none'; }, 8000);
-  }
-  
-  function goBack() {
-      document.getElementById('resultsSection').style.display = 'none';
-      document.getElementById('lookupForm').style.display = 'block';
-      document.getElementById('clientIdInput').value = '';
-      document.getElementById('errorMsg').style.display = 'none';
-      document.getElementById('clientIdInput').focus();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  
-  function openLightbox(src) {
-      document.getElementById('lightboxImg').src = src;
-      document.getElementById('lightbox').classList.add('active');
-  }
-  
-  // Enter key handler
-  document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('clientIdInput').addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') lookupClient();
-      });
-  });
-  </script>
-  
-  </body>
+    <!-- Connection error -->
+    <div class="connection-error" id="connectionError">
+        <i class="fas fa-exclamation-circle"></i>
+        <h3>Connection Failed</h3>
+        <p id="connectionErrorMsg">Could not connect to the workshop database. Please check your internet connection and try again.</p>
+        <button class="retry-btn" onclick="location.reload()">
+            <i class="fas fa-redo"></i> Try Again
+        </button>
+    </div>
+
+    <!-- Lookup Form -->
+    <div class="portal-body" id="lookupForm" style="display:none;">
+        <div class="portal-input-group">
+            <label><i class="fas fa-id-badge"></i> Enter Your Client ID</label>
+            <input type="text" id="clientIdInput" placeholder="e.g. A3B7X2K" maxlength="10" autocomplete="off">
+            <p style="font-size: 12px; color: #a0aec0; margin-top: 8px; text-align: center;">
+                Your Client ID is on the receipt you received at the workshop
+            </p>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="lookupClient()">
+            <i class="fas fa-search"></i> Check My Repair Status
+        </button>
+        <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Looking up your repair...</p>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="resultsSection">
+        <div class="result-status" id="resultStatus"></div>
+        <div id="resultDetails"></div>
+        <div class="repair-details" id="repairDetailsSection" style="display:none;">
+            <h4><i class="fas fa-tools"></i> Repair Details</h4>
+            <div id="repairDetailsContent"></div>
+        </div>
+        <div class="photos-section" id="photosSection">
+            <h4><i class="fas fa-camera"></i> Device Photos</h4>
+            <div class="photos-grid" id="photosGrid"></div>
+        </div>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i> Look Up Another ID
+        </button>
+    </div>
+</div>
+
+<!-- Lightbox for photos -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
+    <img id="lightboxImg" src="" alt="Photo">
+</div>
+
+<script>
+// ============ READ CONFIG FROM URL ============
+var fbDb = null;
+var fbAuth = null;
+var workshopUid = null;
+var workshopData = null;
+
+(function init() {
+    var params = new URLSearchParams(window.location.search);
+    var encoded = params.get('d');
+
+    if (!encoded) {
+        showConnectionError('Invalid link. Please scan the QR code at the workshop.');
+        return;
+    }
+
+    try {
+        var config = JSON.parse(atob(decodeURIComponent(encoded)));
+        connectToFirebase(config);
+    } catch(e) {
+        showConnectionError('Invalid QR code data. Please ask the workshop for a new QR code.');
+    }
+})();
+
+// ============ CONNECT TO FIREBASE ============
+function connectToFirebase(config) {
+    try {
+        var fbConfig = {
+            apiKey: config.k,
+            databaseURL: config.u,
+            projectId: config.p,
+            authDomain: config.p + '.firebaseapp.com'
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(fbConfig);
+        }
+        fbDb = firebase.database();
+        fbAuth = firebase.auth();
+        workshopUid = config.i;
+
+        // Sign in with embedded credentials
+        fbAuth.signInWithEmailAndPassword(config.e, config.w)
+            .then(function() {
+                // Load workshop info
+                return fbDb.ref('workshops/' + workshopUid + '/settings').once('value');
+            })
+            .then(function(snapshot) {
+                var ws = snapshot.val() || {};
+
+                // Set workshop name
+                if (ws.workshopName) {
+                    document.getElementById('workshopName').textContent = ws.workshopName;
+                    document.title = ws.workshopName + ' - Repair Status';
+                }
+
+                // Set logo
+                if (ws.workshopLogo) {
+                    document.getElementById('portalLogo').innerHTML =
+                        '<img src="' + ws.workshopLogo + '" alt="Logo">';
+                }
+
+                // Show lookup form
+                document.getElementById('connectingState').style.display = 'none';
+                document.getElementById('lookupForm').style.display = 'block';
+
+                // Focus input
+                setTimeout(function() {
+                    document.getElementById('clientIdInput').focus();
+                }, 300);
+            })
+            .catch(function(err) {
+                console.error('Auth error:', err);
+                var msg = 'Could not connect to workshop.';
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    msg = 'Workshop credentials have changed. Please ask for a new QR code.';
+                } else if (err.code === 'auth/user-not-found') {
+                    msg = 'Workshop account not found. Please ask for a new QR code.';
+                } else if (err.code === 'auth/network-request-failed') {
+                    msg = 'No internet connection. Please check your connection and try again.';
+                }
+                showConnectionError(msg);
+            });
+
+    } catch(e) {
+        showConnectionError('Connection error: ' + e.message);
+    }
+}
+
+// ============ SHOW CONNECTION ERROR ============
+function showConnectionError(msg) {
+    document.getElementById('connectingState').style.display = 'none';
+    document.getElementById('connectionError').style.display = 'block';
+    document.getElementById('connectionErrorMsg').textContent = msg;
+}
+
+// ============ CLIENT LOOKUP ============
+function lookupClient() {
+    var input = document.getElementById('clientIdInput');
+    var clientId = input.value.trim().toUpperCase();
+
+    if (!clientId || clientId.length < 3) {
+        showError('Please enter a valid Client ID (from your receipt)');
+        return;
+    }
+
+    // Show loading
+    document.getElementById('lookupForm').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('resultsSection').style.display = 'none';
+
+    fbDb.ref('workshops/' + workshopUid + '/clients').once('value')
+        .then(function(snapshot) {
+            var allClients = snapshot.val() || [];
+           var client = null;
+
+            for (var i = 0; i < allClients.length; i++) {
+               if (allClients[i] && allClients[i].id && allClients[i].id.toUpperCase() === clientId) {
+                    client = allClients[i];
+                    break;
+                }
+            }
+
+            document.getElementById('loadingState').style.display = 'none';
+
+            if (!client) {
+                document.getElementById('lookupForm').style.display = 'block';
+                showError('No repair found with ID: ' + clientId + '. Please check the ID on your receipt.');
+                return;
+            }
+
+           showResults(client);
+        })
+        .catch(function(err) {
+            console.error('Lookup error:', err);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('lookupForm').style.display = 'block';
+            showError('Could not fetch data. Please check your internet and try again.');
+        });
+}
+
+// ============ SHOW RESULTS ============
+function showResults(client) {
+    var statusMap = {
+        'pending':     { icon: 'fa-clock',         label: 'Pending',           msg: 'Your device is waiting to be repaired. We will get to it as soon as possible.' },
+        'in-progress': { icon: 'fa-tools',          label: 'In Progress',       msg: 'Your device is currently being repaired! We are working on it.' },
+        'completed':   { icon: 'fa-check-circle',   label: 'Ready for Pickup',  msg: '&#127881; Great news! Your device is repaired and ready for pickup!' },
+        'delivered':   { icon: 'fa-handshake',       label: 'Delivered',         msg: 'Your device has been collected. Thank you for choosing us!' },
+        'failed':      { icon: 'fa-times-circle',    label: 'Repair Failed',     msg: 'Unfortunately, the repair could not be completed. Please contact us for details.' }
+    };
+
+    var st = statusMap[client.status] || statusMap['pending'];
+    var agreed = parseFloat(client.agreedAmount) || 0;
+    var deposited = parseFloat(client.depositedAmount) || 0;
+    var balance = agreed - deposited;
+
+    // Status section
+    var warrantyHtml = getWarrantyHtml(client);
+
+    document.getElementById('resultStatus').innerHTML =
+        '<div class="status-icon ' + client.status + '"><i class="fas ' + st.icon + '"></i></div>' +
+        '<h2>' + escHtml(client.name) + '</h2>' +
+        '<span class="status-badge ' + client.status + '">' + st.label + '</span>' +
+        '<p class="status-message">' + st.msg + '</p>' +
+        warrantyHtml +
+        '<p style="color:#a0aec0;font-size:11px;margin-top:12px;font-family:monospace;">ID: ' + client.id + '</p>';
+
+    // Details
+    var html = '';
+
+    html += detailRow('fa-mobile-alt', 'Device',
+        escHtml((client.deviceBrand || 'N/A') + ' ' + (client.deviceModel || '')));
+
+    html += detailRow('fa-calendar-check', 'Sign-in Date', fmtDate(client.signInDate));
+
+    if (client.estimatedCompletion && client.status !== 'completed' && client.status !== 'delivered') {
+        var eta = getETA(client);
+        html += detailRow('fa-hourglass-half', 'Est. Completion',
+            fmtDate(client.estimatedCompletion) +
+            (eta ? ' <span style="font-size:12px;color:' + (eta.overdue ? '#e53e3e' : '#38a169') + ';">(' + eta.text + ')</span>' : ''));
+    }
+
+    if (client.technicianId) {
+        html += detailRow('fa-user-cog', 'Technician ID', client.technicianId);
+    }
+
+    html += detailRow('fa-money-bill-wave', 'Agreed Amount', 'UGX ' + agreed.toLocaleString());
+    html += detailRow('fa-hand-holding-usd', 'Deposited',
+        '<span style="color:#38a169;">UGX ' + deposited.toLocaleString() + '</span>');
+
+    // Balance (highlighted)
+    html += '<div class="balance-row detail-row">' +
+        '<span class="label"><i class="fas fa-wallet" style="width:18px;color:#667eea;"></i> <strong>Balance Due</strong></span>' +
+        '<span class="value ' + (balance > 0 ? 'owed' : 'paid') + '">UGX ' + balance.toLocaleString() + '</span></div>';
+
+    document.getElementById('resultDetails').innerHTML = html;
+
+    // Repair details (issue description, failed reason, notes)
+    var repairHtml = '';
+    if (client.issueDescription) {
+        repairHtml += '<div class="repair-issue"><strong>Issue:</strong> ' + escHtml(client.issueDescription) + '</div>';
+    }
+    if (client.status === 'failed' && client.failedComment) {
+        repairHtml += '<div class="failed-reason"><i class="fas fa-exclamation-triangle"></i> <strong>Failure Reason:</strong> ' + escHtml(client.failedComment) + '</div>';
+    }
+    if (client.additionalNotes) {
+        repairHtml += '<div class="repair-issue" style="margin-top:10px;border-left-color:#ed8936;"><strong>Notes:</strong> ' + escHtml(client.additionalNotes) + '</div>';
+    }
+
+    if (repairHtml) {
+        document.getElementById('repairDetailsSection').style.display = 'block';
+        document.getElementById('repairDetailsContent').innerHTML = repairHtml;
+    } else {
+        document.getElementById('repairDetailsSection').style.display = 'none';
+    }
+
+    // Photos
+    var photosSection = document.getElementById('photosSection');
+    var photosGrid = document.getElementById('photosGrid');
+
+    if (client.photos && client.photos.length > 0) {
+        photosSection.style.display = 'block';
+        photosGrid.innerHTML = client.photos.map(function(photo, i) {
+            return '<img src="' + photo + '" alt="Photo ' + (i+1) + '" onclick="openLightbox(this.src)">';
+        }).join('');
+    } else {
+        photosSection.style.display = 'none';
+    }
+
+    // Show results
+    document.getElementById('resultsSection').style.display = 'block';
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============ HELPERS ============
+function detailRow(icon, label, value) {
+    return '<div class="detail-row">' +
+        '<span class="label"><i class="fas ' + icon + '" style="width:18px;color:#667eea;"></i> ' + label + '</span>' +
+        '<span class="value">' + value + '</span></div>';
+}
+
+function fmtDate(d) {
+    if (!d) return 'N/A';
+    return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function escHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function getETA(client) {
+    if (!client.estimatedCompletion) return null;
+    var eta = new Date(client.estimatedCompletion);
+    var now = new Date();
+    var daysLeft = Math.ceil((eta - now) / (1000*60*60*24));
+    if (daysLeft > 0) return { overdue: false, text: daysLeft + ' day' + (daysLeft > 1 ? 's' : '') + ' left' };
+    if (daysLeft === 0) return { overdue: false, text: 'Due today' };
+    return { overdue: true, text: Math.abs(daysLeft) + ' day' + (Math.abs(daysLeft) > 1 ? 's' : '') + ' overdue' };
+}
+
+function getWarrantyHtml(client) {
+    if (!client.warrantyDays || client.warrantyDays === 0) return '';
+    if (client.status !== 'completed' && client.status !== 'delivered') {
+        return '<div style="margin-top:10px;"><span class="warranty-badge pending"><i class="fas fa-shield-alt"></i> ' + client.warrantyDays + '-day warranty (starts after repair)</span></div>';
+    }
+    var completedDate = new Date(client.updatedAt || client.createdAt);
+    var expiry = new Date(completedDate);
+    expiry.setDate(expiry.getDate() + client.warrantyDays);
+    var daysLeft = Math.ceil((expiry - new Date()) / (1000*60*60*24));
+    if (daysLeft > 0) {
+        return '<div style="margin-top:10px;"><span class="warranty-badge active"><i class="fas fa-shield-alt"></i> Warranty: ' + daysLeft + ' days remaining</span></div>';
+    }
+    return '<div style="margin-top:10px;"><span class="warranty-badge expired"><i class="fas fa-shield-alt"></i> Warranty expired</span></div>';
+}
+
+function showError(msg) {
+    var el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 8000);
+}
+
+function goBack() {
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('lookupForm').style.display = 'block';
+    document.getElementById('clientIdInput').value = '';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('clientIdInput').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('active');
+}
+
+// Enter key handler
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('clientIdInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') lookupClient();
+    });
+});
+</script>
+
+</body>
  </html>
