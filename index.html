@@ -22,27 +22,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0;
+            padding: 0;
             margin: 0;
         }
 
         .portal-card {
-            background: rgba(255,255,255,0.98);
-            border-radius: 24px;
+            background: rgba(255,255,255,0.97);
+            border-radius: 0;
             width: 100%;
             max-width: 520px;
             /* REMOVED height: 100vh — this was the main cause of content clipping */
-            min-height: calc(100vh - 40px);
+            min-height: 100vh;
             min-height: -webkit-fill-available;
             overflow: visible;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.12), 0 10px 20px rgba(0,0,0,0.08);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: slideUp 0.5s ease;
             display: flex;
             flex-direction: column;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.3);
-            margin-bottom: 20px;
         }
 
         @keyframes slideUp {
@@ -53,40 +49,23 @@
         /* Header - compact on mobile */
         .portal-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 24px 16px 20px;
+            padding: 20px 16px 18px;
             text-align: center;
             color: white;
             position: sticky;
             top: 0;
             z-index: 10;
             flex-shrink: 0;
-            border-radius: 24px 24px 0 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .portal-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-            pointer-events: none;
         }
 
         .portal-logo {
-            width: 60px; height: 60px;
-            border-radius: 16px;
+            width: 52px; height: 52px;
+            border-radius: 14px;
             background: rgba(255,255,255,0.2);
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 12px;
+            margin: 0 auto 8px;
             overflow: hidden;
-            border: 3px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            position: relative;
-            z-index: 2;
+            border: 2px solid rgba(255,255,255,0.3);
         }
 
         .portal-logo img {
@@ -94,23 +73,10 @@
             object-fit: cover; border-radius: 12px;
         }
 
-        .portal-logo i { font-size: 28px; color: white; }
+        .portal-logo i { font-size: 24px; color: white; }
 
-        .portal-header h1 { 
-            font-size: 18px; 
-            font-weight: 800; 
-            margin-bottom: 4px;
-            position: relative;
-            z-index: 2;
-            letter-spacing: -0.5px;
-        }
-        .portal-header p { 
-            font-size: 12px; 
-            opacity: 0.9;
-            font-weight: 500;
-            position: relative;
-            z-index: 2;
-        }
+        .portal-header h1 { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+        .portal-header p { font-size: 11px; opacity: 0.85; }
 
         /* Body - natural flow, no internal scroll */
         .portal-body {
@@ -127,70 +93,49 @@
         }
 
         .portal-input-group input {
-            width: 100%; padding: 16px 18px;
-            border: 2px solid #e2e8f0; border-radius: 16px;
+            width: 100%; padding: 14px 14px;
+            border: 2px solid #e2e8f0; border-radius: 12px;
             /* 16px minimum prevents iOS zoom on focus */
             font-size: 16px; text-align: center;
             letter-spacing: 3px; font-weight: 700;
             text-transform: uppercase; color: #2d3748;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            background: #f8fafc;
+            transition: all 0.3s ease; background: #f7fafc;
             -webkit-appearance: none;
             appearance: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
         .portal-input-group input:focus {
-            outline: none; 
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102,126,234,0.15), 0 4px 12px rgba(102,126,234,0.1);
+            outline: none; border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
             background: white;
-            transform: translateY(-1px);
         }
 
         .portal-input-group input::placeholder {
             letter-spacing: 1px; text-transform: none;
-            font-weight: 500; font-size: 14px; color: #a0aec0;
+            font-weight: 400; font-size: 13px; color: #a0aec0;
         }
 
         .submit-btn {
-            width: 100%; padding: 16px 24px;
+            width: 100%; padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 16px;
-            font-size: 16px; font-weight: 700; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 20px rgba(102,126,234,0.3);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            color: white; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
             /* 48px+ touch target per Apple/Google guidelines */
-            min-height: 56px;
+            min-height: 50px;
             -webkit-appearance: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .submit-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .submit-btn:hover::before {
-            left: 100%;
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(102,126,234,0.4);
+            box-shadow: 0 6px 25px rgba(102,126,234,0.5);
         }
 
         .submit-btn:active {
             transform: translateY(0px);
-            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+            box-shadow: 0 2px 10px rgba(102,126,234,0.3);
         }
 
         .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
@@ -683,7 +628,27 @@
 </div>
 
 <div class="portal-footer" id="portalFooter">
-    <p>Powered by <strong>RepairPro</strong></p>
+    <div class="workshop-contact" id="workshopContact" style="display: none;">
+        <div class="contact-info">
+            <h4><i class="fas fa-store"></i> <span id="footerWorkshopName">Workshop</span></h4>
+            <p id="footerWorkshopAddress" style="margin-bottom: 10px;"></p>
+            <div class="contact-actions">
+                <button class="contact-btn" onclick="callWorkshop()" id="callBtn" style="display: none;">
+                    <i class="fas fa-phone"></i> <span id="callBtnText">Call</span>
+                </button>
+                <button class="contact-btn whatsapp-btn" onclick="whatsappWorkshop()" id="whatsappBtn" style="display: none;">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button class="contact-btn sms-btn" onclick="smsWorkshop()" id="smsBtn" style="display: none;">
+                    <i class="fas fa-sms"></i> SMS
+                </button>
+                <button class="contact-btn location-btn" onclick="getDirections()" id="locationBtn" style="display: none;">
+                    <i class="fas fa-map-marker-alt"></i> Directions
+                </button>
+            </div>
+        </div>
+    </div>
+    <p style="margin-top: 15px; font-size: 12px; color: #a0aec0;">Powered by <strong>RepairPro</strong></p>
 </div>
 
 <!-- Lightbox for photos -->
@@ -754,6 +719,9 @@ function connectToFirebase(config) {
                         '<img src="' + ws.workshopLogo + '" alt="Logo">';
                 }
 
+                // Show workshop contact information
+                showWorkshopContact(ws);
+
                 // Show lookup form
                 document.getElementById('connectingState').style.display = 'none';
                 document.getElementById('lookupForm').style.display = 'block';
@@ -778,6 +746,96 @@ function connectToFirebase(config) {
 
     } catch(e) {
         showConnectionError('Connection error: ' + e.message);
+    }
+}
+
+// ============ SHOW WORKSHOP CONTACT INFO ============
+function showWorkshopContact(settings) {
+    var contactSection = document.getElementById('workshopContact');
+    var footerWorkshopName = document.getElementById('footerWorkshopName');
+    var footerWorkshopAddress = document.getElementById('footerWorkshopAddress');
+    var callBtn = document.getElementById('callBtn');
+    var whatsappBtn = document.getElementById('whatsappBtn');
+    var smsBtn = document.getElementById('smsBtn');
+    var locationBtn = document.getElementById('locationBtn');
+    
+    // Set workshop name and address
+    if (settings.workshopName) {
+        footerWorkshopName.textContent = settings.workshopName;
+    }
+    
+    if (settings.workshopAddress || settings.workshopLocation?.formattedAddress) {
+        footerWorkshopAddress.textContent = settings.workshopLocation?.formattedAddress || settings.workshopAddress;
+    }
+    
+    // Show contact buttons if phone numbers are available
+    var hasPhone = false;
+    if (settings.workshopPhone1) {
+        callBtn.style.display = 'flex';
+        callBtn.setAttribute('data-phone', settings.workshopPhone1);
+        hasPhone = true;
+    }
+    
+    if (settings.workshopPhone1) {
+        whatsappBtn.style.display = 'flex';
+        whatsappBtn.setAttribute('data-phone', settings.workshopPhone1);
+        hasPhone = true;
+    }
+    
+    if (settings.workshopPhone1) {
+        smsBtn.style.display = 'flex';
+        smsBtn.setAttribute('data-phone', settings.workshopPhone1);
+        hasPhone = true;
+    }
+    
+    // Show location button if coordinates are available
+    if (settings.workshopLocation && settings.workshopLocation.lat && settings.workshopLocation.lng) {
+        locationBtn.style.display = 'flex';
+        locationBtn.setAttribute('data-lat', settings.workshopLocation.lat);
+        locationBtn.setAttribute('data-lng', settings.workshopLocation.lng);
+    }
+    
+    // Show contact section if we have any contact info
+    if (hasPhone || settings.workshopAddress || settings.workshopLocation) {
+        contactSection.style.display = 'block';
+    }
+}
+
+// ============ CONTACT FUNCTIONS ============
+function callWorkshop() {
+    var phone = document.getElementById('callBtn').getAttribute('data-phone');
+    if (phone) {
+        window.location.href = 'tel:' + phone;
+    }
+}
+
+function whatsappWorkshop() {
+    var phone = document.getElementById('whatsappBtn').getAttribute('data-phone');
+    if (phone) {
+        var message = encodeURIComponent('Hello, I would like to inquire about my device repair.');
+        window.open('https://wa.me/' + phone.replace(/\D/g, '') + '?text=' + message, '_blank');
+    }
+}
+
+function smsWorkshop() {
+    var phone = document.getElementById('smsBtn').getAttribute('data-phone');
+    if (phone) {
+        var message = encodeURIComponent('Hello, I would like to inquire about my device repair.');
+        window.location.href = 'sms:' + phone + '?body=' + message;
+    }
+}
+
+function getDirections() {
+    var lat = document.getElementById('locationBtn').getAttribute('data-lat');
+    var lng = document.getElementById('locationBtn').getAttribute('data-lng');
+    var address = document.getElementById('footerWorkshopAddress').textContent;
+    
+    if (lat && lng) {
+        // Use Google Maps for directions
+        window.open('https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng, '_blank');
+    } else if (address) {
+        // Fallback to address search
+        window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address), '_blank');
     }
 }
 
