@@ -195,6 +195,23 @@
         /* ===================== RESULTS ===================== */
         .results-section { display: none; animation: slideUp 0.4s ease; }
 
+        .portal-client-photo {
+            margin: 0 auto 14px;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.95);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            background: #edf2f7;
+        }
+        .portal-client-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .result-status {
             text-align: center; padding: 20px 16px;
             border-bottom: 1px solid #e2e8f0;
@@ -353,6 +370,37 @@
         .photos-grid img:hover { transform: scale(1.03); }
         .photos-grid img:active { transform: scale(0.97); }
 
+        .portal-message-section {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        .portal-message-section h4 {
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .portal-message-section textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 96px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .portal-message-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+        }
+
         /* Back button */
         .back-btn {
             width: calc(100% - 32px); padding: 13px;
@@ -494,6 +542,34 @@
 
             .photos-section { padding: 14px 12px; }
 
+        .portal-message-section {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        .portal-message-section h4 {
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        .portal-message-section textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 96px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .portal-message-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+        }
+
             .back-btn { width: calc(100% - 24px); margin: 14px 12px; font-size: 12px; }
         }
 
@@ -590,6 +666,15 @@
 
     <!-- Lookup Form -->
     <div class="portal-body" id="lookupForm" style="display:none;">
+        <div id="workshopLocationCard" style="display:none; margin-bottom:14px; background:#f7fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px;">
+            <div style="font-size:12px; color:#667eea; font-weight:700; margin-bottom:8px;">
+                <i class="fas fa-location-dot"></i> Workshop Location
+            </div>
+            <div id="workshopLocationText" style="font-size:13px; color:#4a5568; margin-bottom:8px;"></div>
+            <a id="workshopLocationLink" href="#" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#553c9a; font-weight:600; text-decoration:none;">
+                <i class="fas fa-map"></i> Open in Google Maps
+            </a>
+        </div>
         <div class="portal-input-group">
             <label><i class="fas fa-id-badge"></i> Enter Your Client ID</label>
             <input type="text" id="clientIdInput" placeholder="e.g. A3B7X2K" maxlength="10" autocomplete="off" inputmode="text" enterkeyhint="search">
@@ -621,6 +706,17 @@
             <h4><i class="fas fa-camera"></i> Device Photos</h4>
             <div class="photos-grid" id="photosGrid"></div>
         </div>
+        <div class="portal-message-section" id="portalMessageSection">
+            <h4><i class="fas fa-comments"></i> Message the workshop</h4>
+            <p style="font-size:12px;color:#718096;margin-bottom:10px;line-height:1.5;">
+                This sends to the team chat in the app with your name and phone so staff can reply in person or call you.
+            </p>
+            <textarea id="portalMessageInput" maxlength="500" rows="4" placeholder="Write your message..."></textarea>
+            <button type="button" class="submit-btn" id="portalSendBtn" onclick="sendPortalMessage()">
+                <i class="fas fa-paper-plane"></i> Send to team
+            </button>
+            <p id="portalMsgStatus" style="font-size:12px;text-align:center;margin-top:10px;min-height:18px;color:#718096;"></p>
+        </div>
         <button class="back-btn" onclick="goBack()">
             <i class="fas fa-arrow-left"></i> Look Up Another ID
         </button>
@@ -628,27 +724,7 @@
 </div>
 
 <div class="portal-footer" id="portalFooter">
-    <div class="workshop-contact" id="workshopContact" style="display: none;">
-        <div class="contact-info">
-            <h4><i class="fas fa-store"></i> <span id="footerWorkshopName">Workshop</span></h4>
-            <p id="footerWorkshopAddress" style="margin-bottom: 10px;"></p>
-            <div class="contact-actions">
-                <button class="contact-btn" onclick="callWorkshop()" id="callBtn" style="display: none;">
-                    <i class="fas fa-phone"></i> <span id="callBtnText">Call</span>
-                </button>
-                <button class="contact-btn whatsapp-btn" onclick="whatsappWorkshop()" id="whatsappBtn" style="display: none;">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </button>
-                <button class="contact-btn sms-btn" onclick="smsWorkshop()" id="smsBtn" style="display: none;">
-                    <i class="fas fa-sms"></i> SMS
-                </button>
-                <button class="contact-btn location-btn" onclick="getDirections()" id="locationBtn" style="display: none;">
-                    <i class="fas fa-map-marker-alt"></i> Directions
-                </button>
-            </div>
-        </div>
-    </div>
-    <p style="margin-top: 15px; font-size: 12px; color: #a0aec0;">Powered by <strong>RepairPro</strong></p>
+    <p>Powered by <strong>RepairPro</strong></p>
 </div>
 
 <!-- Lightbox for photos -->
@@ -706,6 +782,7 @@ function connectToFirebase(config) {
             })
             .then(function(snapshot) {
                 var ws = snapshot.val() || {};
+                workshopData = ws;
 
                 // Set workshop name
                 if (ws.workshopName) {
@@ -719,8 +796,7 @@ function connectToFirebase(config) {
                         '<img src="' + ws.workshopLogo + '" alt="Logo">';
                 }
 
-                // Show workshop contact information
-                showWorkshopContact(ws);
+                renderWorkshopLocation(ws);
 
                 // Show lookup form
                 document.getElementById('connectingState').style.display = 'none';
@@ -749,94 +825,18 @@ function connectToFirebase(config) {
     }
 }
 
-// ============ SHOW WORKSHOP CONTACT INFO ============
-function showWorkshopContact(settings) {
-    var contactSection = document.getElementById('workshopContact');
-    var footerWorkshopName = document.getElementById('footerWorkshopName');
-    var footerWorkshopAddress = document.getElementById('footerWorkshopAddress');
-    var callBtn = document.getElementById('callBtn');
-    var whatsappBtn = document.getElementById('whatsappBtn');
-    var smsBtn = document.getElementById('smsBtn');
-    var locationBtn = document.getElementById('locationBtn');
-    
-    // Set workshop name and address
-    if (settings.workshopName) {
-        footerWorkshopName.textContent = settings.workshopName;
+function renderWorkshopLocation(ws) {
+    var mapLink = (ws && ws.workshopMapLink ? String(ws.workshopMapLink).trim() : '');
+    var card = document.getElementById('workshopLocationCard');
+    if (!card) return;
+    if (!mapLink) {
+        card.style.display = 'none';
+        return;
     }
-    
-    if (settings.workshopAddress || settings.workshopLocation?.formattedAddress) {
-        footerWorkshopAddress.textContent = settings.workshopLocation?.formattedAddress || settings.workshopAddress;
-    }
-    
-    // Show contact buttons if phone numbers are available
-    var hasPhone = false;
-    if (settings.workshopPhone1) {
-        callBtn.style.display = 'flex';
-        callBtn.setAttribute('data-phone', settings.workshopPhone1);
-        hasPhone = true;
-    }
-    
-    if (settings.workshopPhone1) {
-        whatsappBtn.style.display = 'flex';
-        whatsappBtn.setAttribute('data-phone', settings.workshopPhone1);
-        hasPhone = true;
-    }
-    
-    if (settings.workshopPhone1) {
-        smsBtn.style.display = 'flex';
-        smsBtn.setAttribute('data-phone', settings.workshopPhone1);
-        hasPhone = true;
-    }
-    
-    // Show location button if coordinates are available
-    if (settings.workshopLocation && settings.workshopLocation.lat && settings.workshopLocation.lng) {
-        locationBtn.style.display = 'flex';
-        locationBtn.setAttribute('data-lat', settings.workshopLocation.lat);
-        locationBtn.setAttribute('data-lng', settings.workshopLocation.lng);
-    }
-    
-    // Show contact section if we have any contact info
-    if (hasPhone || settings.workshopAddress || settings.workshopLocation) {
-        contactSection.style.display = 'block';
-    }
-}
-
-// ============ CONTACT FUNCTIONS ============
-function callWorkshop() {
-    var phone = document.getElementById('callBtn').getAttribute('data-phone');
-    if (phone) {
-        window.location.href = 'tel:' + phone;
-    }
-}
-
-function whatsappWorkshop() {
-    var phone = document.getElementById('whatsappBtn').getAttribute('data-phone');
-    if (phone) {
-        var message = encodeURIComponent('Hello, I would like to inquire about my device repair.');
-        window.open('https://wa.me/' + phone.replace(/\D/g, '') + '?text=' + message, '_blank');
-    }
-}
-
-function smsWorkshop() {
-    var phone = document.getElementById('smsBtn').getAttribute('data-phone');
-    if (phone) {
-        var message = encodeURIComponent('Hello, I would like to inquire about my device repair.');
-        window.location.href = 'sms:' + phone + '?body=' + message;
-    }
-}
-
-function getDirections() {
-    var lat = document.getElementById('locationBtn').getAttribute('data-lat');
-    var lng = document.getElementById('locationBtn').getAttribute('data-lng');
-    var address = document.getElementById('footerWorkshopAddress').textContent;
-    
-    if (lat && lng) {
-        // Use Google Maps for directions
-        window.open('https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng, '_blank');
-    } else if (address) {
-        // Fallback to address search
-        window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address), '_blank');
-    }
+    var label = (ws.workshopMapLabel || ws.workshopAddress || 'Workshop location').trim();
+    document.getElementById('workshopLocationText').textContent = label;
+    document.getElementById('workshopLocationLink').href = mapLink;
+    card.style.display = 'block';
 }
 
 // ============ SHOW CONNECTION ERROR ============
@@ -910,7 +910,13 @@ function showResults(client) {
     // Status section
     var warrantyHtml = getWarrantyHtml(client);
 
+    var profileBlock = '';
+    if (client.profilePhoto && String(client.profilePhoto).trim()) {
+        profileBlock = '<div class="portal-client-photo"><img src="' + escAttr(client.profilePhoto) + '" alt=""></div>';
+    }
+
     document.getElementById('resultStatus').innerHTML =
+        profileBlock +
         '<div class="status-icon ' + client.status + '"><i class="fas ' + st.icon + '"></i></div>' +
         '<h2>' + escHtml(client.name) + '</h2>' +
         '<span class="status-badge ' + client.status + '">' + st.label + '</span>' +
@@ -945,6 +951,14 @@ function showResults(client) {
     html += '<div class="balance-row detail-row">' +
         '<span class="label"><i class="fas fa-wallet" style="width:16px;color:#667eea;"></i> <strong>Balance Due</strong></span>' +
         '<span class="value ' + (balance > 0 ? 'owed' : 'paid') + '">UGX ' + balance.toLocaleString() + '</span></div>';
+
+    if (client.status !== 'completed' && client.status !== 'delivered') {
+        html += '<div style="margin:12px 0 0;padding:12px 14px;background:#fffaf0;border:1px solid #fbd38d;border-radius:10px;font-size:12px;color:#744210;line-height:1.5;">' +
+            '<strong><i class="fas fa-info-circle"></i> About payments</strong><br>' +
+            'Deposits shown here may be held until your repair is marked <strong>completed</strong> or <strong>delivered</strong>. ' +
+            'The workshop counts money as fully earned only after the job is finished and collected. Contact them if you have questions.' +
+            '</div>';
+    }
 
     document.getElementById('resultDetails').innerHTML = html;
 
@@ -983,8 +997,57 @@ function showResults(client) {
     // Show results
     document.getElementById('resultsSection').style.display = 'block';
 
+    window.currentPortalClient = client;
+    var pm = document.getElementById('portalMessageInput');
+    var ps = document.getElementById('portalMsgStatus');
+    if (pm) pm.value = '';
+    if (ps) ps.textContent = '';
+    var sb = document.getElementById('portalSendBtn');
+    if (sb) sb.disabled = false;
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function sendPortalMessage() {
+    var client = window.currentPortalClient;
+    var statusEl = document.getElementById('portalMsgStatus');
+    var btn = document.getElementById('portalSendBtn');
+    var input = document.getElementById('portalMessageInput');
+    if (!client || !fbDb || !workshopUid) {
+        if (statusEl) statusEl.textContent = 'Cannot send right now.';
+        return;
+    }
+    var text = (input && input.value || '').trim();
+    if (text.length < 1) {
+        if (statusEl) statusEl.textContent = 'Please enter a message.';
+        return;
+    }
+    var phone = String(client.phone1 || client.phone2 || '').replace(/\s/g, '');
+    var msgId = 'PMSG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 8);
+    if (btn) btn.disabled = true;
+    if (statusEl) statusEl.textContent = 'Sending...';
+    fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set({
+        id: msgId,
+        senderId: 'PORTAL-' + client.id,
+        senderName: client.name,
+        senderType: 'portal',
+        clientId: client.id,
+        clientName: client.name,
+        clientPhone: phone,
+        text: text,
+        target: 'broadcast',
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        readBy: {}
+    }).then(function() {
+        if (input) input.value = '';
+        if (statusEl) statusEl.textContent = 'Sent! The workshop will see this in team chat.';
+        if (btn) btn.disabled = false;
+    }).catch(function(err) {
+        console.error(err);
+        if (statusEl) statusEl.textContent = 'Could not send. Check connection and try again.';
+        if (btn) btn.disabled = false;
+    });
 }
 
 // ============ HELPERS ============
@@ -1004,6 +1067,10 @@ function escHtml(str) {
     var div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+}
+
+function escAttr(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
 
 function getETA(client) {
@@ -1039,6 +1106,11 @@ function showError(msg) {
 }
 
 function goBack() {
+    window.currentPortalClient = null;
+    var pm = document.getElementById('portalMessageInput');
+    var ps = document.getElementById('portalMsgStatus');
+    if (pm) pm.value = '';
+    if (ps) ps.textContent = '';
     document.getElementById('resultsSection').style.display = 'none';
     document.getElementById('lookupForm').style.display = 'block';
     document.getElementById('clientIdInput').value = '';
