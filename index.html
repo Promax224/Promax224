@@ -872,6 +872,8 @@ var fbAuth = null;
 var workshopUid = null;
 var workshopData = null;
 var portalChatListener = null;
+var portalChatQuery = null;
+var portalThreadMessages = [];
 
 (function init() {
     var params = new URLSearchParams(window.location.search);
@@ -1061,31 +1063,68 @@ function isPortalThreadMessage(msg, clientId) {
     return false;
 }
 
+function mergePortalThreadMessages(incoming) {
+    if (!incoming || !incoming.length) return;
+    incoming.forEach(function(m) {
+        if (!m || !m.id) return;
+        var idx = -1;
+        for (var i = 0; i < portalThreadMessages.length; i++) {
+            if (portalThreadMessages[i].id === m.id) { idx = i; break; }
+        }
+        if (idx >= 0) portalThreadMessages[idx] = m;
+        else portalThreadMessages.push(m);
+    });
+    portalThreadMessages.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+    renderPortalThread(portalThreadMessages);
+}
+
+function addPortalMessageOptimistic(msg) {
+    if (!msg || !msg.id) return;
+    portalThreadMessages.push(msg);
+    portalThreadMessages.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+    renderPortalThread(portalThreadMessages);
+}
+
 function stopPortalMessageListener() {
-    if (portalChatListener && fbDb && workshopUid) {
-        fbDb.ref('workshops/' + workshopUid + '/chat/messages').off('value', portalChatListener);
-        portalChatListener = null;
+    if (portalChatQuery && portalChatListener) {
+        portalChatQuery.off('value', portalChatListener);
     }
+    portalChatQuery = null;
+    portalChatListener = null;
 }
 
 function startPortalMessageListener(client) {
     stopPortalMessageListener();
+    portalThreadMessages = [];
     if (!fbDb || !workshopUid || !client) return;
 
     portalChatListener = function(snapshot) {
         var msgs = [];
         snapshot.forEach(function(child) {
             var m = child.val();
-            if (isPortalThreadMessage(m, client.id)) msgs.push(m);
+            if (m && isPortalThreadMessage(m, client.id)) msgs.push(m);
         });
-        msgs.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
-        renderPortalThread(msgs);
+        mergePortalThreadMessages(msgs);
     };
 
-    fbDb.ref('workshops/' + workshopUid + '/chat/messages')
-        .orderByChild('timestamp')
-        .limitToLast(80)
-        .on('value', portalChatListener);
+    portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+        .orderByChild('clientId')
+        .equalTo(client.id);
+    portalChatQuery.on('value', portalChatListener, function(err) {
+        console.warn('Indexed portal listener failed, using fallback:', err);
+        stopPortalMessageListener();
+        portalThreadMessages = [];
+        portalChatListener = function(snapshot) {
+            var msgs = [];
+            snapshot.forEach(function(child) {
+                var m = child.val();
+                if (m && isPortalThreadMessage(m, client.id)) msgs.push(m);
+            });
+            mergePortalThreadMessages(msgs);
+        };
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages');
+        portalChatQuery.on('value', portalChatListener);
+    });
 }
 
 function renderPortalThread(msgs) {
@@ -1300,9 +1339,8 @@ function sendPortalMessage() {
     }
     var phone = String(client.phone1 || client.phone2 || '').replace(/\s/g, '');
     var msgId = 'PMSG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 8);
-    if (btn) btn.disabled = true;
-    if (statusEl) statusEl.textContent = 'Sending...';
-    fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set({
+    var localTs = Date.now();
+    var optimisticMsg = {
         id: msgId,
         senderId: 'PORTAL-' + client.id,
         senderName: client.name,
@@ -1313,17 +1351,28 @@ function sendPortalMessage() {
         threadId: client.id,
         text: text,
         target: 'broadcast',
-        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        timestamp: localTs,
         readBy: {}
-    }).then(function() {
-        if (input) input.value = '';
-        if (statusEl) statusEl.textContent = 'Message sent!';
-        if (btn) btn.disabled = false;
-    }).catch(function(err) {
-        console.error(err);
-        if (statusEl) statusEl.textContent = 'Could not send. Check connection and try again.';
-        if (btn) btn.disabled = false;
-    });
+    };
+
+    if (btn) btn.disabled = true;
+    if (statusEl) statusEl.textContent = 'Sending...';
+    if (input) input.value = '';
+    addPortalMessageOptimistic(optimisticMsg);
+
+    fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set(optimisticMsg)
+        .then(function() {
+            if (statusEl) statusEl.textContent = 'Message sent!';
+            if (btn) btn.disabled = false;
+        })
+        .catch(function(err) {
+            console.error(err);
+            portalThreadMessages = portalThreadMessages.filter(function(m) { return m.id !== msgId; });
+            renderPortalThread(portalThreadMessages);
+            if (input) input.value = text;
+            if (statusEl) statusEl.textContent = 'Could not send. Check connection and try again.';
+            if (btn) btn.disabled = false;
+        });
 }
 
 // ============ HELPERS ============
@@ -1383,6 +1432,7 @@ function showError(msg) {
 
 function goBack() {
     stopPortalMessageListener();
+    portalThreadMessages = [];
     window.currentPortalClient = null;
     var pm = document.getElementById('portalMessageInput');
     var ps = document.getElementById('portalMsgStatus');
