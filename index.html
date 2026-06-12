@@ -401,6 +401,141 @@
             box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
         }
 
+        .workshop-contact-card {
+            margin-bottom: 14px;
+            background: linear-gradient(145deg, #f7fafc 0%, #edf2f7 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.08);
+        }
+        .workshop-contact-card h3 {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .contact-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .contact-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .contact-chip:active { transform: scale(0.97); }
+        .contact-chip.phone {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+        }
+        .contact-chip.email {
+            background: linear-gradient(135deg, #bee3f8, #90cdf4);
+            color: #2c5282;
+        }
+        .contact-chip.maps {
+            background: linear-gradient(135deg, #e9d8fd, #d6bcfa);
+            color: #553c9a;
+            width: 100%;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        .contact-address {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            padding-left: 2px;
+        }
+
+        .pickup-overdue-banner {
+            margin: 0 16px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 2px solid #fc8181;
+            animation: pulseWarn 2s ease-in-out infinite;
+        }
+        .pickup-overdue-banner h4 {
+            font-size: 14px;
+            color: #c53030;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pickup-overdue-banner p {
+            font-size: 12px;
+            color: #742a2a;
+            line-height: 1.55;
+        }
+        @keyframes pulseWarn {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.25); }
+            50% { box-shadow: 0 0 0 6px rgba(245, 101, 101, 0); }
+        }
+
+        .portal-thread {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+        .portal-thread-empty {
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            padding: 16px 8px;
+        }
+        .portal-thread-msg {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .portal-thread-msg:last-child { margin-bottom: 0; }
+        .portal-thread-msg.client { align-items: flex-end; }
+        .portal-thread-msg.workshop { align-items: flex-start; }
+        .portal-thread-bubble {
+            max-width: 88%;
+            padding: 10px 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .portal-thread-msg.client .portal-thread-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .portal-thread-msg.workshop .portal-thread-bubble {
+            background: #edf2f7;
+            color: #2d3748;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .portal-thread-meta {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+
         /* Back button */
         .back-btn {
             width: calc(100% - 32px); padding: 13px;
@@ -666,15 +801,7 @@
 
     <!-- Lookup Form -->
     <div class="portal-body" id="lookupForm" style="display:none;">
-        <div id="workshopLocationCard" style="display:none; margin-bottom:14px; background:#f7fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px;">
-            <div style="font-size:12px; color:#667eea; font-weight:700; margin-bottom:8px;">
-                <i class="fas fa-location-dot"></i> Workshop Location
-            </div>
-            <div id="workshopLocationText" style="font-size:13px; color:#4a5568; margin-bottom:8px;"></div>
-            <a id="workshopLocationLink" href="#" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#553c9a; font-weight:600; text-decoration:none;">
-                <i class="fas fa-map"></i> Open in Google Maps
-            </a>
-        </div>
+        <div id="workshopContactLookup" class="workshop-contact-card" style="display:none;"></div>
         <div class="portal-input-group">
             <label><i class="fas fa-id-badge"></i> Enter Your Client ID</label>
             <input type="text" id="clientIdInput" placeholder="e.g. A3B7X2K" maxlength="10" autocomplete="off" inputmode="text" enterkeyhint="search">
@@ -696,8 +823,10 @@
 
     <!-- Results -->
     <div class="results-section" id="resultsSection">
+        <div id="pickupOverdueBanner" style="display:none;"></div>
         <div class="result-status" id="resultStatus"></div>
         <div id="resultDetails"></div>
+        <div id="workshopContactResults" class="workshop-contact-card" style="display:none; margin: 12px 16px 0;"></div>
         <div class="repair-details" id="repairDetailsSection" style="display:none;">
             <h4><i class="fas fa-tools"></i> Repair Details</h4>
             <div id="repairDetailsContent"></div>
@@ -709,11 +838,14 @@
         <div class="portal-message-section" id="portalMessageSection">
             <h4><i class="fas fa-comments"></i> Message the workshop</h4>
             <p style="font-size:12px;color:#718096;margin-bottom:10px;line-height:1.5;">
-                This sends to the team chat in the app with your name and phone so staff can reply in person or call you.
+                Chat with the workshop team here. You can send messages and see their replies in real time.
             </p>
-            <textarea id="portalMessageInput" maxlength="500" rows="4" placeholder="Write your message..."></textarea>
+            <div class="portal-thread" id="portalMessageThread">
+                <div class="portal-thread-empty">No messages yet. Say hello below!</div>
+            </div>
+            <textarea id="portalMessageInput" maxlength="500" rows="3" placeholder="Write your message..."></textarea>
             <button type="button" class="submit-btn" id="portalSendBtn" onclick="sendPortalMessage()">
-                <i class="fas fa-paper-plane"></i> Send to team
+                <i class="fas fa-paper-plane"></i> Send message
             </button>
             <p id="portalMsgStatus" style="font-size:12px;text-align:center;margin-top:10px;min-height:18px;color:#718096;"></p>
         </div>
@@ -739,6 +871,7 @@ var fbDb = null;
 var fbAuth = null;
 var workshopUid = null;
 var workshopData = null;
+var portalChatListener = null;
 
 (function init() {
     var params = new URLSearchParams(window.location.search);
@@ -796,7 +929,8 @@ function connectToFirebase(config) {
                         '<img src="' + ws.workshopLogo + '" alt="Logo">';
                 }
 
-                renderWorkshopLocation(ws);
+                renderWorkshopContact(ws, 'workshopContactLookup');
+                renderWorkshopContact(ws, 'workshopContactResults');
 
                 // Show lookup form
                 document.getElementById('connectingState').style.display = 'none';
@@ -825,18 +959,154 @@ function connectToFirebase(config) {
     }
 }
 
-function renderWorkshopLocation(ws) {
-    var mapLink = (ws && ws.workshopMapLink ? String(ws.workshopMapLink).trim() : '');
-    var card = document.getElementById('workshopLocationCard');
-    if (!card) return;
-    if (!mapLink) {
-        card.style.display = 'none';
+function renderWorkshopContact(ws, elementId) {
+    var el = document.getElementById(elementId);
+    if (!el || !ws) return;
+
+    var phone1 = (ws.workshopPhone1 || '').trim();
+    var phone2 = (ws.workshopPhone2 || '').trim();
+    var email1 = (ws.workshopEmail1 || '').trim();
+    var email2 = (ws.workshopEmail2 || '').trim();
+    var mapLink = (ws.workshopMapLink || '').trim();
+    var address = (ws.workshopAddress || ws.workshopMapLabel || '').trim();
+
+    if (!phone1 && !phone2 && !email1 && !email2 && !mapLink) {
+        el.style.display = 'none';
+        el.innerHTML = '';
         return;
     }
-    var label = (ws.workshopMapLabel || ws.workshopAddress || 'Workshop location').trim();
-    document.getElementById('workshopLocationText').textContent = label;
-    document.getElementById('workshopLocationLink').href = mapLink;
-    card.style.display = 'block';
+
+    var html = '<h3><i class="fas fa-store"></i> Contact the workshop</h3>';
+    if (address) {
+        html += '<div class="contact-address"><i class="fas fa-location-dot" style="color:#667eea;"></i> ' + escHtml(address) + '</div>';
+    }
+
+    var chips = '';
+    if (phone1) {
+        chips += '<a class="contact-chip phone" href="tel:' + escAttr(phone1.replace(/\s/g, '')) + '"><i class="fas fa-phone"></i> ' + escHtml(phone1) + '</a>';
+    }
+    if (phone2) {
+        chips += '<a class="contact-chip phone" href="tel:' + escAttr(phone2.replace(/\s/g, '')) + '"><i class="fas fa-phone-alt"></i> ' + escHtml(phone2) + '</a>';
+    }
+    if (email1) {
+        chips += '<a class="contact-chip email" href="mailto:' + escAttr(email1) + '"><i class="fas fa-envelope"></i> ' + escHtml(email1) + '</a>';
+    }
+    if (email2) {
+        chips += '<a class="contact-chip email" href="mailto:' + escAttr(email2) + '"><i class="fas fa-envelope"></i> ' + escHtml(email2) + '</a>';
+    }
+    if (chips) html += '<div class="contact-chip-row">' + chips + '</div>';
+    if (mapLink) {
+        html += '<a class="contact-chip maps" href="' + escAttr(mapLink) + '" target="_blank" rel="noopener"><i class="fas fa-map-marked-alt"></i> Open in Google Maps</a>';
+    }
+
+    el.innerHTML = html;
+    el.style.display = 'block';
+}
+
+function getPickupOverdueNotice(client) {
+    if (!client || !workshopData) return null;
+    var reminderDays = parseInt(workshopData.reminderDays, 10) || 40;
+    if (client.status === 'delivered' || client.status === 'abandoned') return null;
+
+    var days = 0;
+    var title = '';
+    var message = '';
+
+    if (client.status === 'completed') {
+        var refDate = client.jobFinishedAt || client.updatedAt || client.signInDate;
+        if (!refDate) return null;
+        days = Math.floor((Date.now() - new Date(refDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (days < reminderDays) return null;
+        title = 'Pickup reminder';
+        message = 'Your device has been <strong>ready for pickup</strong> for <strong>' + days + ' day' + (days !== 1 ? 's' : '') + '</strong>. ' +
+            'The workshop allows up to <strong>' + reminderDays + ' days</strong> before a pickup is considered overdue. Please visit or message us to arrange collection.';
+    } else if (client.signInDate) {
+        days = Math.floor((Date.now() - new Date(client.signInDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (days < reminderDays) return null;
+        title = 'Long stay notice';
+        message = 'Your device has been with the workshop for <strong>' + days + ' day' + (days !== 1 ? 's' : '') + '</strong>, ' +
+            'which exceeds the <strong>' + reminderDays + '-day</strong> pickup window set by the workshop. Please contact us or pick up your device soon.';
+    } else {
+        return null;
+    }
+
+    return { title: title, message: message, days: days };
+}
+
+function showPickupOverdueBanner(client) {
+    var banner = document.getElementById('pickupOverdueBanner');
+    if (!banner) return;
+    var notice = getPickupOverdueNotice(client);
+    if (!notice) {
+        banner.style.display = 'none';
+        banner.innerHTML = '';
+        return;
+    }
+    banner.innerHTML =
+        '<div class="pickup-overdue-banner">' +
+        '<h4><i class="fas fa-bell"></i> ' + escHtml(notice.title) + '</h4>' +
+        '<p>' + notice.message + '</p></div>';
+    banner.style.display = 'block';
+}
+
+function isPortalThreadMessage(msg, clientId) {
+    if (!msg || !clientId) return false;
+    var cid = String(clientId).toUpperCase();
+    if (msg.threadId && String(msg.threadId).toUpperCase() === cid) return true;
+    if (msg.clientId && String(msg.clientId).toUpperCase() === cid) return true;
+    if (msg.senderId === 'PORTAL-' + clientId) return true;
+    if (msg.target && String(msg.target).toLowerCase() === 'portal-' + String(clientId).toLowerCase()) return true;
+    if ((msg.senderType === 'portal' || (msg.senderId && String(msg.senderId).indexOf('PORTAL-') === 0)) &&
+        msg.clientId && String(msg.clientId).toUpperCase() === cid) return true;
+    return false;
+}
+
+function stopPortalMessageListener() {
+    if (portalChatListener && fbDb && workshopUid) {
+        fbDb.ref('workshops/' + workshopUid + '/chat/messages').off('value', portalChatListener);
+        portalChatListener = null;
+    }
+}
+
+function startPortalMessageListener(client) {
+    stopPortalMessageListener();
+    if (!fbDb || !workshopUid || !client) return;
+
+    portalChatListener = function(snapshot) {
+        var msgs = [];
+        snapshot.forEach(function(child) {
+            var m = child.val();
+            if (isPortalThreadMessage(m, client.id)) msgs.push(m);
+        });
+        msgs.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+        renderPortalThread(msgs);
+    };
+
+    fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+        .orderByChild('timestamp')
+        .limitToLast(80)
+        .on('value', portalChatListener);
+}
+
+function renderPortalThread(msgs) {
+    var container = document.getElementById('portalMessageThread');
+    if (!container) return;
+
+    if (!msgs || msgs.length === 0) {
+        container.innerHTML = '<div class="portal-thread-empty">No messages yet. Say hello below!</div>';
+        return;
+    }
+
+    container.innerHTML = msgs.map(function(msg) {
+        var isClient = msg.senderType === 'portal' || (msg.senderId && String(msg.senderId).indexOf('PORTAL-') === 0);
+        var who = isClient ? 'You' : escHtml(msg.senderName || 'Workshop');
+        var time = msg.timestamp ? new Date(msg.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        return '<div class="portal-thread-msg ' + (isClient ? 'client' : 'workshop') + '">' +
+            '<div class="portal-thread-bubble">' + escHtml(msg.text || '') + '</div>' +
+            '<div class="portal-thread-meta">' + who + (time ? ' · ' + time : '') + '</div></div>';
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
 }
 
 // ============ SHOW CONNECTION ERROR ============
@@ -994,6 +1264,9 @@ function showResults(client) {
         photosSection.style.display = 'none';
     }
 
+    showPickupOverdueBanner(client);
+    if (workshopData) renderWorkshopContact(workshopData, 'workshopContactResults');
+
     // Show results
     document.getElementById('resultsSection').style.display = 'block';
 
@@ -1004,6 +1277,8 @@ function showResults(client) {
     if (ps) ps.textContent = '';
     var sb = document.getElementById('portalSendBtn');
     if (sb) sb.disabled = false;
+
+    startPortalMessageListener(client);
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1035,13 +1310,14 @@ function sendPortalMessage() {
         clientId: client.id,
         clientName: client.name,
         clientPhone: phone,
+        threadId: client.id,
         text: text,
         target: 'broadcast',
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         readBy: {}
     }).then(function() {
         if (input) input.value = '';
-        if (statusEl) statusEl.textContent = 'Sent! The workshop will see this in team chat.';
+        if (statusEl) statusEl.textContent = 'Message sent!';
         if (btn) btn.disabled = false;
     }).catch(function(err) {
         console.error(err);
@@ -1106,11 +1382,16 @@ function showError(msg) {
 }
 
 function goBack() {
+    stopPortalMessageListener();
     window.currentPortalClient = null;
     var pm = document.getElementById('portalMessageInput');
     var ps = document.getElementById('portalMsgStatus');
     if (pm) pm.value = '';
     if (ps) ps.textContent = '';
+    var banner = document.getElementById('pickupOverdueBanner');
+    if (banner) { banner.style.display = 'none'; banner.innerHTML = ''; }
+    var thread = document.getElementById('portalMessageThread');
+    if (thread) thread.innerHTML = '<div class="portal-thread-empty">No messages yet. Say hello below!</div>';
     document.getElementById('resultsSection').style.display = 'none';
     document.getElementById('lookupForm').style.display = 'block';
     document.getElementById('clientIdInput').value = '';
@@ -1137,6 +1418,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('clientIdInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') lookupClient();
     });
+    var portalInput = document.getElementById('portalMessageInput');
+    if (portalInput) {
+        portalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPortalMessage();
+            }
+        });
+    }
 });
 </script>
 
