@@ -1006,7 +1006,7 @@ function connectToFirebase(config) {
                 // Set logo
                 if (ws.workshopLogo) {
                     document.getElementById('portalLogo').innerHTML =
-                        '<img src="' + ws.workshopLogo + '" alt="Logo">';
+                        '<img src="' + escAttr(ws.workshopLogo) + '" alt="Logo">';
                 }
 
                 renderWorkshopContact(ws, 'workshopContactLookup');
@@ -1143,8 +1143,10 @@ function isPortalThreadMessage(msg, clientId) {
 
 function mergePortalThreadMessages(incoming) {
     if (!incoming || !incoming.length) return;
+    var activeClient = window.currentPortalClient;
     incoming.forEach(function(m) {
         if (!m || !m.id) return;
+        if (activeClient && !isPortalThreadMessage(m, activeClient.id)) return;
         var idx = -1;
         for (var i = 0; i < portalThreadMessages.length; i++) {
             if (portalThreadMessages[i].id === m.id) { idx = i; break; }
@@ -1185,11 +1187,8 @@ function startPortalMessageListener(client) {
         mergePortalThreadMessages(msgs);
     };
 
-    portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
-        .orderByChild('clientId')
-        .equalTo(client.id);
-    portalChatQuery.on('value', portalChatListener, function(err) {
-        console.warn('Indexed portal listener failed, using fallback:', err);
+    function useFullFallback() {
+        console.warn('Indexed portal listeners failed, using filtered full-path fallback');
         stopPortalMessageListener();
         portalThreadMessages = [];
         portalChatListener = function(snapshot) {
@@ -1202,6 +1201,26 @@ function startPortalMessageListener(client) {
         };
         portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages');
         portalChatQuery.on('value', portalChatListener);
+    }
+
+    function tryThreadIdIndex() {
+        stopPortalMessageListener();
+        portalThreadMessages = [];
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+            .orderByChild('threadId')
+            .equalTo(client.id);
+        portalChatQuery.on('value', portalChatListener, function(err) {
+            console.warn('threadId index failed:', err);
+            useFullFallback();
+        });
+    }
+
+    portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+        .orderByChild('clientId')
+        .equalTo(client.id);
+    portalChatQuery.on('value', portalChatListener, function(err) {
+        console.warn('clientId index failed:', err);
+        tryThreadIdIndex();
     });
 }
 
