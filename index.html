@@ -26,6 +26,55 @@
             margin: 0;
         }
 
+        .portal-bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+        .portal-bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.32);
+            pointer-events: none;
+            display: none;
+        }
+
+        body.portal-has-wallpaper {
+            background: #1a202c;
+        }
+
+        body.portal-has-wallpaper .portal-bg-layer,
+        body.portal-has-wallpaper .portal-bg-overlay {
+            display: block;
+        }
+
+        body.portal-has-wallpaper .portal-card,
+        body.portal-has-wallpaper .portal-footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        body.portal-has-wallpaper .portal-footer {
+            background: transparent;
+            color: rgba(255,255,255,0.75);
+        }
+
+        body.portal-has-wallpaper .portal-footer strong {
+            color: #fff;
+        }
+
         .portal-card {
             background: rgba(255,255,255,0.97);
             border-radius: 0;
@@ -841,6 +890,9 @@
 </head>
 <body>
 
+<div id="portalBgLayer" class="portal-bg-layer" aria-hidden="true"></div>
+<div id="portalBgOverlay" class="portal-bg-overlay" aria-hidden="true"></div>
+
 <div class="portal-card" id="portalCard">
     <!-- Header -->
     <div class="portal-header" id="portalHeader">
@@ -1008,6 +1060,8 @@ function connectToFirebase(config) {
                     document.getElementById('portalLogo').innerHTML =
                         '<img src="' + escAttr(ws.workshopLogo) + '" alt="Logo">';
                 }
+
+                applyPortalBackground(ws);
 
                 renderWorkshopContact(ws, 'workshopContactLookup');
                 renderWorkshopContact(ws, 'workshopContactResults');
@@ -1596,6 +1650,20 @@ function escHtml(str) {
 
 function escAttr(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function applyPortalBackground(ws) {
+    var bg = (ws && ws.portalBackground) ? ws.portalBackground : '';
+    var layer = document.getElementById('portalBgLayer');
+    if (!layer) return;
+
+    if (bg) {
+        layer.style.backgroundImage = 'url("' + bg + '")';
+        document.body.classList.add('portal-has-wallpaper');
+    } else {
+        layer.style.backgroundImage = '';
+        document.body.classList.remove('portal-has-wallpaper');
+    }
 }
 
 function getETA(client) {
