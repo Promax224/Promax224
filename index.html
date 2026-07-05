@@ -1050,10 +1050,12 @@ var portalChatQuery = null;
 var portalThreadMessages = [];
 var portalAttachments = [];
 var PORTAL_MAX_PHOTOS = 2;
+var portalAutoClientId = null;
 
 (function init() {
     var params = new URLSearchParams(window.location.search);
     var encoded = params.get('d');
+    portalAutoClientId = params.get('c');
 
     if (!encoded) {
         showConnectionError('Invalid link. Please scan the QR code at the workshop.');
@@ -1113,14 +1115,17 @@ function connectToFirebase(config) {
                 renderWorkshopContact(ws, 'workshopContactLookup');
                 renderWorkshopContact(ws, 'workshopContactResults');
 
-                // Show lookup form
+                // Show lookup form or auto-open client status
                 document.getElementById('connectingState').style.display = 'none';
-                document.getElementById('lookupForm').style.display = 'block';
-
-                // Focus input
-                setTimeout(function() {
-                    document.getElementById('clientIdInput').focus();
-                }, 300);
+                if (portalAutoClientId) {
+                    document.getElementById('clientIdInput').value = portalAutoClientId;
+                    lookupClient(portalAutoClientId);
+                } else {
+                    document.getElementById('lookupForm').style.display = 'block';
+                    setTimeout(function() {
+                        document.getElementById('clientIdInput').focus();
+                    }, 300);
+                }
             })
             .catch(function(err) {
                 console.error('Auth error:', err);
@@ -1453,9 +1458,9 @@ function showConnectionError(msg) {
 }
 
 // ============ CLIENT LOOKUP ============
-function lookupClient() {
+function lookupClient(prefilledId) {
     var input = document.getElementById('clientIdInput');
-    var clientId = input.value.trim().toUpperCase();
+    var clientId = (prefilledId || input.value).trim().toUpperCase();
 
     if (!clientId || clientId.length < 3) {
         showError('Please enter a valid Client ID (from your receipt)');
