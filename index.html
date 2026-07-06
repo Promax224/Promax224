@@ -1071,6 +1071,29 @@ var portalAutoClientId = null;
 })();
 
 // ============ CONNECT TO FIREBASE ============
+function normalizeFirebaseList(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data.filter(Boolean);
+    return Object.keys(data)
+        .filter(function(k) { return k !== 'length'; })
+        .sort(function(a, b) {
+            var na = parseInt(a, 10), nb = parseInt(b, 10);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            return String(a).localeCompare(String(b));
+        })
+        .map(function(k) { return data[k]; })
+        .filter(Boolean);
+}
+
+function findClientById(clients, clientId) {
+    var id = String(clientId || '').trim().toUpperCase();
+    for (var i = 0; i < clients.length; i++) {
+        var c = clients[i];
+        if (c && c.id && String(c.id).toUpperCase() === id) return c;
+    }
+    return null;
+}
+
 function connectToFirebase(config) {
     try {
         var fbConfig = {
@@ -1090,7 +1113,11 @@ function connectToFirebase(config) {
         // Sign in with embedded credentials
         fbAuth.signInWithEmailAndPassword(config.e, config.w)
             .then(function() {
-                // Load workshop info
+                workshopUid = (fbAuth.currentUser && fbAuth.currentUser.uid) || config.i;
+                if (!workshopUid) throw new Error('Authentication failed');
+                if (config.i && config.i !== workshopUid) {
+                    console.warn('[Portal] Config UID outdated; using authenticated UID:', workshopUid);
+                }
                 return fbDb.ref('workshops/' + workshopUid + '/settings').once('value');
             })
             .then(function(snapshot) {
@@ -1474,15 +1501,8 @@ function lookupClient(prefilledId) {
 
     fbDb.ref('workshops/' + workshopUid + '/clients').once('value')
         .then(function(snapshot) {
-            var allClients = snapshot.val() || [];
-            var client = null;
-
-            for (var i = 0; i < allClients.length; i++) {
-                if (allClients[i] && allClients[i].id && allClients[i].id.toUpperCase() === clientId) {
-                    client = allClients[i];
-                    break;
-                }
-            }
+            var allClients = normalizeFirebaseList(snapshot.val());
+            var client = findClientById(allClients, clientId);
 
             document.getElementById('loadingState').style.display = 'none';
 
@@ -1498,7 +1518,11 @@ function lookupClient(prefilledId) {
             console.error('Lookup error:', err);
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('lookupForm').style.display = 'block';
-            showError('Could not fetch data. Please check your internet and try again.');
+            var msg = 'Could not fetch data. Please check your internet and try again.';
+            if (err && (err.code === 'PERMISSION_DENIED' || err.message && err.message.indexOf('permission') >= 0)) {
+                msg = 'Access denied. The portal link may be outdated — please ask the workshop for a new QR code or link.';
+            }
+            showError(msg);
         });
 }
 
@@ -1596,11 +1620,16 @@ function showResults(client) {
     var photosSection = document.getElementById('photosSection');
     var photosGrid = document.getElementById('photosGrid');
 
-    if (client.photos && client.photos.length > 0) {
+    if (client.photos) {
+        var photoList = normalizeFirebaseList(client.photos);
+        if (photoList.length > 0) {
         photosSection.style.display = 'block';
-        photosGrid.innerHTML = client.photos.map(function(photo, i) {
+        photosGrid.innerHTML = photoList.map(function(photo, i) {
             return '<img src="' + photo + '" alt="Photo ' + (i+1) + '" loading="lazy" onclick="openLightbox(this.src)">';
         }).join('');
+        } else {
+            photosSection.style.display = 'none';
+        }
     } else {
         photosSection.style.display = 'none';
     }
@@ -1666,6 +1695,10 @@ function sendPortalMessage() {
     addPortalMessageOptimistic(optimisticMsg);
 
     fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set(optimisticMsg)
+        .then(function() {
+            return fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId + '/timestamp')
+                .set(firebase.database.ServerValue.TIMESTAMP);
+        })
         .then(function() {
             if (statusEl) statusEl.textContent = 'Message sent!';
             if (btn) btn.disabled = false;
