@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Repair Status Check</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Use min-height instead of fixed height to allow natural scrolling */
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .portal-bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+        .portal-bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.32);
+            pointer-events: none;
+            display: none;
+        }
+
+        body.portal-has-wallpaper {
+            background: #1a202c;
+        }
+
+        body.portal-has-wallpaper .portal-bg-layer,
+        body.portal-has-wallpaper .portal-bg-overlay {
+            display: block;
+        }
+
+        body.portal-has-wallpaper .portal-card,
+        body.portal-has-wallpaper .portal-footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        body.portal-has-wallpaper .portal-footer {
+            background: transparent;
+            color: rgba(255,255,255,0.75);
+        }
+
+        body.portal-has-wallpaper .portal-footer strong {
+            color: #fff;
+        }
+
+        .portal-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 0;
+            width: 100%;
+            max-width: 520px;
+            /* REMOVED height: 100vh — this was the main cause of content clipping */
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow: visible;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: slideUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header - compact on mobile */
+        .portal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 16px 18px;
+            text-align: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .portal-logo {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 8px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .portal-logo img {
+            width: 100%; height: 100%;
+            object-fit: cover; border-radius: 12px;
+        }
+
+        .portal-logo i { font-size: 24px; color: white; }
+
+        .portal-header h1 { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+        .portal-header p { font-size: 11px; opacity: 0.85; }
+
+        /* Body - natural flow, no internal scroll */
+        .portal-body {
+            padding: 20px 16px;
+            flex-grow: 1;
+            /* REMOVED overflow-y: auto — let page scroll naturally */
+        }
+
+        .portal-input-group { margin-bottom: 16px; }
+
+        .portal-input-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: #2d3748; margin-bottom: 8px;
+        }
+
+        .portal-input-group input {
+            width: 100%; padding: 14px 14px;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            /* 16px minimum prevents iOS zoom on focus */
+            font-size: 16px; text-align: center;
+            letter-spacing: 3px; font-weight: 700;
+            text-transform: uppercase; color: #2d3748;
+            transition: all 0.3s ease; background: #f7fafc;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .portal-input-group input:focus {
+            outline: none; border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+            background: white;
+        }
+
+        .portal-input-group input::placeholder {
+            letter-spacing: 1px; text-transform: none;
+            font-weight: 400; font-size: 13px; color: #a0aec0;
+        }
+
+        .submit-btn {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            /* 48px+ touch target per Apple/Google guidelines */
+            min-height: 50px;
+            -webkit-appearance: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102,126,234,0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 10px rgba(102,126,234,0.3);
+        }
+
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* Error */
+        .error-msg {
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            color: #c53030; padding: 12px 16px; border-radius: 10px;
+            font-size: 13px; margin-top: 14px; display: none;
+            text-align: center; font-weight: 500;
+        }
+
+        /* Loading */
+        .loading-state {
+            text-align: center; padding: 45px 20px; display: none;
+        }
+
+        .spinner {
+            width: 44px; height: 44px;
+            border: 3px solid #e2e8f0; border-top: 3px solid #667eea;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Connection loading */
+        .connecting-state {
+            text-align: center; padding: 45px 20px;
+        }
+
+        .connecting-state .spinner {
+            border-top-color: white;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* Connection error full page */
+        .connection-error {
+            text-align: center; padding: 35px 20px; display: none;
+        }
+
+        .connection-error i { font-size: 44px; color: #fc8181; margin-bottom: 14px; }
+        .connection-error h3 { color: #2d3748; margin-bottom: 8px; font-size: 17px; }
+        .connection-error p { color: #718096; font-size: 13px; line-height: 1.6; }
+
+        .retry-btn {
+            margin-top: 18px; padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            min-height: 48px;
+            -webkit-appearance: none;
+        }
+
+        .retry-btn:active { opacity: 0.85; }
+
+        /* ===================== RESULTS ===================== */
+        .results-section { display: none; animation: slideUp 0.4s ease; }
+
+        .portal-client-photo {
+            margin: 0 auto 14px;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.95);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            background: #edf2f7;
+        }
+        .portal-client-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .result-status {
+            text-align: center; padding: 20px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .status-icon {
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px; font-size: 26px;
+        }
+
+        .status-icon.pending { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #9c4221; }
+        .status-icon.in-progress { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #2b6cb0; }
+        .status-icon.completed { background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #276749; }
+        .status-icon.delivered { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .status-icon.failed { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
+        .status-icon.abandoned { background: linear-gradient(135deg, #e2e8f0, #edf2f7); color: #718096; }
+
+        .result-status h2 {
+            font-size: 17px; color: #2d3748; margin-bottom: 6px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .status-badge {
+            display: inline-block; padding: 5px 14px;
+            border-radius: 20px; font-size: 11px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .status-badge.pending { background: #ffecd2; color: #9c4221; }
+        .status-badge.in-progress { background: #bee3f8; color: #2b6cb0; }
+        .status-badge.completed { background: #c6f6d5; color: #276749; }
+        .status-badge.delivered { background: #e9d8fd; color: #553c9a; }
+        .status-badge.failed { background: #fed7d7; color: #c53030; }
+        .status-badge.abandoned { background: #e2e8f0; color: #718096; }
+
+        .status-message {
+            color: #718096; font-size: 13px; margin-top: 10px; line-height: 1.5;
+            padding: 0 4px;
+        }
+
+        /* ===================== DETAIL ROWS ===================== */
+        /* Stacked layout on mobile for maximum readability */
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f4f8;
+            gap: 2px;
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-row .label {
+            font-size: 11px; color: #718096;
+            display: flex; align-items: center; gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .detail-row .label i { width: 16px; color: #667eea; font-size: 12px; }
+
+        .detail-row .value {
+            font-size: 15px; font-weight: 700; color: #2d3748;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            padding-left: 22px; /* align with label text (icon width + gap) */
+        }
+
+        /* Balance row - highlighted */
+        .balance-row {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 10px;
+            margin: 10px 14px;
+            padding: 14px 16px !important;
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .balance-row .label {
+            font-size: 13px;
+            text-transform: none;
+        }
+        .balance-row .label strong { color: #2d3748; }
+
+        .balance-row .value {
+            padding-left: 0;
+        }
+
+        .balance-row .value.owed { color: #e53e3e; font-size: 18px; }
+        .balance-row .value.paid { color: #38a169; font-size: 18px; }
+
+        /* Repair details section */
+        .repair-details {
+            padding: 14px 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .repair-details h4 {
+            font-size: 13px; color: #667eea; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .repair-issue {
+            background: #f7fafc; padding: 12px 14px; border-radius: 10px;
+            font-size: 13px; color: #4a5568; line-height: 1.6;
+            border-left: 3px solid #667eea;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .failed-reason {
+            background: #fff5f5; padding: 12px 14px; border-radius: 10px;
+            font-size: 13px; color: #742a2a; line-height: 1.6;
+            border-left: 3px solid #fc8181; margin-top: 8px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        /* Warranty */
+        .warranty-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; margin-top: 10px;
+        }
+
+        .warranty-badge.active { background: #c6f6d5; color: #276749; }
+        .warranty-badge.expired { background: #fed7d7; color: #c53030; }
+        .warranty-badge.pending { background: #e2e8f0; color: #718096; }
+
+        /* Photos - 2-col grid on small screens for bigger thumbnails */
+        .photos-section {
+            padding: 16px 16px; display: none;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .photos-section h4 {
+            font-size: 13px; color: #718096; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .photos-grid img {
+            width: 100%; aspect-ratio: 1; object-fit: cover;
+            border-radius: 10px; border: 2px solid #e2e8f0;
+            cursor: pointer; transition: transform 0.2s ease;
+        }
+
+        .photos-grid img:hover { transform: scale(1.03); }
+        .photos-grid img:active { transform: scale(0.97); }
+
+        .portal-message-section {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .portal-message-section.has-wallpaper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, var(--portal-msg-overlay, 0.88));
+            pointer-events: none;
+            z-index: 0;
+        }
+        .portal-message-section.has-wallpaper > * {
+            position: relative;
+            z-index: 1;
+        }
+        .portal-message-section h4 {
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .portal-call-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 13px;
+            border: 2px solid #48bb78;
+            background: #fff;
+            color: #276749;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .portal-call-btn:hover { background: #f0fff4; }
+        .portal-call-btn:active { transform: scale(0.98); }
+        .portal-call-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .portal-thread-msg.call-request .portal-thread-bubble {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+            font-weight: 600;
+        }
+        .portal-message-section textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 96px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .portal-message-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+        }
+
+        .workshop-contact-card {
+            margin-bottom: 14px;
+            background: linear-gradient(145deg, #f7fafc 0%, #edf2f7 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.08);
+        }
+        .workshop-contact-card h3 {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .contact-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .contact-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .contact-chip:active { transform: scale(0.97); }
+        .contact-chip.phone {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+        }
+        .contact-chip.email {
+            background: linear-gradient(135deg, #bee3f8, #90cdf4);
+            color: #2c5282;
+        }
+        .contact-chip.maps {
+            background: linear-gradient(135deg, #e9d8fd, #d6bcfa);
+            color: #553c9a;
+            width: 100%;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        .contact-address {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            padding-left: 2px;
+        }
+
+        .payment-methods-card {
+            margin-bottom: 14px;
+            background: linear-gradient(145deg, #fffaf0 0%, #feebc8 100%);
+            border: 1px solid #fbd38d;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(237, 137, 54, 0.1);
+        }
+        .payment-methods-card h3 {
+            font-size: 12px;
+            color: #c05621;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .payment-choice-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .payment-choice-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.85);
+            border: 1px solid #fbd38d;
+            border-radius: 12px;
+            padding: 9px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #744210;
+            cursor: pointer;
+            flex: 1 1 auto;
+            min-width: 120px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .payment-choice-chip:active { transform: scale(0.97); }
+        .payment-choice-chip .icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        /* Payment instructions modal */
+        .pay-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26,26,26,0.6); z-index: 9998;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .pay-modal-overlay.active { display: flex; }
+        .pay-modal {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+        .pay-modal-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-radius: 16px 16px 0 0;
+            background: linear-gradient(135deg, #ffcc00, #f59e0b);
+        }
+        .pay-modal-hdr h3 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .pay-modal-close {
+            border: none;
+            background: rgba(0,0,0,0.1);
+            color: #1a1a1a;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .pay-modal-client {
+            padding: 12px 18px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .pay-modal-client-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a202c;
+        }
+        .pay-modal-client-id {
+            font-size: 11px;
+            color: #94a3b8;
+            font-family: monospace;
+            margin-top: 2px;
+        }
+        .pay-modal-amount {
+            background: #f0fff4;
+            color: #276749;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .pay-phone-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #fffaf0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+        }
+        .pay-ussd-link {
+            color: #0ea5e9;
+            font-weight: 800;
+            text-decoration: underline;
+        }
+        .pay-modal-body { padding: 14px 18px 18px; }
+        .pay-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .pay-step:last-of-type { border-bottom: none; }
+        .pay-step-num {
+            background: linear-gradient(135deg, #ffcc00, #f59e0b);
+            color: #1a1a1a;
+            border-radius: 50%;
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 900;
+            flex-shrink: 0; margin-top: 1px;
+        }
+        .pay-step-content { font-size: 13px; color: #374151; flex: 1; min-width: 0; word-break: break-word; }
+        .pay-step-label { color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 1px; }
+        .pay-step-copy {
+            border: none;
+            background: #ffcc00;
+            color: #1a1a1a;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+        .pay-modal-note {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            color: #0369a1;
+            font-size: 12px;
+        }
+        .pay-modal-notify-btn {
+            width: 100%;
+            margin-top: 14px;
+            padding: 11px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .pickup-overdue-banner {
+            margin: 0 16px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 2px solid #fc8181;
+            animation: pulseWarn 2s ease-in-out infinite;
+        }
+        .pickup-overdue-banner h4 {
+            font-size: 14px;
+            color: #c53030;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pickup-overdue-banner p {
+            font-size: 12px;
+            color: #742a2a;
+            line-height: 1.55;
+        }
+        @keyframes pulseWarn {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.25); }
+            50% { box-shadow: 0 0 0 6px rgba(245, 101, 101, 0); }
+        }
+
+        .portal-thread {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+        .portal-thread-empty {
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            padding: 16px 8px;
+        }
+        .portal-thread-msg {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .portal-thread-msg:last-child { margin-bottom: 0; }
+        .portal-thread-msg.client { align-items: flex-end; }
+        .portal-thread-msg.workshop { align-items: flex-start; }
+        .portal-thread-bubble {
+            max-width: 88%;
+            padding: 10px 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .portal-thread-msg.client .portal-thread-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .portal-thread-msg.workshop .portal-thread-bubble {
+            background: #edf2f7;
+            color: #2d3748;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .portal-thread-meta {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+        .portal-thread-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .portal-thread-photos img {
+            width: 88px;
+            height: 88px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.8);
+            cursor: pointer;
+        }
+        .portal-thread-msg.workshop .portal-thread-photos img {
+            border-color: #e2e8f0;
+        }
+        .portal-attach-preview {
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .portal-attach-preview.active { display: flex; }
+        .portal-attach-thumb {
+            position: relative;
+            width: 72px;
+            height: 72px;
+        }
+        .portal-attach-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+        .portal-attach-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            background: #f56565;
+            color: white;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .portal-compose-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+            margin-bottom: 10px;
+        }
+        .portal-compose-row textarea {
+            flex: 1;
+            margin-bottom: 0 !important;
+        }
+        .portal-attach-btn {
+            flex-shrink: 0;
+            width: 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f7fafc;
+            color: #667eea;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .portal-attach-btn:active { background: #edf2f7; }
+
+        /* Back button */
+        .back-btn {
+            width: calc(100% - 32px); padding: 13px;
+            background: #f7fafc; border: 2px solid #e2e8f0;
+            border-radius: 12px; font-size: 13px; font-weight: 600;
+            color: #718096; cursor: pointer; margin: 16px 16px;
+            transition: all 0.2s ease; text-align: center;
+            min-height: 48px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            -webkit-appearance: none;
+        }
+
+        .back-btn:hover { background: #edf2f7; color: #2d3748; }
+        .back-btn:active { background: #e2e8f0; }
+
+        /* Footer */
+        .portal-footer {
+            text-align: center; padding: 16px; color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            background: rgba(255,255,255,0.97);
+            flex-shrink: 0;
+        }
+
+        .portal-footer strong { color: #667eea; }
+
+        /* Image lightbox */
+        .lightbox {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 9999;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; padding: 16px;
+        }
+
+        .lightbox.active { display: flex; }
+
+        .lightbox img {
+            max-width: 100%; max-height: 90vh;
+            border-radius: 10px; object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); border: none;
+            color: white; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ========== WIDER SCREENS (tablets, etc.) ========== */
+        @media (min-width: 520px) {
+            body {
+                padding: 16px;
+            }
+
+            .portal-card {
+                border-radius: 20px;
+                min-height: auto;
+                max-height: none;
+                overflow: hidden;
+            }
+
+            .portal-header {
+                position: relative;
+                padding: 24px 20px;
+            }
+
+            .portal-logo { width: 64px; height: 64px; border-radius: 16px; }
+            .portal-logo i { font-size: 30px; }
+
+            .portal-header h1 { font-size: 19px; }
+            .portal-header p { font-size: 12px; }
+
+            /* Side-by-side layout on wider screens */
+            .detail-row {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+                padding: 13px 18px;
+                gap: 10px;
+            }
+
+            .detail-row .label {
+                text-transform: none;
+                font-size: 12px;
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+
+            .detail-row .value {
+                text-align: right;
+                padding-left: 0;
+                font-size: 13px;
+                min-width: 0;
+            }
+
+            .photos-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .portal-footer {
+                background: transparent;
+                color: rgba(255,255,255,0.7);
+            }
+
+            .portal-footer strong { color: white; }
+        }
+
+        /* ========== VERY SMALL PHONES (< 340px like iPhone SE gen1) ========== */
+        @media (max-width: 340px) {
+            .portal-header { padding: 16px 12px 14px; }
+            .portal-header h1 { font-size: 15px; }
+
+            .portal-logo { width: 44px; height: 44px; border-radius: 12px; }
+            .portal-logo i { font-size: 20px; }
+
+            .portal-body { padding: 16px 12px; }
+
+            .portal-input-group input {
+                padding: 12px 10px;
+                letter-spacing: 2px;
+            }
+
+            .submit-btn { font-size: 14px; padding: 13px; }
+
+            .detail-row { padding: 9px 12px; }
+            .detail-row .label { font-size: 10px; }
+            .detail-row .value { font-size: 13px; padding-left: 22px; }
+
+            .balance-row { margin: 8px 10px; padding: 12px 12px !important; }
+            .balance-row .value.owed,
+            .balance-row .value.paid { font-size: 16px; }
+
+            .result-status { padding: 16px 12px; }
+            .result-status h2 { font-size: 15px; }
+            .status-icon { width: 50px; height: 50px; font-size: 22px; }
+
+            .repair-details { padding: 12px 12px; }
+            .repair-issue, .failed-reason { font-size: 12px; padding: 10px 12px; }
+
+            .photos-section { padding: 14px 12px; }
+
+        .portal-message-section {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        .portal-message-section h4 {
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        .portal-message-section textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 96px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .portal-message-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+        }
+
+            .back-btn { width: calc(100% - 24px); margin: 14px 12px; font-size: 12px; }
+        }
+
+        /* ========== LANDSCAPE ORIENTATION ========== */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .portal-header {
+                padding: 12px 20px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                text-align: left;
+            }
+
+            .portal-logo { width: 36px; height: 36px; margin: 0; border-radius: 10px; }
+            .portal-logo i { font-size: 16px; }
+
+            .portal-header h1 { font-size: 15px; margin-bottom: 0; }
+            .portal-header p { font-size: 10px; }
+
+            .portal-body { padding: 12px 16px; }
+
+            .result-status { padding: 14px; }
+            .status-icon { width: 44px; height: 44px; font-size: 20px; margin-bottom: 6px; }
+
+            .detail-row {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 8px 16px;
+            }
+
+            .detail-row .value {
+                padding-left: 0;
+                text-align: right;
+            }
+        }
+
+        /* ========== SAFE AREA (notched phones) ========== */
+        @supports (padding: max(0px)) {
+            .portal-header {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+                padding-top: max(20px, env(safe-area-inset-top));
+            }
+
+            .portal-body {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+
+            .results-section .detail-row {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+
+            .back-btn {
+                margin-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+
+            .portal-footer {
+                padding-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="portalBgLayer" class="portal-bg-layer" aria-hidden="true"></div>
+<div id="portalBgOverlay" class="portal-bg-overlay" aria-hidden="true"></div>
+
+<div class="portal-card" id="portalCard">
+    <!-- Header -->
+    <div class="portal-header" id="portalHeader">
+        <div class="portal-logo" id="portalLogo">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div>
+            <h1 id="workshopName">Repair Workshop</h1>
+            <p>Client Repair Status Portal</p>
+        </div>
+    </div>
+
+    <!-- Connecting state -->
+    <div class="connecting-state" id="connectingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Connecting to workshop...</p>
+    </div>
+
+    <!-- Connection error -->
+    <div class="connection-error" id="connectionError">
+        <i class="fas fa-exclamation-circle"></i>
+        <h3>Connection Failed</h3>
+        <p id="connectionErrorMsg">Could not connect to the workshop database. Please check your internet connection and try again.</p>
+        <button class="retry-btn" onclick="location.reload()">
+            <i class="fas fa-redo"></i> Try Again
+        </button>
+    </div>
+
+    <!-- Lookup Form -->
+    <div class="portal-body" id="lookupForm" style="display:none;">
+        <div id="workshopContactLookup" class="workshop-contact-card" style="display:none;"></div>
+        <div class="portal-input-group">
+            <label><i class="fas fa-id-badge"></i> Enter Your Client ID</label>
+            <input type="text" id="clientIdInput" placeholder="e.g. A3B7X2K" maxlength="10" autocomplete="off" inputmode="text" enterkeyhint="search">
+            <p style="font-size: 11px; color: #a0aec0; margin-top: 8px; text-align: center;">
+                Your Client ID is on the receipt you received at the workshop
+            </p>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="lookupClient()">
+            <i class="fas fa-search"></i> Check My Repair Status
+        </button>
+        <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Looking up your repair...</p>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="resultsSection">
+        <div id="pickupOverdueBanner" style="display:none;"></div>
+        <div class="result-status" id="resultStatus"></div>
+        <div id="resultDetails"></div>
+        <div id="paymentMethodsResults" class="payment-methods-card" style="display:none; margin: 12px 16px 0;"></div>
+        <div id="workshopContactResults" class="workshop-contact-card" style="display:none; margin: 12px 16px 0;"></div>
+        <div class="repair-details" id="repairDetailsSection" style="display:none;">
+            <h4><i class="fas fa-tools"></i> Repair Details</h4>
+            <div id="repairDetailsContent"></div>
+        </div>
+        <div class="photos-section" id="photosSection">
+            <h4><i class="fas fa-camera"></i> Device Photos</h4>
+            <div class="photos-grid" id="photosGrid"></div>
+        </div>
+        <div class="portal-message-section" id="portalMessageSection">
+            <h4><i class="fas fa-comments"></i> Message the workshop</h4>
+            <p style="font-size:12px;color:#718096;margin-bottom:10px;line-height:1.5;">
+                Chat with the workshop team here. You can send messages and see their replies in real time.
+            </p>
+            <div class="portal-thread" id="portalMessageThread">
+                <div class="portal-thread-empty">No messages yet. Say hello below!</div>
+            </div>
+            <div class="portal-attach-preview" id="portalAttachPreview"></div>
+            <div class="portal-compose-row">
+                <button type="button" class="portal-attach-btn" onclick="attachPhotoToPortal()" title="Attach photo">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <textarea id="portalMessageInput" maxlength="500" rows="3" placeholder="Write your message..."></textarea>
+            </div>
+            <button type="button" class="submit-btn" id="portalSendBtn" onclick="sendPortalMessage()">
+                <i class="fas fa-paper-plane"></i> Send message
+            </button>
+            <button type="button" class="portal-call-btn" id="portalCallBtn" onclick="requestPortalCall()">
+                <i class="fas fa-phone"></i> Request a call
+            </button>
+            <p id="portalMsgStatus" style="font-size:12px;text-align:center;margin-top:10px;min-height:18px;color:#718096;"></p>
+        </div>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i> Look Up Another ID
+        </button>
+    </div>
+</div>
+
+<div class="portal-footer" id="portalFooter">
+    <p>Powered by <strong>RepairPro</strong></p>
+</div>
+
+<!-- Lightbox for photos -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <button class="lightbox-close" aria-label="Close"><i class="fas fa-times"></i></button>
+    <img id="lightboxImg" src="" alt="Photo">
+</div>
+
+<!-- Payment instructions modal -->
+<div class="pay-modal-overlay" id="payModalOverlay" onclick="if(event.target===this)closePayModal();">
+    <div class="pay-modal">
+        <div class="pay-modal-hdr">
+            <h3 id="payModalTitle"><i class="fas fa-wallet"></i> Pay</h3>
+            <button class="pay-modal-close" onclick="closePayModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="pay-modal-client">
+            <div class="pay-modal-client-name" id="payModalClientName"></div>
+            <div class="pay-modal-client-id" id="payModalClientId"></div>
+        </div>
+        <div class="pay-modal-body" id="payModalBody"></div>
+    </div>
+</div>
+
+<script>
+// ============ READ CONFIG FROM URL ============
+var fbDb = null;
+var fbAuth = null;
+var workshopUid = null;
+var workshopData = null;
+var portalChatListener = null;
+var portalChatQuery = null;
+var portalThreadMessages = [];
+var portalAttachments = [];
+var PORTAL_MAX_PHOTOS = 2;
+var portalAutoClientId = null;
+
+(function init() {
+    var params = new URLSearchParams(window.location.search);
+    var encoded = params.get('d');
+    portalAutoClientId = params.get('c');
+
+    if (!encoded) {
+        showConnectionError('Invalid link. Please scan the QR code at the workshop.');
+        return;
+    }
+
+    try {
+        var config = JSON.parse(atob(decodeURIComponent(encoded)));
+        connectToFirebase(config);
+    } catch(e) {
+        showConnectionError('Invalid QR code data. Please ask the workshop for a new QR code.');
+    }
+})();
+
+// ============ CONNECT TO FIREBASE ============
+function normalizeFirebaseList(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data.filter(Boolean);
+    return Object.keys(data)
+        .filter(function(k) { return k !== 'length'; })
+        .sort(function(a, b) {
+            var na = parseInt(a, 10), nb = parseInt(b, 10);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            return String(a).localeCompare(String(b));
+        })
+        .map(function(k) { return data[k]; })
+        .filter(Boolean);
+}
+
+function findClientById(clients, clientId) {
+    var id = String(clientId || '').trim().toUpperCase();
+    for (var i = 0; i < clients.length; i++) {
+        var c = clients[i];
+        if (c && c.id && String(c.id).toUpperCase() === id) return c;
+    }
+    return null;
+}
+
+function connectToFirebase(config) {
+    try {
+        var fbConfig = {
+            apiKey: config.k,
+            databaseURL: config.u,
+            projectId: config.p,
+            authDomain: config.p + '.firebaseapp.com'
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(fbConfig);
+        }
+        fbDb = firebase.database();
+        fbAuth = firebase.auth();
+        workshopUid = config.i;
+
+        // Sign in with embedded credentials
+        fbAuth.signInWithEmailAndPassword(config.e, config.w)
+            .then(function() {
+                workshopUid = (fbAuth.currentUser && fbAuth.currentUser.uid) || config.i;
+                if (!workshopUid) throw new Error('Authentication failed');
+                if (config.i && config.i !== workshopUid) {
+                    console.warn('[Portal] Config UID outdated; using authenticated UID:', workshopUid);
+                }
+                return fbDb.ref('workshops/' + workshopUid + '/settings').once('value');
+            })
+            .then(function(snapshot) {
+                var ws = snapshot.val() || {};
+                workshopData = ws;
+
+                // Set workshop name
+                if (ws.workshopName) {
+                    document.getElementById('workshopName').textContent = ws.workshopName;
+                    document.title = ws.workshopName + ' - Repair Status';
+                }
+
+                // Set logo
+                if (ws.workshopLogo) {
+                    document.getElementById('portalLogo').innerHTML =
+                        '<img src="' + escAttr(ws.workshopLogo) + '" alt="Logo">';
+                }
+
+                applyPortalBackground(ws);
+                applyPortalMessageBackground(ws);
+
+                renderWorkshopContact(ws, 'workshopContactLookup');
+                renderWorkshopContact(ws, 'workshopContactResults');
+
+                // Show lookup form or auto-open client status
+                document.getElementById('connectingState').style.display = 'none';
+                if (portalAutoClientId) {
+                    document.getElementById('clientIdInput').value = portalAutoClientId;
+                    lookupClient(portalAutoClientId);
+                } else {
+                    document.getElementById('lookupForm').style.display = 'block';
+                    setTimeout(function() {
+                        document.getElementById('clientIdInput').focus();
+                    }, 300);
+                }
+            })
+            .catch(function(err) {
+                console.error('Auth error:', err);
+                var msg = 'Could not connect to workshop.';
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    msg = 'Workshop credentials have changed. Please ask for a new QR code.';
+                } else if (err.code === 'auth/user-not-found') {
+                    msg = 'Workshop account not found. Please ask for a new QR code.';
+                } else if (err.code === 'auth/network-request-failed') {
+                    msg = 'No internet connection. Please check your connection and try again.';
+                }
+                showConnectionError(msg);
+            });
+
+    } catch(e) {
+        showConnectionError('Connection error: ' + e.message);
+    }
+}
+
+function renderWorkshopContact(ws, elementId) {
+    var el = document.getElementById(elementId);
+    if (!el || !ws) return;
+
+    var phone1 = (ws.workshopPhone1 || '').trim();
+    var phone2 = (ws.workshopPhone2 || '').trim();
+    var email1 = (ws.workshopEmail1 || '').trim();
+    var email2 = (ws.workshopEmail2 || '').trim();
+    var mapLink = (ws.workshopMapLink || '').trim();
+    var address = (ws.workshopAddress || ws.workshopMapLabel || '').trim();
+
+    if (!phone1 && !phone2 && !email1 && !email2 && !mapLink) {
+        el.style.display = 'none';
+        el.innerHTML = '';
+        return;
+    }
+
+    var html = '<h3><i class="fas fa-store"></i> Contact the workshop</h3>';
+    if (address) {
+        html += '<div class="contact-address"><i class="fas fa-location-dot" style="color:#667eea;"></i> ' + escHtml(address) + '</div>';
+    }
+
+    var chips = '';
+    if (phone1) {
+        chips += '<a class="contact-chip phone" href="tel:' + escAttr(phone1.replace(/\s/g, '')) + '"><i class="fas fa-phone"></i> ' + escHtml(phone1) + '</a>';
+    }
+    if (phone2) {
+        chips += '<a class="contact-chip phone" href="tel:' + escAttr(phone2.replace(/\s/g, '')) + '"><i class="fas fa-phone-alt"></i> ' + escHtml(phone2) + '</a>';
+    }
+    if (email1) {
+        chips += '<a class="contact-chip email" href="mailto:' + escAttr(email1) + '"><i class="fas fa-envelope"></i> ' + escHtml(email1) + '</a>';
+    }
+    if (email2) {
+        chips += '<a class="contact-chip email" href="mailto:' + escAttr(email2) + '"><i class="fas fa-envelope"></i> ' + escHtml(email2) + '</a>';
+    }
+    if (chips) html += '<div class="contact-chip-row">' + chips + '</div>';
+    if (mapLink) {
+        html += '<a class="contact-chip maps" href="' + escAttr(mapLink) + '" target="_blank" rel="noopener"><i class="fas fa-map-marked-alt"></i> Open in Google Maps</a>';
+    }
+
+    el.innerHTML = html;
+    el.style.display = 'block';
+}
+
+var PAYMENT_TYPE_ICON = {
+    mobile_money_personal: 'fa-mobile-screen-button',
+    mobile_money_merchant: 'fa-store',
+    bank: 'fa-building-columns',
+    cash: 'fa-money-bill-wave',
+    other: 'fa-credit-card'
+};
+
+var portalPaymentMethods = [];
+var portalPaymentBalance = 0;
+var portalPaymentClient = null;
+var portalPaymentWorkshop = null;
+
+// Normalizes older/legacy payment method records so the portal never breaks
+// on data saved before the Personal/Merchant split existed.
+function normalizePortalPaymentMethod(pm) {
+    if (!pm) return pm;
+    if (pm.type === 'mobile_money') {
+        pm = Object.assign({}, pm, {
+            type: 'mobile_money_personal',
+            phoneNumber: pm.phoneNumber || pm.accountNumber || '',
+            steps: (pm.steps && pm.steps.length) ? pm.steps : (pm.instructions ? [pm.instructions] : [])
+        });
+    }
+    return pm;
+}
+
+function renderPaymentMethods(ws, balance, client) {
+    var el = document.getElementById('paymentMethodsResults');
+    if (!el || !ws) return;
+
+    var methods = normalizeFirebaseList(ws.paymentMethods)
+        .map(normalizePortalPaymentMethod)
+        .filter(function(pm) { return pm && pm.enabled !== false; });
+
+    portalPaymentMethods = methods;
+    portalPaymentBalance = balance;
+    portalPaymentClient = client;
+    portalPaymentWorkshop = ws;
+
+    if (methods.length === 0 || !(balance > 0)) {
+        el.style.display = 'none';
+        el.innerHTML = '';
+        return;
+    }
+
+    var html = '<h3><i class="fas fa-wallet"></i> How to pay your balance</h3>';
+    html += '<div class="payment-choice-row">';
+    html += methods.map(function(pm) {
+        var icon = PAYMENT_TYPE_ICON[pm.type] || PAYMENT_TYPE_ICON.other;
+        return '<div class="payment-choice-chip" onclick="openPayModal(\'' + escAttr(pm.id) + '\')">' +
+            '<span class="icon"><i class="fas ' + icon + '"></i></span>' +
+            '<span>' + escHtml(pm.provider || '') + '</span>' +
+        '</div>';
+    }).join('');
+    html += '</div>';
+
+    el.innerHTML = html;
+    el.style.display = 'block';
+}
+
+function fmtUGX(n) {
+    return 'UGX ' + Math.round(n || 0).toLocaleString();
+}
+
+// Detects USSD-style codes like *165*3# inside free text and turns them into
+// tap-to-dial links, leaving the rest of the text untouched.
+var USSD_PATTERN = /(\*[0-9\*]+#)/g;
+function linkifyUssd(text) {
+    var escaped = escHtml(text);
+    return escaped.replace(USSD_PATTERN, function(match) {
+        return '<a href="tel:' + encodeURIComponent(match) + '" class="pay-ussd-link">' + match + '</a>';
+    });
+}
+
+function buildPayStep(number, label, valueHtml, copyValue) {
+    var copyBtn = copyValue ?
+        '<button type="button" class="pay-step-copy" onclick="copyPaymentDetail(this, \'' + escAttr(copyValue) + '\')"><i class="fas fa-copy"></i> Copy</button>' : '';
+    return '<div class="pay-step">' +
+        '<span class="pay-step-num">' + number + '</span>' +
+        '<div class="pay-step-content"><span class="pay-step-label">' + escHtml(label) + '</span>' + valueHtml + copyBtn + '</div>' +
+    '</div>';
+}
+
+function openPayModal(id) {
+    var pm = portalPaymentMethods.find(function(m) { return m.id === id; });
+    if (!pm) return;
+
+    var icon = PAYMENT_TYPE_ICON[pm.type] || PAYMENT_TYPE_ICON.other;
+    var title = escHtml(pm.provider || 'Payment');
+    document.getElementById('payModalTitle').innerHTML = '<i class="fas ' + icon + '"></i> Pay with ' + title;
+
+    var clientName = portalPaymentClient ? (portalPaymentClient.name || '') : '';
+    var clientId = portalPaymentClient ? (portalPaymentClient.id || '') : '';
+    document.getElementById('payModalClientName').textContent = clientName;
+    document.getElementById('payModalClientId').textContent = clientId ? ('Client ID: ' + clientId) : '';
+
+    var amountText = fmtUGX(portalPaymentBalance);
+    var html = '<div class="pay-modal-amount"><i class="fas fa-circle-info"></i> Amount due: <strong>' + amountText + '</strong></div>';
+
+    if (pm.type === 'mobile_money_personal') {
+        if (pm.phoneNumber) {
+            html += '<div class="pay-phone-row">' +
+                '<div><span class="pay-step-label">Send Money To</span><strong>' + escHtml(pm.phoneNumber) + '</strong></div>' +
+                '<button type="button" class="pay-step-copy" onclick="copyPaymentDetail(this, \'' + escAttr(pm.phoneNumber) + '\')"><i class="fas fa-copy"></i> Copy</button>' +
+            '</div>';
+        }
+        var steps = pm.steps || [];
+        html += steps.map(function(step, i) {
+            return '<div class="pay-step"><span class="pay-step-num">' + (i + 1) + '</span><div class="pay-step-content">' + linkifyUssd(step) + '</div></div>';
+        }).join('');
+    } else if (pm.type === 'mobile_money_merchant') {
+        var workshopName = pm.workshopName || (portalPaymentWorkshop && portalPaymentWorkshop.workshopName) || '';
+        var n = 1;
+        if (pm.ussdCode) {
+            var dialLink = '<a href="tel:' + encodeURIComponent(pm.ussdCode) + '" class="pay-ussd-link">' + escHtml(pm.ussdCode) + '</a>';
+            html += buildPayStep(n++, 'Dial', dialLink, null);
+        }
+        if (pm.merchantId) {
+            html += buildPayStep(n++, 'Merchant / Till Number', escHtml(pm.merchantId), pm.merchantId);
+        }
+        if (workshopName) {
+            html += buildPayStep(n++, 'Workshop Name', escHtml(workshopName), null);
+        }
+    } else if (pm.type === 'bank') {
+        var n2 = 1;
+        if (pm.accountNumber) html += buildPayStep(n2++, 'Account Number', escHtml(pm.accountNumber), pm.accountNumber);
+        if (pm.accountName) html += buildPayStep(n2++, 'Account Name', escHtml(pm.accountName), null);
+    } else {
+        var n3 = 1;
+        if (pm.accountName) html += buildPayStep(n3++, 'Details', escHtml(pm.accountName), null);
+        if (pm.accountNumber) html += buildPayStep(n3++, 'Reference', escHtml(pm.accountNumber), pm.accountNumber);
+    }
+
+    if (pm.instructions) {
+        html += '<div class="pay-modal-note"><i class="fas fa-circle-info"></i> ' + escHtml(pm.instructions) + '</div>';
+    }
+
+    html += '<button type="button" class="pay-modal-notify-btn" onclick="notifyWorkshopOfPayment(\'' + escAttr(pm.provider || '') + '\')">' +
+        '<i class="fas fa-comment-dots"></i> I\u2019ve paid \u2014 let the workshop know</button>';
+
+    document.getElementById('payModalBody').innerHTML = html;
+    document.getElementById('payModalOverlay').classList.add('active');
+}
+
+function closePayModal() {
+    document.getElementById('payModalOverlay').classList.remove('active');
+}
+
+function notifyWorkshopOfPayment(providerName) {
+    closePayModal();
+    var input = document.getElementById('portalMessageInput');
+    if (input) {
+        input.value = 'Hi, I\u2019ve just made a payment of ' + fmtUGX(portalPaymentBalance) +
+            ' via ' + providerName + '. Transaction ID: ';
+        input.focus();
+    }
+    var section = document.getElementById('portalMessageSection');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function copyPaymentDetail(btn, value) {
+    var restore = btn.innerHTML;
+    var done = function() {
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+        setTimeout(function() { btn.innerHTML = restore; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(done).catch(done);
+    } else {
+        done();
+    }
+}
+
+
+function getPickupOverdueNotice(client) {
+    if (!client || !workshopData) return null;
+    var reminderDays = parseInt(workshopData.reminderDays, 10) || 40;
+    if (client.status === 'delivered' || client.status === 'abandoned') return null;
+
+    var days = 0;
+    var title = '';
+    var message = '';
+
+    if (client.status === 'completed') {
+        var refDate = client.jobFinishedAt || client.updatedAt || client.signInDate;
+        if (!refDate) return null;
+        days = Math.floor((Date.now() - new Date(refDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (days < reminderDays) return null;
+        title = 'Pickup reminder';
+        message = 'Your device has been <strong>ready for pickup</strong> for <strong>' + days + ' day' + (days !== 1 ? 's' : '') + '</strong>. ' +
+            'The workshop allows up to <strong>' + reminderDays + ' days</strong> before a pickup is considered overdue. Please visit or message us to arrange collection.';
+    } else if (client.signInDate) {
+        days = Math.floor((Date.now() - new Date(client.signInDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (days < reminderDays) return null;
+        title = 'Long stay notice';
+        message = 'Your device has been with the workshop for <strong>' + days + ' day' + (days !== 1 ? 's' : '') + '</strong>, ' +
+            'which exceeds the <strong>' + reminderDays + '-day</strong> pickup window set by the workshop. Please contact us or pick up your device soon.';
+    } else {
+        return null;
+    }
+
+    return { title: title, message: message, days: days };
+}
+
+function showPickupOverdueBanner(client) {
+    var banner = document.getElementById('pickupOverdueBanner');
+    if (!banner) return;
+    var notice = getPickupOverdueNotice(client);
+    if (!notice) {
+        banner.style.display = 'none';
+        banner.innerHTML = '';
+        return;
+    }
+    banner.innerHTML =
+        '<div class="pickup-overdue-banner">' +
+        '<h4><i class="fas fa-bell"></i> ' + escHtml(notice.title) + '</h4>' +
+        '<p>' + notice.message + '</p></div>';
+    banner.style.display = 'block';
+}
+
+function isPortalThreadMessage(msg, clientId) {
+    if (!msg || !clientId) return false;
+    var cid = String(clientId).toUpperCase();
+    if (msg.threadId && String(msg.threadId).toUpperCase() === cid) return true;
+    if (msg.clientId && String(msg.clientId).toUpperCase() === cid) return true;
+    if (msg.senderId === 'PORTAL-' + clientId) return true;
+    if (msg.target && String(msg.target).toLowerCase() === 'portal-' + String(clientId).toLowerCase()) return true;
+    if ((msg.senderType === 'portal' || (msg.senderId && String(msg.senderId).indexOf('PORTAL-') === 0)) &&
+        msg.clientId && String(msg.clientId).toUpperCase() === cid) return true;
+    return false;
+}
+
+function mergePortalThreadMessages(incoming) {
+    if (!incoming || !incoming.length) return;
+    var activeClient = window.currentPortalClient;
+    incoming.forEach(function(m) {
+        if (!m || !m.id) return;
+        if (activeClient && !isPortalThreadMessage(m, activeClient.id)) return;
+        var idx = -1;
+        for (var i = 0; i < portalThreadMessages.length; i++) {
+            if (portalThreadMessages[i].id === m.id) { idx = i; break; }
+        }
+        if (idx >= 0) portalThreadMessages[idx] = m;
+        else portalThreadMessages.push(m);
+    });
+    portalThreadMessages.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+    renderPortalThread(portalThreadMessages);
+}
+
+function addPortalMessageOptimistic(msg) {
+    if (!msg || !msg.id) return;
+    portalThreadMessages.push(msg);
+    portalThreadMessages.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+    renderPortalThread(portalThreadMessages);
+}
+
+function stopPortalMessageListener() {
+    if (portalChatQuery && portalChatListener) {
+        portalChatQuery.off('value', portalChatListener);
+    }
+    portalChatQuery = null;
+    portalChatListener = null;
+}
+
+function startPortalMessageListener(client) {
+    stopPortalMessageListener();
+    portalThreadMessages = [];
+    if (!fbDb || !workshopUid || !client) return;
+
+    portalChatListener = function(snapshot) {
+        var msgs = [];
+        snapshot.forEach(function(child) {
+            var m = child.val();
+            if (m && isPortalThreadMessage(m, client.id)) msgs.push(m);
+        });
+        mergePortalThreadMessages(msgs);
+    };
+
+    function useFullFallback() {
+        console.warn('Indexed portal listeners failed, using filtered full-path fallback');
+        stopPortalMessageListener();
+        portalThreadMessages = [];
+        portalChatListener = function(snapshot) {
+            var msgs = [];
+            snapshot.forEach(function(child) {
+                var m = child.val();
+                if (m && isPortalThreadMessage(m, client.id)) msgs.push(m);
+            });
+            mergePortalThreadMessages(msgs);
+        };
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages');
+        portalChatQuery.on('value', portalChatListener);
+    }
+
+    function tryThreadIdIndex() {
+        stopPortalMessageListener();
+        portalThreadMessages = [];
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+            .orderByChild('threadId')
+            .equalTo(client.id);
+        portalChatQuery.on('value', portalChatListener, function(err) {
+            console.warn('threadId index failed:', err);
+            useFullFallback();
+        });
+    }
+
+    portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+        .orderByChild('clientId')
+        .equalTo(client.id);
+    portalChatQuery.on('value', portalChatListener, function(err) {
+        console.warn('clientId index failed:', err);
+        tryThreadIdIndex();
+    });
+}
+
+function renderPortalThreadPhotos(attachments) {
+    if (!attachments || !attachments.length) return '';
+    var photos = attachments.filter(function(a) { return a && a.type === 'photo' && a.data; });
+    if (!photos.length) return '';
+    return '<div class="portal-thread-photos">' + photos.map(function(a) {
+        return '<img src="' + escAttr(a.data) + '" alt="Photo" onclick="openLightbox(this.src)">';
+    }).join('') + '</div>';
+}
+
+function renderPortalThread(msgs) {
+    var container = document.getElementById('portalMessageThread');
+    if (!container) return;
+
+    if (!msgs || msgs.length === 0) {
+        container.innerHTML = '<div class="portal-thread-empty">No messages yet. Say hello below!</div>';
+        return;
+    }
+
+    container.innerHTML = msgs.map(function(msg) {
+        var isClient = msg.senderType === 'portal' || (msg.senderId && String(msg.senderId).indexOf('PORTAL-') === 0);
+        var isCallReq = msg.messageType === 'call_request';
+        var who = isClient ? 'You' : escHtml(msg.senderName || 'Workshop');
+        var time = msg.timestamp ? new Date(msg.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        var textHtml = msg.text ? '<div>' + escHtml(msg.text) + '</div>' : '';
+        return '<div class="portal-thread-msg ' + (isClient ? 'client' : 'workshop') + (isCallReq ? ' call-request' : '') + '">' +
+            '<div class="portal-thread-bubble">' + textHtml + renderPortalThreadPhotos(msg.attachments) + '</div>' +
+            '<div class="portal-thread-meta">' + who + (time ? ' · ' + time : '') + '</div></div>';
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+function compressPortalImage(file, targetKB) {
+    return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var w = img.width, h = img.height;
+                var maxDim = 1600;
+                if (w > maxDim || h > maxDim) {
+                    if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                    else { w = Math.round(w * maxDim / h); h = maxDim; }
+                }
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                var quality = 0.88;
+                var result = canvas.toDataURL('image/jpeg', quality);
+                while (result.length / 1024 > targetKB && quality > 0.2) {
+                    quality -= 0.06;
+                    result = canvas.toDataURL('image/jpeg', quality);
+                }
+                resolve(result);
+            };
+            img.onerror = function() { reject(new Error('Failed to load image')); };
+            img.src = e.target.result;
+        };
+        reader.onerror = function() { reject(new Error('Failed to read file')); };
+        reader.readAsDataURL(file);
+    });
+}
+
+function updatePortalAttachPreview() {
+    var el = document.getElementById('portalAttachPreview');
+    if (!el) return;
+    if (!portalAttachments.length) {
+        el.classList.remove('active');
+        el.innerHTML = '';
+        return;
+    }
+    el.classList.add('active');
+    el.innerHTML = portalAttachments.map(function(att, i) {
+        return '<div class="portal-attach-thumb"><img src="' + escAttr(att.data) + '" alt="Attached">' +
+            '<button type="button" class="portal-attach-remove" onclick="removePortalAttachment(' + i + ')"><i class="fas fa-times"></i></button></div>';
+    }).join('');
+}
+
+function removePortalAttachment(index) {
+    portalAttachments.splice(index, 1);
+    updatePortalAttachPreview();
+}
+
+function clearPortalAttachments() {
+    portalAttachments = [];
+    updatePortalAttachPreview();
+}
+
+function attachPhotoToPortal() {
+    if (portalAttachments.length >= PORTAL_MAX_PHOTOS) {
+        var statusEl = document.getElementById('portalMsgStatus');
+        if (statusEl) statusEl.textContent = 'Maximum ' + PORTAL_MAX_PHOTOS + ' photos per message.';
+        return;
+    }
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 8 * 1024 * 1024) {
+            var statusEl = document.getElementById('portalMsgStatus');
+            if (statusEl) statusEl.textContent = 'Photo too large. Max 8MB.';
+            return;
+        }
+        var statusEl = document.getElementById('portalMsgStatus');
+        if (statusEl) statusEl.textContent = 'Compressing photo...';
+        compressPortalImage(file, 450).then(function(data) {
+            portalAttachments.push({ type: 'photo', data: data, name: file.name });
+            updatePortalAttachPreview();
+            if (statusEl) statusEl.textContent = '';
+        }).catch(function(err) {
+            if (statusEl) statusEl.textContent = 'Could not attach photo.';
+            console.error(err);
+        });
+    };
+    input.click();
+}
+
+// ============ SHOW CONNECTION ERROR ============
+function showConnectionError(msg) {
+    document.getElementById('connectingState').style.display = 'none';
+    document.getElementById('connectionError').style.display = 'block';
+    document.getElementById('connectionErrorMsg').textContent = msg;
+}
+
+// ============ CLIENT LOOKUP ============
+function lookupClient(prefilledId) {
+    var input = document.getElementById('clientIdInput');
+    var clientId = (prefilledId || input.value).trim().toUpperCase();
+
+    if (!clientId || clientId.length < 3) {
+        showError('Please enter a valid Client ID (from your receipt)');
+        return;
+    }
+
+    // Show loading
+    document.getElementById('lookupForm').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('resultsSection').style.display = 'none';
+
+    fbDb.ref('workshops/' + workshopUid + '/clients').once('value')
+        .then(function(snapshot) {
+            var allClients = normalizeFirebaseList(snapshot.val());
+            var client = findClientById(allClients, clientId);
+
+            document.getElementById('loadingState').style.display = 'none';
+
+            if (!client) {
+                document.getElementById('lookupForm').style.display = 'block';
+                showError('No repair found with ID: ' + clientId + '. Please check the ID on your receipt.');
+                return;
+            }
+
+            showResults(client);
+        })
+        .catch(function(err) {
+            console.error('Lookup error:', err);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('lookupForm').style.display = 'block';
+            var msg = 'Could not fetch data. Please check your internet and try again.';
+            if (err && (err.code === 'PERMISSION_DENIED' || err.message && err.message.indexOf('permission') >= 0)) {
+                msg = 'Access denied. The portal link may be outdated — please ask the workshop for a new QR code or link.';
+            }
+            showError(msg);
+        });
+}
+
+// ============ SHOW RESULTS ============
+function showResults(client) {
+    var statusMap = {
+        'pending':     { icon: 'fa-clock',         label: 'Pending',           msg: 'Your device is waiting to be repaired. We will get to it as soon as possible.' },
+        'in-progress': { icon: 'fa-tools',          label: 'In Progress',       msg: 'Your device is currently being repaired! We are working on it.' },
+        'completed':   { icon: 'fa-check-circle',   label: 'Ready for Pickup',  msg: '&#127881; Great news! Your device is repaired and ready for pickup!' },
+        'delivered':   { icon: 'fa-handshake',       label: 'Delivered',         msg: 'Your device has been collected. Thank you for choosing us!' },
+        'failed':      { icon: 'fa-times-circle',    label: 'Repair Failed',     msg: 'Unfortunately, the repair could not be completed. Please contact us for details.' },
+        'abandoned':    { icon: 'fa-archive',         label: 'Abandoned',        msg: 'This repair has been abandoned. Please contact us for further assistance.' }
+    };
+
+    var st = statusMap[client.status] || statusMap['pending'];
+    var agreed = parseFloat(client.agreedAmount) || 0;
+    var deposited = parseFloat(client.depositedAmount) || 0;
+    var balance = agreed - deposited;
+
+    // Status section
+    var warrantyHtml = getWarrantyHtml(client);
+
+    var profileBlock = '';
+    if (client.profilePhoto && String(client.profilePhoto).trim()) {
+        profileBlock = '<div class="portal-client-photo"><img src="' + escAttr(client.profilePhoto) + '" alt=""></div>';
+    }
+
+    document.getElementById('resultStatus').innerHTML =
+        profileBlock +
+        '<div class="status-icon ' + client.status + '"><i class="fas ' + st.icon + '"></i></div>' +
+        '<h2>' + escHtml(client.name) + '</h2>' +
+        '<span class="status-badge ' + client.status + '">' + st.label + '</span>' +
+        '<p class="status-message">' + st.msg + '</p>' +
+        warrantyHtml +
+        '<p style="color:#a0aec0;font-size:10px;margin-top:10px;font-family:monospace;">ID: ' + client.id + '</p>';
+
+    // Details
+    var html = '';
+
+    html += detailRow('fa-mobile-alt', 'Device',
+        escHtml((client.deviceBrand || 'N/A') + ' ' + (client.deviceModel || '')));
+
+    html += detailRow('fa-calendar-check', 'Sign-in Date', fmtDate(client.signInDate));
+
+    if (client.estimatedCompletion && client.status !== 'completed' && client.status !== 'delivered') {
+        var eta = getETA(client);
+        html += detailRow('fa-hourglass-half', 'Est. Completion',
+            fmtDate(client.estimatedCompletion) +
+            (eta ? ' <span style="font-size:11px;color:' + (eta.overdue ? '#e53e3e' : '#38a169') + ';">(' + eta.text + ')</span>' : ''));
+    }
+
+    if (client.technicianId) {
+        html += detailRow('fa-user-cog', 'Technician', client.technicianId);
+    }
+
+    html += detailRow('fa-money-bill-wave', 'Agreed', 'UGX ' + agreed.toLocaleString());
+    html += detailRow('fa-hand-holding-usd', 'Deposited',
+        '<span style="color:#38a169;">UGX ' + deposited.toLocaleString() + '</span>');
+
+    // Balance (highlighted)
+    html += '<div class="balance-row detail-row">' +
+        '<span class="label"><i class="fas fa-wallet" style="width:16px;color:#667eea;"></i> <strong>Balance Due</strong></span>' +
+        '<span class="value ' + (balance > 0 ? 'owed' : 'paid') + '">UGX ' + balance.toLocaleString() + '</span></div>';
+
+    if (client.status !== 'completed' && client.status !== 'delivered') {
+        html += '<div style="margin:12px 0 0;padding:12px 14px;background:#fffaf0;border:1px solid #fbd38d;border-radius:10px;font-size:12px;color:#744210;line-height:1.5;">' +
+            '<strong><i class="fas fa-info-circle"></i> About payments</strong><br>' +
+            'Deposits shown here may be held until your repair is marked <strong>completed</strong> or <strong>delivered</strong>. ' +
+            'The workshop counts money as fully earned only after the job is finished and collected. Contact them if you have questions.' +
+            '</div>';
+    }
+
+    document.getElementById('resultDetails').innerHTML = html;
+
+    // Repair details (issue description, failed reason, notes)
+    var repairHtml = '';
+    if (client.issueDescription) {
+        repairHtml += '<div class="repair-issue"><strong>Issue:</strong> ' + escHtml(client.issueDescription) + '</div>';
+    }
+    if (client.status === 'failed' && client.failedComment) {
+        repairHtml += '<div class="failed-reason"><i class="fas fa-exclamation-triangle"></i> <strong>Failure Reason:</strong> ' + escHtml(client.failedComment) + '</div>';
+    }
+    if (client.additionalNotes) {
+        repairHtml += '<div class="repair-issue" style="margin-top:8px;border-left-color:#ed8936;"><strong>Notes:</strong> ' + escHtml(client.additionalNotes) + '</div>';
+    }
+
+    if (repairHtml) {
+        document.getElementById('repairDetailsSection').style.display = 'block';
+        document.getElementById('repairDetailsContent').innerHTML = repairHtml;
+    } else {
+        document.getElementById('repairDetailsSection').style.display = 'none';
+    }
+
+    // Photos
+    var photosSection = document.getElementById('photosSection');
+    var photosGrid = document.getElementById('photosGrid');
+
+    if (client.photos) {
+        var photoList = normalizeFirebaseList(client.photos);
+        if (photoList.length > 0) {
+        photosSection.style.display = 'block';
+        photosGrid.innerHTML = photoList.map(function(photo, i) {
+            return '<img src="' + photo + '" alt="Photo ' + (i+1) + '" loading="lazy" onclick="openLightbox(this.src)">';
+        }).join('');
+        } else {
+            photosSection.style.display = 'none';
+        }
+    } else {
+        photosSection.style.display = 'none';
+    }
+
+    showPickupOverdueBanner(client);
+    if (workshopData) renderWorkshopContact(workshopData, 'workshopContactResults');
+    if (workshopData) renderPaymentMethods(workshopData, balance, client);
+
+    // Show results
+    document.getElementById('resultsSection').style.display = 'block';
+
+    window.currentPortalClient = client;
+    var pm = document.getElementById('portalMessageInput');
+    var ps = document.getElementById('portalMsgStatus');
+    if (pm) pm.value = '';
+    if (ps) ps.textContent = '';
+    var sb = document.getElementById('portalSendBtn');
+    if (sb) sb.disabled = false;
+
+    startPortalMessageListener(client);
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function sendPortalMessage() {
+    var client = window.currentPortalClient;
+    var statusEl = document.getElementById('portalMsgStatus');
+    var btn = document.getElementById('portalSendBtn');
+    var input = document.getElementById('portalMessageInput');
+    if (!client || !fbDb || !workshopUid) {
+        if (statusEl) statusEl.textContent = 'Cannot send right now.';
+        return;
+    }
+    var text = (input && input.value || '').trim();
+    if (text.length < 1 && portalAttachments.length < 1) {
+        if (statusEl) statusEl.textContent = 'Please enter a message or attach a photo.';
+        return;
+    }
+    var phone = String(client.phone1 || client.phone2 || '').replace(/\s/g, '');
+    var msgId = 'PMSG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 8);
+    var localTs = Date.now();
+    var attachmentsCopy = portalAttachments.length ? portalAttachments.slice() : null;
+    var optimisticMsg = {
+        id: msgId,
+        senderId: 'PORTAL-' + client.id,
+        senderName: client.name,
+        senderType: 'portal',
+        clientId: client.id,
+        clientName: client.name,
+        clientPhone: phone,
+        threadId: client.id,
+        text: text,
+        attachments: attachmentsCopy,
+        target: 'broadcast',
+        timestamp: localTs,
+        readBy: {}
+    };
+
+    if (btn) btn.disabled = true;
+    if (statusEl) statusEl.textContent = 'Sending...';
+    if (input) input.value = '';
+    clearPortalAttachments();
+    addPortalMessageOptimistic(optimisticMsg);
+
+    fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set(optimisticMsg)
+        .then(function() {
+            return fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId + '/timestamp')
+                .set(firebase.database.ServerValue.TIMESTAMP);
+        })
+        .then(function() {
+            if (statusEl) statusEl.textContent = 'Message sent!';
+            if (btn) btn.disabled = false;
+        })
+        .catch(function(err) {
+            console.error(err);
+            portalThreadMessages = portalThreadMessages.filter(function(m) { return m.id !== msgId; });
+            renderPortalThread(portalThreadMessages);
+            if (input) input.value = text;
+            if (attachmentsCopy) portalAttachments = attachmentsCopy.slice();
+            updatePortalAttachPreview();
+            if (statusEl) statusEl.textContent = 'Could not send. Check connection and try again.';
+            if (btn) btn.disabled = false;
+        });
+}
+
+// ============ HELPERS ============
+function detailRow(icon, label, value) {
+    return '<div class="detail-row">' +
+        '<span class="label"><i class="fas ' + icon + '" style="width:16px;color:#667eea;"></i> ' + label + '</span>' +
+        '<span class="value">' + value + '</span></div>';
+}
+
+function fmtDate(d) {
+    if (!d) return 'N/A';
+    return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function escHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function escAttr(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function applyPortalBackground(ws) {
+    var bg = (ws && ws.portalBackground) ? ws.portalBackground : '';
+    var layer = document.getElementById('portalBgLayer');
+    if (!layer) return;
+
+    if (bg) {
+        layer.style.backgroundImage = 'url("' + bg + '")';
+        document.body.classList.add('portal-has-wallpaper');
+    } else {
+        layer.style.backgroundImage = '';
+        document.body.classList.remove('portal-has-wallpaper');
+    }
+}
+
+function applyPortalMessageBackground(ws) {
+    var section = document.getElementById('portalMessageSection');
+    if (!section || !ws) return;
+    var useWallpaper = ws.portalMessageWallpaper !== false;
+    var bg = ws.portalBackground;
+    var opacity = typeof ws.portalMessageBgOpacity === 'number' ? ws.portalMessageBgOpacity : 88;
+    if (useWallpaper && bg) {
+        section.classList.add('has-wallpaper');
+        section.style.backgroundImage = 'url("' + bg + '")';
+        section.style.setProperty('--portal-msg-overlay', String(opacity / 100));
+    } else {
+        section.classList.remove('has-wallpaper');
+        section.style.backgroundImage = '';
+    }
+}
+
+function requestPortalCall() {
+    var client = window.currentPortalClient;
+    var statusEl = document.getElementById('portalMsgStatus');
+    var btn = document.getElementById('portalCallBtn');
+    if (!client || !fbDb || !workshopUid) {
+        if (statusEl) statusEl.textContent = 'Cannot send request right now.';
+        return;
+    }
+    var lastReq = sessionStorage.getItem('portalCallReq_' + client.id);
+    if (lastReq && Date.now() - parseInt(lastReq, 10) < 10 * 60 * 1000) {
+        if (statusEl) statusEl.textContent = 'Call already requested. The workshop will contact you soon.';
+        return;
+    }
+    var phone = String(client.phone1 || client.phone2 || '').replace(/\s/g, '');
+    var msgId = 'PMSG-CALL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 8);
+    var optimisticMsg = {
+        id: msgId,
+        senderId: 'PORTAL-' + client.id,
+        senderName: client.name,
+        senderType: 'portal',
+        messageType: 'call_request',
+        clientId: client.id,
+        clientName: client.name,
+        clientPhone: phone,
+        threadId: client.id,
+        text: 'Call requested — please call me back.',
+        attachments: null,
+        target: 'broadcast',
+        timestamp: Date.now(),
+        readBy: {}
+    };
+    if (btn) btn.disabled = true;
+    if (statusEl) statusEl.textContent = 'Sending call request...';
+    addPortalMessageOptimistic(optimisticMsg);
+    fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set(optimisticMsg)
+        .then(function() {
+            sessionStorage.setItem('portalCallReq_' + client.id, String(Date.now()));
+            if (statusEl) statusEl.textContent = 'Call request sent! The workshop will call you soon.';
+            if (btn) btn.disabled = false;
+        })
+        .catch(function(err) {
+            console.error(err);
+            portalThreadMessages = portalThreadMessages.filter(function(m) { return m.id !== msgId; });
+            renderPortalThread(portalThreadMessages);
+            if (statusEl) statusEl.textContent = 'Could not send request. Try again.';
+            if (btn) btn.disabled = false;
+        });
+}
+
+function getETA(client) {
+    if (!client.estimatedCompletion) return null;
+    var eta = new Date(client.estimatedCompletion);
+    var now = new Date();
+    var daysLeft = Math.ceil((eta - now) / (1000*60*60*24));
+    if (daysLeft > 0) return { overdue: false, text: daysLeft + ' day' + (daysLeft > 1 ? 's' : '') + ' left' };
+    if (daysLeft === 0) return { overdue: false, text: 'Due today' };
+    return { overdue: true, text: Math.abs(daysLeft) + ' day' + (Math.abs(daysLeft) > 1 ? 's' : '') + ' overdue' };
+}
+
+function getWarrantyHtml(client) {
+    if (!client.warrantyDays || client.warrantyDays === 0) return '';
+    if (client.status !== 'completed' && client.status !== 'delivered') {
+        return '<div style="margin-top:10px;"><span class="warranty-badge pending"><i class="fas fa-shield-alt"></i> ' + client.warrantyDays + '-day warranty (starts after repair)</span></div>';
+    }
+    var completedDate = new Date(client.updatedAt || client.createdAt);
+    var expiry = new Date(completedDate);
+    expiry.setDate(expiry.getDate() + client.warrantyDays);
+    var daysLeft = Math.ceil((expiry - new Date()) / (1000*60*60*24));
+    if (daysLeft > 0) {
+        return '<div style="margin-top:10px;"><span class="warranty-badge active"><i class="fas fa-shield-alt"></i> Warranty: ' + daysLeft + ' days remaining</span></div>';
+    }
+    return '<div style="margin-top:10px;"><span class="warranty-badge expired"><i class="fas fa-shield-alt"></i> Warranty expired</span></div>';
+}
+
+function showError(msg) {
+    var el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 8000);
+}
+
+function goBack() {
+    stopPortalMessageListener();
+    portalThreadMessages = [];
+    window.currentPortalClient = null;
+    var pm = document.getElementById('portalMessageInput');
+    var ps = document.getElementById('portalMsgStatus');
+    if (pm) pm.value = '';
+    if (ps) ps.textContent = '';
+    var banner = document.getElementById('pickupOverdueBanner');
+    if (banner) { banner.style.display = 'none'; banner.innerHTML = ''; }
+    var thread = document.getElementById('portalMessageThread');
+    if (thread) thread.innerHTML = '<div class="portal-thread-empty">No messages yet. Say hello below!</div>';
+    clearPortalAttachments();
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('lookupForm').style.display = 'block';
+    document.getElementById('clientIdInput').value = '';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('clientIdInput').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+    if (e.target.id === 'lightbox' || e.target.closest('.lightbox-close')) {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Enter key handler
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('clientIdInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') lookupClient();
+    });
+    var portalInput = document.getElementById('portalMessageInput');
+    if (portalInput) {
+        portalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPortalMessage();
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
