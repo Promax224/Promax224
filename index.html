@@ -572,44 +572,172 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
-        .payment-method-row {
+        .payment-choice-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .payment-choice-chip {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
+            gap: 8px;
+            background: rgba(255,255,255,0.85);
+            border: 1px solid #fbd38d;
+            border-radius: 12px;
+            padding: 9px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #744210;
+            cursor: pointer;
+            flex: 1 1 auto;
+            min-width: 120px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
-        .payment-method-row:last-child { margin-bottom: 0; }
-        .payment-method-icon {
-            width: 34px;
-            height: 34px;
+        .payment-choice-chip:active { transform: scale(0.97); }
+        .payment-choice-chip .icon {
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ed8936, #dd6b20);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 13px;
             flex-shrink: 0;
         }
-        .payment-method-info { flex: 1; min-width: 0; }
-        .payment-method-info .provider { font-size: 13px; font-weight: 700; color: #2d3748; }
-        .payment-method-info .details { font-size: 12px; color: #4a5568; word-break: break-word; }
-        .payment-method-info .instructions { font-size: 11px; color: #a0522d; margin-top: 2px; }
-        .payment-copy-btn {
-            border: none;
+
+        /* Payment instructions modal */
+        .pay-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26,26,26,0.6); z-index: 9998;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .pay-modal-overlay.active { display: flex; }
+        .pay-modal {
             background: #fff;
-            color: #c05621;
-            border-radius: 8px;
-            padding: 6px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            flex-shrink: 0;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
         }
-        .payment-copy-btn:active { transform: scale(0.95); }
+        .pay-modal-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-radius: 16px 16px 0 0;
+            background: linear-gradient(135deg, #ffcc00, #f59e0b);
+        }
+        .pay-modal-hdr h3 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .pay-modal-close {
+            border: none;
+            background: rgba(0,0,0,0.1);
+            color: #1a1a1a;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .pay-modal-client {
+            padding: 12px 18px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .pay-modal-client-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a202c;
+        }
+        .pay-modal-client-id {
+            font-size: 11px;
+            color: #94a3b8;
+            font-family: monospace;
+            margin-top: 2px;
+        }
+        .pay-modal-amount {
+            background: #f0fff4;
+            color: #276749;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .pay-phone-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #fffaf0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+        }
+        .pay-ussd-link {
+            color: #0ea5e9;
+            font-weight: 800;
+            text-decoration: underline;
+        }
+        .pay-modal-body { padding: 14px 18px 18px; }
+        .pay-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .pay-step:last-of-type { border-bottom: none; }
+        .pay-step-num {
+            background: linear-gradient(135deg, #ffcc00, #f59e0b);
+            color: #1a1a1a;
+            border-radius: 50%;
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 900;
+            flex-shrink: 0; margin-top: 1px;
+        }
+        .pay-step-content { font-size: 13px; color: #374151; flex: 1; min-width: 0; word-break: break-word; }
+        .pay-step-label { color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 1px; }
+        .pay-step-copy {
+            border: none;
+            background: #ffcc00;
+            color: #1a1a1a;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+        .pay-modal-note {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            color: #0369a1;
+            font-size: 12px;
+        }
+        .pay-modal-notify-btn {
+            width: 100%;
+            margin-top: 14px;
+            padding: 11px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
 
         .pickup-overdue-banner {
             margin: 0 16px 0;
@@ -1098,6 +1226,21 @@
     <img id="lightboxImg" src="" alt="Photo">
 </div>
 
+<!-- Payment instructions modal -->
+<div class="pay-modal-overlay" id="payModalOverlay" onclick="if(event.target===this)closePayModal();">
+    <div class="pay-modal">
+        <div class="pay-modal-hdr">
+            <h3 id="payModalTitle"><i class="fas fa-wallet"></i> Pay</h3>
+            <button class="pay-modal-close" onclick="closePayModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="pay-modal-client">
+            <div class="pay-modal-client-name" id="payModalClientName"></div>
+            <div class="pay-modal-client-id" id="payModalClientId"></div>
+        </div>
+        <div class="pay-modal-body" id="payModalBody"></div>
+    </div>
+</div>
+
 <script>
 // ============ READ CONFIG FROM URL ============
 var fbDb = null;
@@ -1276,19 +1419,44 @@ function renderWorkshopContact(ws, elementId) {
 }
 
 var PAYMENT_TYPE_ICON = {
-    mobile_money: 'fa-mobile-screen-button',
+    mobile_money_personal: 'fa-mobile-screen-button',
+    mobile_money_merchant: 'fa-store',
     bank: 'fa-building-columns',
     cash: 'fa-money-bill-wave',
     other: 'fa-credit-card'
 };
 
-function renderPaymentMethods(ws, balance) {
+var portalPaymentMethods = [];
+var portalPaymentBalance = 0;
+var portalPaymentClient = null;
+var portalPaymentWorkshop = null;
+
+// Normalizes older/legacy payment method records so the portal never breaks
+// on data saved before the Personal/Merchant split existed.
+function normalizePortalPaymentMethod(pm) {
+    if (!pm) return pm;
+    if (pm.type === 'mobile_money') {
+        pm = Object.assign({}, pm, {
+            type: 'mobile_money_personal',
+            phoneNumber: pm.phoneNumber || pm.accountNumber || '',
+            steps: (pm.steps && pm.steps.length) ? pm.steps : (pm.instructions ? [pm.instructions] : [])
+        });
+    }
+    return pm;
+}
+
+function renderPaymentMethods(ws, balance, client) {
     var el = document.getElementById('paymentMethodsResults');
     if (!el || !ws) return;
 
-    var methods = normalizeFirebaseList(ws.paymentMethods).filter(function(pm) {
-        return pm && pm.enabled !== false;
-    });
+    var methods = normalizeFirebaseList(ws.paymentMethods)
+        .map(normalizePortalPaymentMethod)
+        .filter(function(pm) { return pm && pm.enabled !== false; });
+
+    portalPaymentMethods = methods;
+    portalPaymentBalance = balance;
+    portalPaymentClient = client;
+    portalPaymentWorkshop = ws;
 
     if (methods.length === 0 || !(balance > 0)) {
         el.style.display = 'none';
@@ -1297,29 +1465,118 @@ function renderPaymentMethods(ws, balance) {
     }
 
     var html = '<h3><i class="fas fa-wallet"></i> How to pay your balance</h3>';
+    html += '<div class="payment-choice-row">';
     html += methods.map(function(pm) {
         var icon = PAYMENT_TYPE_ICON[pm.type] || PAYMENT_TYPE_ICON.other;
-        var details = escHtml(pm.accountName || '') +
-            (pm.accountName && pm.accountNumber ? ' &middot; ' : '') +
-            escHtml(pm.accountNumber || '');
-        var copyBtn = pm.accountNumber ?
-            '<button type="button" class="payment-copy-btn" onclick="copyPaymentDetail(this, \'' + escAttr(pm.accountNumber) + '\')"><i class="fas fa-copy"></i> Copy</button>' : '';
-        var instructions = pm.instructions ?
-            '<div class="instructions"><i class="fas fa-circle-info"></i> ' + escHtml(pm.instructions) + '</div>' : '';
-
-        return '<div class="payment-method-row">' +
-            '<div class="payment-method-icon"><i class="fas ' + icon + '"></i></div>' +
-            '<div class="payment-method-info">' +
-                '<div class="provider">' + escHtml(pm.provider || '') + '</div>' +
-                '<div class="details">' + details + '</div>' +
-                instructions +
-            '</div>' +
-            copyBtn +
+        return '<div class="payment-choice-chip" onclick="openPayModal(\'' + escAttr(pm.id) + '\')">' +
+            '<span class="icon"><i class="fas ' + icon + '"></i></span>' +
+            '<span>' + escHtml(pm.provider || '') + '</span>' +
         '</div>';
     }).join('');
+    html += '</div>';
 
     el.innerHTML = html;
     el.style.display = 'block';
+}
+
+function fmtUGX(n) {
+    return 'UGX ' + Math.round(n || 0).toLocaleString();
+}
+
+// Detects USSD-style codes like *165*3# inside free text and turns them into
+// tap-to-dial links, leaving the rest of the text untouched.
+var USSD_PATTERN = /(\*[0-9\*]+#)/g;
+function linkifyUssd(text) {
+    var escaped = escHtml(text);
+    return escaped.replace(USSD_PATTERN, function(match) {
+        return '<a href="tel:' + encodeURIComponent(match) + '" class="pay-ussd-link">' + match + '</a>';
+    });
+}
+
+function buildPayStep(number, label, valueHtml, copyValue) {
+    var copyBtn = copyValue ?
+        '<button type="button" class="pay-step-copy" onclick="copyPaymentDetail(this, \'' + escAttr(copyValue) + '\')"><i class="fas fa-copy"></i> Copy</button>' : '';
+    return '<div class="pay-step">' +
+        '<span class="pay-step-num">' + number + '</span>' +
+        '<div class="pay-step-content"><span class="pay-step-label">' + escHtml(label) + '</span>' + valueHtml + copyBtn + '</div>' +
+    '</div>';
+}
+
+function openPayModal(id) {
+    var pm = portalPaymentMethods.find(function(m) { return m.id === id; });
+    if (!pm) return;
+
+    var icon = PAYMENT_TYPE_ICON[pm.type] || PAYMENT_TYPE_ICON.other;
+    var title = escHtml(pm.provider || 'Payment');
+    document.getElementById('payModalTitle').innerHTML = '<i class="fas ' + icon + '"></i> Pay with ' + title;
+
+    var clientName = portalPaymentClient ? (portalPaymentClient.name || '') : '';
+    var clientId = portalPaymentClient ? (portalPaymentClient.id || '') : '';
+    document.getElementById('payModalClientName').textContent = clientName;
+    document.getElementById('payModalClientId').textContent = clientId ? ('Client ID: ' + clientId) : '';
+
+    var amountText = fmtUGX(portalPaymentBalance);
+    var html = '<div class="pay-modal-amount"><i class="fas fa-circle-info"></i> Amount due: <strong>' + amountText + '</strong></div>';
+
+    if (pm.type === 'mobile_money_personal') {
+        if (pm.phoneNumber) {
+            html += '<div class="pay-phone-row">' +
+                '<div><span class="pay-step-label">Send Money To</span><strong>' + escHtml(pm.phoneNumber) + '</strong></div>' +
+                '<button type="button" class="pay-step-copy" onclick="copyPaymentDetail(this, \'' + escAttr(pm.phoneNumber) + '\')"><i class="fas fa-copy"></i> Copy</button>' +
+            '</div>';
+        }
+        var steps = pm.steps || [];
+        html += steps.map(function(step, i) {
+            return '<div class="pay-step"><span class="pay-step-num">' + (i + 1) + '</span><div class="pay-step-content">' + linkifyUssd(step) + '</div></div>';
+        }).join('');
+    } else if (pm.type === 'mobile_money_merchant') {
+        var workshopName = pm.workshopName || (portalPaymentWorkshop && portalPaymentWorkshop.workshopName) || '';
+        var n = 1;
+        if (pm.ussdCode) {
+            var dialLink = '<a href="tel:' + encodeURIComponent(pm.ussdCode) + '" class="pay-ussd-link">' + escHtml(pm.ussdCode) + '</a>';
+            html += buildPayStep(n++, 'Dial', dialLink, null);
+        }
+        if (pm.merchantId) {
+            html += buildPayStep(n++, 'Merchant / Till Number', escHtml(pm.merchantId), pm.merchantId);
+        }
+        if (workshopName) {
+            html += buildPayStep(n++, 'Workshop Name', escHtml(workshopName), null);
+        }
+    } else if (pm.type === 'bank') {
+        var n2 = 1;
+        if (pm.accountNumber) html += buildPayStep(n2++, 'Account Number', escHtml(pm.accountNumber), pm.accountNumber);
+        if (pm.accountName) html += buildPayStep(n2++, 'Account Name', escHtml(pm.accountName), null);
+    } else {
+        var n3 = 1;
+        if (pm.accountName) html += buildPayStep(n3++, 'Details', escHtml(pm.accountName), null);
+        if (pm.accountNumber) html += buildPayStep(n3++, 'Reference', escHtml(pm.accountNumber), pm.accountNumber);
+    }
+
+    if (pm.instructions) {
+        html += '<div class="pay-modal-note"><i class="fas fa-circle-info"></i> ' + escHtml(pm.instructions) + '</div>';
+    }
+
+    html += '<button type="button" class="pay-modal-notify-btn" onclick="notifyWorkshopOfPayment(\'' + escAttr(pm.provider || '') + '\')">' +
+        '<i class="fas fa-comment-dots"></i> I\u2019ve paid \u2014 let the workshop know</button>';
+
+    document.getElementById('payModalBody').innerHTML = html;
+    document.getElementById('payModalOverlay').classList.add('active');
+}
+
+function closePayModal() {
+    document.getElementById('payModalOverlay').classList.remove('active');
+}
+
+function notifyWorkshopOfPayment(providerName) {
+    closePayModal();
+    var input = document.getElementById('portalMessageInput');
+    if (input) {
+        input.value = 'Hi, I\u2019ve just made a payment of ' + fmtUGX(portalPaymentBalance) +
+            ' via ' + providerName + '. Transaction ID: ';
+        input.focus();
+    }
+    var section = document.getElementById('portalMessageSection');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function copyPaymentDetail(btn, value) {
@@ -1334,6 +1591,7 @@ function copyPaymentDetail(btn, value) {
         done();
     }
 }
+
 
 function getPickupOverdueNotice(client) {
     if (!client || !workshopData) return null;
@@ -1755,7 +2013,7 @@ function showResults(client) {
 
     showPickupOverdueBanner(client);
     if (workshopData) renderWorkshopContact(workshopData, 'workshopContactResults');
-    if (workshopData) renderPaymentMethods(workshopData, balance);
+    if (workshopData) renderPaymentMethods(workshopData, balance, client);
 
     // Show results
     document.getElementById('resultsSection').style.display = 'block';
