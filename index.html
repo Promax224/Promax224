@@ -553,6 +553,64 @@
             padding-left: 2px;
         }
 
+        .payment-methods-card {
+            margin-bottom: 14px;
+            background: linear-gradient(145deg, #fffaf0 0%, #feebc8 100%);
+            border: 1px solid #fbd38d;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(237, 137, 54, 0.1);
+        }
+        .payment-methods-card h3 {
+            font-size: 12px;
+            color: #c05621;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .payment-method-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+        .payment-method-row:last-child { margin-bottom: 0; }
+        .payment-method-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .payment-method-info { flex: 1; min-width: 0; }
+        .payment-method-info .provider { font-size: 13px; font-weight: 700; color: #2d3748; }
+        .payment-method-info .details { font-size: 12px; color: #4a5568; word-break: break-word; }
+        .payment-method-info .instructions { font-size: 11px; color: #a0522d; margin-top: 2px; }
+        .payment-copy-btn {
+            border: none;
+            background: #fff;
+            color: #c05621;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .payment-copy-btn:active { transform: scale(0.95); }
+
         .pickup-overdue-banner {
             margin: 0 16px 0;
             padding: 14px 16px;
@@ -991,6 +1049,7 @@
         <div id="pickupOverdueBanner" style="display:none;"></div>
         <div class="result-status" id="resultStatus"></div>
         <div id="resultDetails"></div>
+        <div id="paymentMethodsResults" class="payment-methods-card" style="display:none; margin: 12px 16px 0;"></div>
         <div id="workshopContactResults" class="workshop-contact-card" style="display:none; margin: 12px 16px 0;"></div>
         <div class="repair-details" id="repairDetailsSection" style="display:none;">
             <h4><i class="fas fa-tools"></i> Repair Details</h4>
@@ -1214,6 +1273,66 @@ function renderWorkshopContact(ws, elementId) {
 
     el.innerHTML = html;
     el.style.display = 'block';
+}
+
+var PAYMENT_TYPE_ICON = {
+    mobile_money: 'fa-mobile-screen-button',
+    bank: 'fa-building-columns',
+    cash: 'fa-money-bill-wave',
+    other: 'fa-credit-card'
+};
+
+function renderPaymentMethods(ws, balance) {
+    var el = document.getElementById('paymentMethodsResults');
+    if (!el || !ws) return;
+
+    var methods = normalizeFirebaseList(ws.paymentMethods).filter(function(pm) {
+        return pm && pm.enabled !== false;
+    });
+
+    if (methods.length === 0 || !(balance > 0)) {
+        el.style.display = 'none';
+        el.innerHTML = '';
+        return;
+    }
+
+    var html = '<h3><i class="fas fa-wallet"></i> How to pay your balance</h3>';
+    html += methods.map(function(pm) {
+        var icon = PAYMENT_TYPE_ICON[pm.type] || PAYMENT_TYPE_ICON.other;
+        var details = escHtml(pm.accountName || '') +
+            (pm.accountName && pm.accountNumber ? ' &middot; ' : '') +
+            escHtml(pm.accountNumber || '');
+        var copyBtn = pm.accountNumber ?
+            '<button type="button" class="payment-copy-btn" onclick="copyPaymentDetail(this, \'' + escAttr(pm.accountNumber) + '\')"><i class="fas fa-copy"></i> Copy</button>' : '';
+        var instructions = pm.instructions ?
+            '<div class="instructions"><i class="fas fa-circle-info"></i> ' + escHtml(pm.instructions) + '</div>' : '';
+
+        return '<div class="payment-method-row">' +
+            '<div class="payment-method-icon"><i class="fas ' + icon + '"></i></div>' +
+            '<div class="payment-method-info">' +
+                '<div class="provider">' + escHtml(pm.provider || '') + '</div>' +
+                '<div class="details">' + details + '</div>' +
+                instructions +
+            '</div>' +
+            copyBtn +
+        '</div>';
+    }).join('');
+
+    el.innerHTML = html;
+    el.style.display = 'block';
+}
+
+function copyPaymentDetail(btn, value) {
+    var restore = btn.innerHTML;
+    var done = function() {
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+        setTimeout(function() { btn.innerHTML = restore; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(done).catch(done);
+    } else {
+        done();
+    }
 }
 
 function getPickupOverdueNotice(client) {
@@ -1636,6 +1755,7 @@ function showResults(client) {
 
     showPickupOverdueBanner(client);
     if (workshopData) renderWorkshopContact(workshopData, 'workshopContactResults');
+    if (workshopData) renderPaymentMethods(workshopData, balance);
 
     // Show results
     document.getElementById('resultsSection').style.display = 'block';
