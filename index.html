@@ -687,6 +687,19 @@
             font-weight: 800;
             text-decoration: underline;
         }
+        .pay-step-action-row { margin-top: 6px; }
+        .pay-step-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #ffcc00;
+            color: #1a1a1a;
+            border-radius: 7px;
+            padding: 5px 11px;
+            font-size: 11px;
+            font-weight: 800;
+            text-decoration: none;
+        }
         .pay-modal-body { padding: 14px 18px 18px; }
         .pay-step {
             display: flex;
@@ -1493,6 +1506,62 @@ function linkifyUssd(text) {
     });
 }
 
+function normalizePortalStep(step) {
+    if (typeof step === 'string') return { text: step, type: 'text' };
+    return step && step.text ? step : { text: '', type: 'text' };
+}
+
+function buildStepActionHtml(step) {
+    var type = step.type;
+    var value = (step.value || '').trim();
+
+    if (type === 'copy') {
+        return '<button type="button" class="pay-step-action" onclick="copyPaymentDetail(this, \'' + escAttr(step.text) + '\')"><i class="fas fa-copy"></i> Copy</button>';
+    }
+    if (!value) return '';
+
+    if (type === 'ussd') {
+        return '<a href="tel:' + encodeURIComponent(value) + '" class="pay-step-action"><i class="fas fa-phone-volume"></i> Dial</a>';
+    }
+    if (type === 'phone') {
+        return '<a href="tel:' + encodeURIComponent(value) + '" class="pay-step-action"><i class="fas fa-phone"></i> Call</a>';
+    }
+    if (type === 'sms') {
+        var smsHref = 'sms:' + encodeURIComponent(value) + (step.message ? '?body=' + encodeURIComponent(step.message) : '');
+        return '<a href="' + smsHref + '" class="pay-step-action"><i class="fas fa-comment-sms"></i> Message</a>';
+    }
+    if (type === 'whatsapp') {
+        var digits = value.replace(/[^0-9]/g, '');
+        var waHref = 'https://wa.me/' + digits + (step.message ? '?text=' + encodeURIComponent(step.message) : '');
+        return '<a href="' + escAttr(waHref) + '" target="_blank" rel="noopener" class="pay-step-action"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
+    }
+    if (type === 'web') {
+        var webHref = /^https?:\/\//i.test(value) ? value : ('https://' + value);
+        return '<a href="' + escAttr(webHref) + '" target="_blank" rel="noopener" class="pay-step-action"><i class="fas fa-arrow-up-right-from-square"></i> Open Link</a>';
+    }
+    if (type === 'email') {
+        return '<a href="mailto:' + escAttr(value) + '" class="pay-step-action"><i class="fas fa-envelope"></i> Email</a>';
+    }
+    if (type === 'maps') {
+        var mapsHref = /^https?:\/\//i.test(value) ? value : ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(value));
+        return '<a href="' + escAttr(mapsHref) + '" target="_blank" rel="noopener" class="pay-step-action"><i class="fas fa-location-dot"></i> Open Map</a>';
+    }
+    return '';
+}
+
+function buildTypedStepHtml(rawStep, number) {
+    var step = normalizePortalStep(rawStep);
+    var displayText = (step.type === 'text' || !step.type) ? linkifyUssd(step.text) : escHtml(step.text);
+    var action = buildStepActionHtml(step);
+
+    return '<div class="pay-step">' +
+        '<span class="pay-step-num">' + number + '</span>' +
+        '<div class="pay-step-content">' + displayText +
+            (action ? '<div class="pay-step-action-row">' + action + '</div>' : '') +
+        '</div>' +
+    '</div>';
+}
+
 function buildPayStep(number, label, valueHtml, copyValue) {
     var copyBtn = copyValue ?
         '<button type="button" class="pay-step-copy" onclick="copyPaymentDetail(this, \'' + escAttr(copyValue) + '\')"><i class="fas fa-copy"></i> Copy</button>' : '';
@@ -1527,7 +1596,7 @@ function openPayModal(id) {
         }
         var steps = pm.steps || [];
         html += steps.map(function(step, i) {
-            return '<div class="pay-step"><span class="pay-step-num">' + (i + 1) + '</span><div class="pay-step-content">' + linkifyUssd(step) + '</div></div>';
+            return buildTypedStepHtml(step, i + 1);
         }).join('');
     } else if (pm.type === 'mobile_money_merchant') {
         var workshopName = pm.workshopName || (portalPaymentWorkshop && portalPaymentWorkshop.workshopName) || '';
