@@ -1615,6 +1615,15 @@ function openPayModal(id) {
         var n2 = 1;
         if (pm.accountNumber) html += buildPayStep(n2++, 'Account Number', escHtml(pm.accountNumber), pm.accountNumber);
         if (pm.accountName) html += buildPayStep(n2++, 'Account Name', escHtml(pm.accountName), null);
+    } else if (pm.type === 'other') {
+        var workshopNameOther = pm.workshopName || (portalPaymentWorkshop && portalPaymentWorkshop.workshopName) || '';
+        var n4 = 1;
+        if (workshopNameOther) html += buildPayStep(n4++, 'Workshop Name', escHtml(workshopNameOther), null);
+        if (pm.paymentAgent) html += buildPayStep(n4++, 'Payment Agent', escHtml(pm.paymentAgent), null);
+        var otherSteps = pm.steps || [];
+        html += otherSteps.map(function(step) {
+            return buildTypedStepHtml(step, n4++);
+        }).join('');
     } else {
         var n3 = 1;
         if (pm.accountName) html += buildPayStep(n3++, 'Details', escHtml(pm.accountName), null);
