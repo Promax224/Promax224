@@ -701,6 +701,59 @@
             text-decoration: none;
         }
         .pay-modal-body { padding: 14px 18px 18px; }
+
+        /* Terms of Service modal */
+        .tos-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26,26,26,0.6); z-index: 9998;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .tos-modal-overlay.active { display: flex; }
+        .tos-modal {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 460px;
+            width: 100%;
+            max-height: 82vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+        .tos-modal-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-radius: 16px 16px 0 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: sticky;
+            top: 0;
+        }
+        .tos-modal-hdr h3 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0;
+        }
+        .tos-modal-close {
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tos-modal-body {
+            padding: 16px 18px 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #374151;
+        }
+        .tos-modal-body p { margin-bottom: 12px; }
+        .tos-modal-body p:last-child { margin-bottom: 0; }
         .pay-step {
             display: flex;
             align-items: flex-start;
@@ -750,6 +803,16 @@
             font-weight: 700;
             font-size: 13px;
             cursor: pointer;
+        }
+
+        .preview-mode-banner {
+            background: repeating-linear-gradient(45deg, #2d3748, #2d3748 10px, #1a202c 10px, #1a202c 20px);
+            color: #fff;
+            text-align: center;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
         }
 
         .pickup-overdue-banner {
@@ -921,6 +984,26 @@
         }
 
         .portal-footer strong { color: #667eea; }
+
+        .portal-tos-link {
+            display: inline-block;
+            margin-top: 2px;
+            background: none;
+            border: none;
+            padding: 4px 10px;
+            color: #a0aec0;
+            font-size: 10px;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .portal-tos-link:active { opacity: 0.6; }
+
+        body.portal-has-wallpaper .portal-tos-link {
+            color: rgba(255,255,255,0.7);
+        }
 
         /* Image lightbox */
         .lightbox {
@@ -1136,6 +1219,7 @@
 <div id="portalBgOverlay" class="portal-bg-overlay" aria-hidden="true"></div>
 
 <div class="portal-card" id="portalCard">
+    <div id="previewModeBanner" style="display:none;"></div>
     <!-- Header -->
     <div class="portal-header" id="portalHeader">
         <div class="portal-logo" id="portalLogo">
@@ -1200,6 +1284,10 @@
             <h4><i class="fas fa-camera"></i> Device Photos</h4>
             <div class="photos-grid" id="photosGrid"></div>
         </div>
+        <div class="photos-section" id="afterPhotosSection">
+            <h4><i class="fas fa-camera-retro"></i> After-Repair Photos</h4>
+            <div class="photos-grid" id="afterPhotosGrid"></div>
+        </div>
         <div class="portal-message-section" id="portalMessageSection">
             <h4><i class="fas fa-comments"></i> Message the workshop</h4>
             <p style="font-size:12px;color:#718096;margin-bottom:10px;line-height:1.5;">
@@ -1231,6 +1319,18 @@
 
 <div class="portal-footer" id="portalFooter">
     <p>Powered by <strong>RepairPro</strong></p>
+    <button type="button" class="portal-tos-link" id="portalTosLink" onclick="openTermsModal()" style="display:none;">Terms of Service</button>
+</div>
+
+<!-- Terms of Service modal -->
+<div class="tos-modal-overlay" id="tosModalOverlay" onclick="if(event.target===this)closeTermsModal();">
+    <div class="tos-modal">
+        <div class="tos-modal-hdr">
+            <h3><i class="fas fa-file-contract"></i> Terms of Service</h3>
+            <button class="tos-modal-close" onclick="closeTermsModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="tos-modal-body" id="tosModalBody"></div>
+    </div>
 </div>
 
 <!-- Lightbox for photos -->
@@ -1266,11 +1366,13 @@ var portalThreadMessages = [];
 var portalAttachments = [];
 var PORTAL_MAX_PHOTOS = 2;
 var portalAutoClientId = null;
+var portalPreviewMode = false;
 
 (function init() {
     var params = new URLSearchParams(window.location.search);
     var encoded = params.get('d');
     portalAutoClientId = params.get('c');
+    portalPreviewMode = params.get('preview') === 'payment';
 
     if (!encoded) {
         showConnectionError('Invalid link. Please scan the QR code at the workshop.');
@@ -1357,8 +1459,32 @@ function connectToFirebase(config) {
                 renderWorkshopContact(ws, 'workshopContactLookup');
                 renderWorkshopContact(ws, 'workshopContactResults');
 
-                // Show lookup form or auto-open client status
+                var tosLink = document.getElementById('portalTosLink');
+                if (tosLink) tosLink.style.display = (ws.termsOfService && ws.termsOfService.trim()) ? 'inline-block' : 'none';
+
                 document.getElementById('connectingState').style.display = 'none';
+
+                // Preview mode: skip the real lookup and show a synthetic client so
+                // the workshop owner can see exactly how their configured payment
+                // methods will look and behave, without needing a real client record.
+                if (portalPreviewMode) {
+                    showPreviewModeBanner();
+                    var previewClient = {
+                        id: 'PREVIEW-0001',
+                        name: 'Preview Client',
+                        status: 'in-progress',
+                        deviceBrand: 'Sample',
+                        deviceModel: 'Device',
+                        issue: 'This is a preview — no real client data.',
+                        agreedAmount: 25000,
+                        depositedAmount: 0,
+                        signInDate: new Date().toISOString()
+                    };
+                    showResults(previewClient);
+                    return;
+                }
+
+                // Show lookup form or auto-open client status
                 if (portalAutoClientId) {
                     document.getElementById('clientIdInput').value = portalAutoClientId;
                     lookupClient(portalAutoClientId);
@@ -1645,6 +1771,20 @@ function closePayModal() {
     document.getElementById('payModalOverlay').classList.remove('active');
 }
 
+function openTermsModal() {
+    var text = (workshopData && workshopData.termsOfService) || '';
+    var body = document.getElementById('tosModalBody');
+    var paragraphs = text.split(/\n\s*\n/).map(function(p) { return p.trim(); }).filter(Boolean);
+    body.innerHTML = paragraphs.length
+        ? paragraphs.map(function(p) { return '<p>' + escHtml(p).replace(/\n/g, '<br>') + '</p>'; }).join('')
+        : '<p>No terms have been set yet.</p>';
+    document.getElementById('tosModalOverlay').classList.add('active');
+}
+
+function closeTermsModal() {
+    document.getElementById('tosModalOverlay').classList.remove('active');
+}
+
 function notifyWorkshopOfPayment(providerName) {
     closePayModal();
     var input = document.getElementById('portalMessageInput');
@@ -1699,6 +1839,14 @@ function getPickupOverdueNotice(client) {
     }
 
     return { title: title, message: message, days: days };
+}
+
+function showPreviewModeBanner() {
+    var banner = document.getElementById('previewModeBanner');
+    if (!banner) return;
+    banner.className = 'preview-mode-banner';
+    banner.innerHTML = '<i class="fas fa-eye"></i> PREVIEW MODE — sample client, no messages will be sent';
+    banner.style.display = 'block';
 }
 
 function showPickupOverdueBanner(client) {
@@ -2089,6 +2237,24 @@ function showResults(client) {
         photosSection.style.display = 'none';
     }
 
+    // After-Repair Photos
+    var afterPhotosSection = document.getElementById('afterPhotosSection');
+    var afterPhotosGrid = document.getElementById('afterPhotosGrid');
+
+    if (client.afterRepairPhotos) {
+        var afterPhotoList = normalizeFirebaseList(client.afterRepairPhotos);
+        if (afterPhotoList.length > 0) {
+            afterPhotosSection.style.display = 'block';
+            afterPhotosGrid.innerHTML = afterPhotoList.map(function(photo, i) {
+                return '<img src="' + photo + '" alt="After-Repair Photo ' + (i+1) + '" loading="lazy" onclick="openLightbox(this.src)">';
+            }).join('');
+        } else {
+            afterPhotosSection.style.display = 'none';
+        }
+    } else {
+        afterPhotosSection.style.display = 'none';
+    }
+
     showPickupOverdueBanner(client);
     if (workshopData) renderWorkshopContact(workshopData, 'workshopContactResults');
     if (workshopData) renderPaymentMethods(workshopData, balance, client);
@@ -2104,7 +2270,7 @@ function showResults(client) {
     var sb = document.getElementById('portalSendBtn');
     if (sb) sb.disabled = false;
 
-    startPortalMessageListener(client);
+    if (!portalPreviewMode) startPortalMessageListener(client);
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2115,6 +2281,10 @@ function sendPortalMessage() {
     var statusEl = document.getElementById('portalMsgStatus');
     var btn = document.getElementById('portalSendBtn');
     var input = document.getElementById('portalMessageInput');
+    if (portalPreviewMode) {
+        if (statusEl) statusEl.textContent = 'Preview mode — messages are not actually sent.';
+        return;
+    }
     if (!client || !fbDb || !workshopUid) {
         if (statusEl) statusEl.textContent = 'Cannot send right now.';
         return;
