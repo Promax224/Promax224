@@ -1239,8 +1239,24 @@
         }
         .portal-rating { margin-top: 4px; font-size: 12px; color: #fff; }
         .hdr-stars span { color: rgba(255,255,255,0.4); } .hdr-stars span.on { color: #fbd34d; }
-        .portal-reviews { background: rgba(255,255,255,0.97); padding: 16px; flex-shrink: 0; border-top: 1px solid #e2e8f0; }
-        .portal-reviews h3 { font-size: 14px; color: #2d3748; margin-bottom: 10px; }
+        .portal-reviews-list, .portal-review-form-block {
+            padding: 16px; background:#fff; border-radius:12px; border:1px solid #e2e8f0;
+        }
+        .portal-reviews-list { margin-top:20px; }
+        .portal-review-form-block { margin:0 16px 16px; }
+        .portal-reviews-list h3, .portal-review-form-block h3 {
+            font-size:14px; color:#2d3748; margin-bottom:10px;
+            display:flex; align-items:center; gap:6px;
+        }
+        .review-reply {
+            margin-top:8px; padding:8px 10px; background:#e6fffa;
+            border-left:3px solid #38b2ac; border-radius:6px;
+            font-size:12px; color:#234e52;
+        }
+        .review-reply strong {
+            display:block; margin-bottom:2px; color:#285e61; font-size:11px;
+        }
+        .not-rated-label { font-size:11px; color:rgba(255,255,255,.75); font-weight:600; }
         .review-card { padding: 10px 0; border-bottom: 1px solid #f0f4f8; font-size: 13px; color: #2d3748; }
         .review-card .meta { font-size: 11px; color: #a0aec0; margin-top: 2px; }
         .review-stars span { color: #cbd5e0; } .review-stars span.on { color: #ecc94b; }
@@ -1301,6 +1317,7 @@
             <i class="fas fa-search"></i> Check My Repair Status
         </button>
         <div class="error-msg" id="errorMsg"></div>
+        <div id="portalReviewsList" class="portal-reviews-list" style="display:none;"></div>
     </div>
 
     <!-- Loading -->
@@ -1354,6 +1371,7 @@
         <button class="back-btn" onclick="goBack()">
             <i class="fas fa-arrow-left"></i> Look Up Another ID
         </button>
+        <div id="portalReviewFormBlock" class="portal-review-form-block" style="display:none;"></div>
     </div>
 </div>
 
@@ -1361,8 +1379,6 @@
     <p>Powered by <strong>RepairPro</strong></p>
     <button type="button" class="portal-tos-link" id="portalTosLink" onclick="openTermsModal()" style="display:none;">Terms of Service</button>
 </div>
-
-<div class="portal-reviews" id="portalReviews" style="display:none;"></div>
 
 <!-- Terms of Service modal -->
 <div class="tos-modal-overlay" id="tosModalOverlay" onclick="if(event.target===this)closeTermsModal();">
@@ -2588,14 +2604,22 @@ var portalReviews = {};
 var portalReviewRating = 0;
 var portalReviewsExpanded = false;
 var REVIEWS_VISIBLE = 3;
+var REVIEWS_MIN_FOR_RATING = 10;
+var portalReviewsRef = null;
 
 function reviewKey(id) { return String(id).replace(/[.#$\[\]\/]/g, '_'); }
 
 function loadPortalReviews() {
-    return fbDb.ref('workshops/' + workshopUid + '/reviews').once('value')
-        .then(function (snap) { portalReviews = snap.val() || {}; })
-        .catch(function () { portalReviews = {}; })
-        .then(renderPortalReviews);
+    if (portalReviewsRef) portalReviewsRef.off();
+    portalReviewsRef = fbDb.ref('workshops/' + workshopUid + '/reviews');
+    portalReviewsRef.on('value', function (snap) {
+        portalReviews = snap.val() || {};
+        renderPortalReviews();
+    }, function (err) {
+        console.warn('Reviews listener failed:', err);
+        portalReviews = {};
+        renderPortalReviews();
+    });
 }
 
 function starRow(n, cls) {
@@ -2604,49 +2628,71 @@ function starRow(n, cls) {
     return '<span class="' + cls + '">' + h + '</span>';
 }
 
+function reviewCardHtml(r) {
+    var d = r.updatedAt ? new Date(r.updatedAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+    var reply = (r.reply && r.reply.text)
+        ? '<div class="review-reply"><strong><i class="fas fa-reply"></i> Workshop reply</strong>' + escHtml(r.reply.text) + '</div>' : '';
+    return '<div class="review-card">' + starRow(r.rating, 'review-stars')
+        + ' <strong>' + escHtml(r.name || 'Client') + '</strong>'
+        + (r.text ? '<div>' + escHtml(r.text) + '</div>' : '')
+        + reply + '<div class="meta">' + d + '</div></div>';
+}
+
 function renderPortalReviews() {
     var list = Object.keys(portalReviews).map(function (k) { return portalReviews[k]; })
         .filter(function (r) { return r && r.rating >= 1 && r.rating <= 5; })
         .sort(function (a, b) { return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0); });
 
+    var count = list.length;
+    var avg = count ? list.reduce(function (s, r) { return s + r.rating; }, 0) / count : 0;
+
+    // Header summary under the workshop logo
     var summary = document.getElementById('portalRatingSummary');
     if (summary) {
-        var avg = list.length ? list.reduce(function (s, r) { return s + r.rating; }, 0) / list.length : 0;
-        summary.innerHTML = list.length
-            ? starRow(avg, 'hdr-stars') + ' <strong>' + avg.toFixed(1) + '</strong> (' + list.length + ')'
-            : '';
+        summary.innerHTML = (count >= REVIEWS_MIN_FOR_RATING)
+            ? starRow(avg, 'hdr-stars') + ' <strong>' + avg.toFixed(1) + '</strong> (' + count + ')'
+            : '<span class="not-rated-label">Not rated</span>';
     }
 
-    var box = document.getElementById('portalReviews');
-    if (!box) return;
-    var client = window.currentPortalClient;
-    var canReview = client && String(client.id).indexOf('PREVIEW') !== 0;
-    if (!list.length && !canReview) { box.style.display = 'none'; return; }
+    // Reviews list on the lookup screen
+    var listBox = document.getElementById('portalReviewsList');
+    if (listBox) {
+        if (count === 0) { listBox.style.display = 'none'; listBox.innerHTML = ''; }
+        else {
+            var html = '<h3><i class="fas fa-star" style="color:#ecc94b;"></i> Client Reviews</h3>';
+            html += list.slice(0, REVIEWS_VISIBLE).map(reviewCardHtml).join('');
+            if (count > REVIEWS_VISIBLE) {
+                html += '<div id="moreReviews" style="display:' + (portalReviewsExpanded ? 'block' : 'none') + ';">'
+                    + list.slice(REVIEWS_VISIBLE).map(reviewCardHtml).join('') + '</div>';
+                html += '<button type="button" class="review-more" onclick="toggleMoreReviews()">'
+                    + (portalReviewsExpanded ? 'Show fewer' : 'Show ' + (count - REVIEWS_VISIBLE) + ' more') + '</button>';
+            }
+            listBox.innerHTML = html;
+            listBox.style.display = 'block';
+        }
+    }
 
-    var mine = canReview ? portalReviews[reviewKey(client.id)] : null;
-    var html = '<h3><i class="fas fa-star" style="color:#ecc94b;"></i> Client Reviews</h3>';
-    if (canReview) {
-        if (!portalReviewRating && mine) portalReviewRating = mine.rating;
-        var pick = '';
-        for (var i = 1; i <= 5; i++) pick += '<button type="button" class="' + (i <= portalReviewRating ? 'on' : '') + '" onclick="setReviewRating(' + i + ')" aria-label="' + i + ' star">\u2605</button>';
-        html += '<div class="review-form"><strong style="font-size:13px;">' + (mine ? 'Edit your review' : 'Rate this workshop') + '</strong>' +
-            '<div class="review-pick">' + pick + '</div>' +
-            '<textarea id="reviewText" maxlength="500" placeholder="Write your review (optional)">' + escHtml(mine ? mine.text || '' : '') + '</textarea>' +
-            '<button type="button" class="btn-review" onclick="submitPortalReview()">' + (mine ? 'Update review' : 'Post review') + '</button>' +
-            '<span id="reviewMsg" style="font-size:12px;margin-left:8px;color:#718096;"></span></div>';
+    // Write / edit form on the results screen
+    var formBox = document.getElementById('portalReviewFormBlock');
+    if (formBox) {
+        var client = window.currentPortalClient;
+        var canReview = client && String(client.id).indexOf('PREVIEW') !== 0;
+        if (!canReview) { formBox.style.display = 'none'; formBox.innerHTML = ''; }
+        else {
+            var mine = portalReviews[reviewKey(client.id)];
+            if (!portalReviewRating && mine) portalReviewRating = mine.rating;
+            var pick = '';
+            for (var i = 1; i <= 5; i++)
+                pick += '<button type="button" class="' + (i <= portalReviewRating ? 'on' : '') + '" onclick="setReviewRating(' + i + ')" aria-label="' + i + ' star">\u2605</button>';
+            formBox.innerHTML =
+                '<h3><i class="fas fa-pen" style="color:#667eea;"></i> ' + (mine ? 'Edit your review' : 'Leave a review') + '</h3>'
+                + '<div class="review-form"><div class="review-pick">' + pick + '</div>'
+                + '<textarea id="reviewText" maxlength="500" placeholder="Write your review (optional)">' + escHtml(mine ? mine.text || '' : '') + '</textarea>'
+                + '<button type="button" class="btn-review" onclick="submitPortalReview()">' + (mine ? 'Update review' : 'Post review') + '</button>'
+                + '<span id="reviewMsg" style="font-size:12px;margin-left:8px;color:#718096;"></span></div>';
+            formBox.style.display = 'block';
+        }
     }
-    function card(r) {
-        var d = r.updatedAt ? new Date(r.updatedAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-        return '<div class="review-card">' + starRow(r.rating, 'review-stars') + ' <strong>' + escHtml(r.name || 'Client') + '</strong>' +
-            (r.text ? '<div>' + escHtml(r.text) + '</div>' : '') + '<div class="meta">' + d + '</div></div>';
-    }
-    html += list.slice(0, REVIEWS_VISIBLE).map(card).join('');
-    if (list.length > REVIEWS_VISIBLE) {
-        html += '<div id="moreReviews" style="display:' + (portalReviewsExpanded ? 'block' : 'none') + ';">' + list.slice(REVIEWS_VISIBLE).map(card).join('') + '</div>' +
-            '<button type="button" class="review-more" onclick="toggleMoreReviews()">' + (portalReviewsExpanded ? 'Show fewer' : 'Show ' + (list.length - REVIEWS_VISIBLE) + ' more') + '</button>';
-    }
-    box.innerHTML = html;
-    box.style.display = 'block';
 }
 
 function setReviewRating(n) {
@@ -2663,25 +2709,30 @@ function submitPortalReview() {
     var client = window.currentPortalClient;
     var msg = document.getElementById('reviewMsg');
     if (!client) return;
-    if (!portalReviewRating) { msg.textContent = 'Please choose a star rating.'; return; }
+    if (!portalReviewRating) { if (msg) msg.textContent = 'Please choose a star rating.'; return; }
     var now = new Date().toISOString();
     var prev = portalReviews[reviewKey(client.id)];
     var first = String(client.name || '').trim().split(/\s+/)[0];
-    var review = {
+    // update() only touches these fields, so a workshop reply on the same review is kept
+    var patch = {
         rating: portalReviewRating,
         text: document.getElementById('reviewText').value.trim().slice(0, 500),
         name: (first && first !== 'Undefined') ? first : 'Client',
         createdAt: prev && prev.createdAt ? prev.createdAt : now,
         updatedAt: now
     };
-    msg.textContent = 'Saving...';
-    fbDb.ref('workshops/' + workshopUid + '/reviews/' + reviewKey(client.id)).set(review)
+    if (msg) msg.textContent = 'Saving...';
+    fbDb.ref('workshops/' + workshopUid + '/reviews/' + reviewKey(client.id)).update(patch)
         .then(function () {
-            portalReviews[reviewKey(client.id)] = review;
+            portalReviews[reviewKey(client.id)] = Object.assign({}, prev || {}, patch);
             renderPortalReviews();
-            document.getElementById('reviewMsg').textContent = 'Thank you! Your review is saved.';
+            var m = document.getElementById('reviewMsg');
+            if (m) m.textContent = 'Thank you! Your review is saved.';
         })
-        .catch(function () { msg.textContent = 'Could not save your review. Please try again.'; });
+        .catch(function () {
+            var m = document.getElementById('reviewMsg');
+            if (m) m.textContent = 'Could not save your review. Please try again.';
+        });
 }
 
 function goBack() {
@@ -2689,6 +2740,7 @@ function goBack() {
     portalThreadMessages = [];
     window.currentPortalClient = null;
     portalReviewRating = 0;
+    portalReviewsExpanded = false;
     renderPortalReviews();
     var pm = document.getElementById('portalMessageInput');
     var ps = document.getElementById('portalMsgStatus');
