@@ -1220,6 +1220,36 @@
                 padding-bottom: max(16px, env(safe-area-inset-bottom));
             }
         }
+        .portal-client-photo-wrap { position: relative; width: 96px; margin: 0 auto 14px; }
+        .portal-client-photo-wrap .portal-client-photo { margin: 0; }
+        .device-photo-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: rgba(102,126,234,0.95);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border: 2px solid var(--card-bg, #fff);
+        }
+        .portal-rating { margin-top: 4px; font-size: 12px; color: #fff; }
+        .hdr-stars span { color: rgba(255,255,255,0.4); } .hdr-stars span.on { color: #fbd34d; }
+        .portal-reviews { background: rgba(255,255,255,0.97); padding: 16px; flex-shrink: 0; border-top: 1px solid #e2e8f0; }
+        .portal-reviews h3 { font-size: 14px; color: #2d3748; margin-bottom: 10px; }
+        .review-card { padding: 10px 0; border-bottom: 1px solid #f0f4f8; font-size: 13px; color: #2d3748; }
+        .review-card .meta { font-size: 11px; color: #a0aec0; margin-top: 2px; }
+        .review-stars span { color: #cbd5e0; } .review-stars span.on { color: #ecc94b; }
+        .review-form { background: #f7fafc; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+        .review-pick button { background: none; border: 0; font-size: 26px; color: #cbd5e0; cursor: pointer; padding: 0 2px; }
+        .review-pick button.on { color: #ecc94b; }
+        .review-form textarea { width: 100%; min-height: 70px; margin: 8px 0; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; font: inherit; font-size: 13px; resize: vertical; }
+        .review-form .btn-review { background: #667eea; color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 600; cursor: pointer; }
+        .review-more { background: none; border: 0; color: #667eea; font-weight: 600; cursor: pointer; padding: 10px 0 0; }
     </style>
 </head>
 <body>
@@ -1237,6 +1267,7 @@
         <div>
             <h1 id="workshopName">Repair Workshop</h1>
             <p>Client Repair Status Portal</p>
+            <div class="portal-rating" id="portalRatingSummary"></div>
         </div>
     </div>
 
@@ -1331,6 +1362,8 @@
     <button type="button" class="portal-tos-link" id="portalTosLink" onclick="openTermsModal()" style="display:none;">Terms of Service</button>
 </div>
 
+<div class="portal-reviews" id="portalReviews" style="display:none;"></div>
+
 <!-- Terms of Service modal -->
 <div class="tos-modal-overlay" id="tosModalOverlay" onclick="if(event.target===this)closeTermsModal();">
     <div class="tos-modal">
@@ -1364,6 +1397,11 @@
 </div>
 
 <script>
+// ---- Workshop currency (Settings → Currency). Every money label reads CUR, so changing the setting changes everything. ----
+Object.defineProperty(window,'CUR',{configurable:true,get:function(){ try{ var c=(window.__portalCurrency); return (c&&String(c).trim())||'UGX'; }catch(e){ return 'UGX'; } }});
+function refreshCurrencyLabels(){ try{ document.querySelectorAll('.cur-code').forEach(function(e){ if(e.textContent!==CUR) e.textContent=CUR; }); }catch(e){} }
+document.addEventListener('DOMContentLoaded',function(){ refreshCurrencyLabels(); });
+
 // ============ READ CONFIG FROM URL ============
 var fbDb = null;
 var fbAuth = null;
@@ -1451,6 +1489,7 @@ function connectToFirebase(config) {
                 workshopData = ws;
 
                 // Set workshop name
+                if (ws.currencyCode) window.__portalCurrency = ws.currencyCode;   // workshop's chosen currency
                 if (ws.workshopName) {
                     document.getElementById('workshopName').textContent = ws.workshopName;
                     document.title = ws.workshopName + ' - Repair Status';
@@ -1471,6 +1510,7 @@ function connectToFirebase(config) {
                 var tosLink = document.getElementById('portalTosLink');
                 if (tosLink) tosLink.style.display = (ws.termsOfService && ws.termsOfService.trim()) ? 'inline-block' : 'none';
 
+                loadPortalReviews();
                 document.getElementById('connectingState').style.display = 'none';
 
                 // Preview mode: skip the real lookup and show a synthetic client so
@@ -1628,7 +1668,7 @@ function renderPaymentMethods(ws, balance, client) {
 }
 
 function fmtUGX(n) {
-    return 'UGX ' + Math.round(n || 0).toLocaleString();
+    return ('' + CUR + ' ') + Math.round(n || 0).toLocaleString();
 }
 
 // Detects USSD-style codes like *165*3# inside free text and turns them into
@@ -2114,6 +2154,7 @@ function lookupClient(prefilledId) {
     fbDb.ref('workshops/' + workshopUid + '/clients').once('value')
         .then(function(snapshot) {
             var allClients = normalizeFirebaseList(snapshot.val());
+            allClients.forEach(function(c) { if (c) delete c.faceDescriptor; }); // biometric data has no reason to ever reach the client-facing portal
             var client = findClientById(allClients, clientId);
 
             document.getElementById('loadingState').style.display = 'none';
@@ -2139,6 +2180,57 @@ function lookupClient(prefilledId) {
 }
 
 // ============ SHOW RESULTS ============
+// Display helper: falls back to device info when a client has no name / photo
+function getClientCardDisplay(c) {
+    const REAL_NAME = (c.name || '').trim();
+    const isPlaceholderName = !REAL_NAME || REAL_NAME === 'Undefined Name';
+    const deviceLabel = [c.deviceBrand, c.deviceModel].filter(Boolean).join(' ').trim();
+
+    const displayName = !isPlaceholderName
+        ? c.name
+        : (deviceLabel || ('Client ' + c.id));
+
+    const clientPhoto = c.profilePhoto || null;
+    const firstDevicePhoto = (Array.isArray(c.photos) && c.photos[0]) || null;
+
+    return {
+        name: displayName,
+        photo: clientPhoto || firstDevicePhoto || null,
+        photoIsDevice: !clientPhoto && !!firstDevicePhoto,
+        isPlaceholderName,
+    };
+}
+
+// Payment history for the client: ONLY the date and amount are shown.
+// Method, note, loggedBy and the balance transition are workshop-internal and must never be rendered here.
+function renderPortalPaymentHistory(client) {
+    var payments = Array.isArray(client.payments) ? client.payments : [];
+    var useful = payments.filter(function (p) { return !String(p.id || '').startsWith('PAY-LEGACY-'); });
+    if (useful.length === 0) return '';
+
+    var sorted = useful.slice().sort(function (a, b) { return new Date(b.at || 0) - new Date(a.at || 0); });
+    var totalPaid = useful.filter(function (p) { return p.type === 'payment'; })
+        .reduce(function (s, p) { return s + (parseFloat(p.amount) || 0); }, 0);
+
+    var rows = sorted.map(function (p) {
+        var isRefund = p.type === 'refund';
+        var date = p.at ? new Date(p.at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+        var sign = isRefund ? '\u2212' : '';
+        var color = isRefund ? '#c53030' : '#2d3748';
+        var bg = isRefund ? 'background:rgba(245,101,101,0.08);' : '';
+        return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f4f8;color:' + color + ';' + bg + '">' +
+            '<span style="font-size:13px;">' + escHtml(date) + '</span>' +
+            '<span style="font-weight:700;font-size:14px;">' + sign + CUR + ' ' + (parseFloat(p.amount) || 0).toLocaleString() + '</span>' +
+            '</div>';
+    }).join('');
+
+    return '<div style="padding:15px 0 0;margin-top:12px;border-top:1px solid #e2e8f0;">' +
+        '<h4 style="font-size:13px;color:#718096;margin-bottom:10px;"><i class="fas fa-history"></i> Payment History</h4>' +
+        rows +
+        '<div style="text-align:right;font-weight:700;font-size:13px;color:#276749;margin-top:10px;">Total paid: ' + CUR + ' ' + totalPaid.toLocaleString() + '</div>' +
+        '</div>';
+}
+
 function showResults(client) {
     var statusMap = {
         'pending':     { icon: 'fa-clock',         label: 'Pending',           msg: 'Your device is waiting to be repaired. We will get to it as soon as possible.' },
@@ -2158,15 +2250,17 @@ function showResults(client) {
     // Status section
     var warrantyHtml = getWarrantyHtml(client);
 
+    var display = getClientCardDisplay(client);
     var profileBlock = '';
-    if (client.profilePhoto && String(client.profilePhoto).trim()) {
-        profileBlock = '<div class="portal-client-photo"><img src="' + escAttr(client.profilePhoto) + '" alt=""></div>';
+    if (display.photo && String(display.photo).trim()) {
+        profileBlock = '<div class="portal-client-photo-wrap"><div class="portal-client-photo"><img src="' + escAttr(display.photo) + '" alt=""></div>' +
+            (display.photoIsDevice ? '<span class="device-photo-badge" title="Device photo">📱</span>' : '') + '</div>';
     }
 
     document.getElementById('resultStatus').innerHTML =
         profileBlock +
         '<div class="status-icon ' + client.status + '"><i class="fas ' + st.icon + '"></i></div>' +
-        '<h2>' + escHtml(client.name) + '</h2>' +
+        '<h2>' + escHtml(display.name) + '</h2>' +
         '<span class="status-badge ' + client.status + '">' + st.label + '</span>' +
         '<p class="status-message">' + st.msg + '</p>' +
         warrantyHtml +
@@ -2191,14 +2285,16 @@ function showResults(client) {
         html += detailRow('fa-user-cog', 'Technician', client.technicianId);
     }
 
-    html += detailRow('fa-money-bill-wave', 'Agreed', 'UGX ' + agreed.toLocaleString());
+    html += detailRow('fa-money-bill-wave', 'Agreed', ('' + CUR + ' ') + agreed.toLocaleString());
     html += detailRow('fa-hand-holding-usd', 'Deposited',
-        '<span style="color:#38a169;">UGX ' + deposited.toLocaleString() + '</span>');
+        ('<span style="color:#38a169;">' + CUR + ' ') + deposited.toLocaleString() + '</span>');
 
     // Balance (highlighted)
     html += '<div class="balance-row detail-row">' +
         '<span class="label"><i class="fas fa-wallet" style="width:16px;color:#667eea;"></i> <strong>Balance Due</strong></span>' +
-        '<span class="value ' + (balance > 0 ? 'owed' : 'paid') + '">UGX ' + balance.toLocaleString() + '</span></div>';
+        '<span class="value ' + (balance > 0 ? 'owed' : 'paid') + ('">' + CUR + ' ') + balance.toLocaleString() + '</span></div>';
+
+    html += renderPortalPaymentHistory(client);
 
     if (client.status !== 'completed' && client.status !== 'delivered') {
         html += '<div style="margin:12px 0 0;padding:12px 14px;background:#fffaf0;border:1px solid #fbd38d;border-radius:10px;font-size:12px;color:#744210;line-height:1.5;">' +
@@ -2273,6 +2369,8 @@ function showResults(client) {
     document.getElementById('resultsSection').style.display = 'block';
 
     window.currentPortalClient = client;
+    portalReviewRating = 0;
+    renderPortalReviews();
     var pm = document.getElementById('portalMessageInput');
     var ps = document.getElementById('portalMsgStatus');
     if (pm) pm.value = '';
@@ -2485,10 +2583,113 @@ function showError(msg) {
     setTimeout(function() { el.style.display = 'none'; }, 8000);
 }
 
+// ---- Ratings & reviews: workshops/{uid}/reviews/{clientId} (one per client, so posting again edits it) ----
+var portalReviews = {};
+var portalReviewRating = 0;
+var portalReviewsExpanded = false;
+var REVIEWS_VISIBLE = 3;
+
+function reviewKey(id) { return String(id).replace(/[.#$\[\]\/]/g, '_'); }
+
+function loadPortalReviews() {
+    return fbDb.ref('workshops/' + workshopUid + '/reviews').once('value')
+        .then(function (snap) { portalReviews = snap.val() || {}; })
+        .catch(function () { portalReviews = {}; })
+        .then(renderPortalReviews);
+}
+
+function starRow(n, cls) {
+    var h = '';
+    for (var i = 1; i <= 5; i++) h += '<span class="' + (i <= Math.round(n) ? 'on' : '') + '">\u2605</span>';
+    return '<span class="' + cls + '">' + h + '</span>';
+}
+
+function renderPortalReviews() {
+    var list = Object.keys(portalReviews).map(function (k) { return portalReviews[k]; })
+        .filter(function (r) { return r && r.rating >= 1 && r.rating <= 5; })
+        .sort(function (a, b) { return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0); });
+
+    var summary = document.getElementById('portalRatingSummary');
+    if (summary) {
+        var avg = list.length ? list.reduce(function (s, r) { return s + r.rating; }, 0) / list.length : 0;
+        summary.innerHTML = list.length
+            ? starRow(avg, 'hdr-stars') + ' <strong>' + avg.toFixed(1) + '</strong> (' + list.length + ')'
+            : '';
+    }
+
+    var box = document.getElementById('portalReviews');
+    if (!box) return;
+    var client = window.currentPortalClient;
+    var canReview = client && String(client.id).indexOf('PREVIEW') !== 0;
+    if (!list.length && !canReview) { box.style.display = 'none'; return; }
+
+    var mine = canReview ? portalReviews[reviewKey(client.id)] : null;
+    var html = '<h3><i class="fas fa-star" style="color:#ecc94b;"></i> Client Reviews</h3>';
+    if (canReview) {
+        if (!portalReviewRating && mine) portalReviewRating = mine.rating;
+        var pick = '';
+        for (var i = 1; i <= 5; i++) pick += '<button type="button" class="' + (i <= portalReviewRating ? 'on' : '') + '" onclick="setReviewRating(' + i + ')" aria-label="' + i + ' star">\u2605</button>';
+        html += '<div class="review-form"><strong style="font-size:13px;">' + (mine ? 'Edit your review' : 'Rate this workshop') + '</strong>' +
+            '<div class="review-pick">' + pick + '</div>' +
+            '<textarea id="reviewText" maxlength="500" placeholder="Write your review (optional)">' + escHtml(mine ? mine.text || '' : '') + '</textarea>' +
+            '<button type="button" class="btn-review" onclick="submitPortalReview()">' + (mine ? 'Update review' : 'Post review') + '</button>' +
+            '<span id="reviewMsg" style="font-size:12px;margin-left:8px;color:#718096;"></span></div>';
+    }
+    function card(r) {
+        var d = r.updatedAt ? new Date(r.updatedAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+        return '<div class="review-card">' + starRow(r.rating, 'review-stars') + ' <strong>' + escHtml(r.name || 'Client') + '</strong>' +
+            (r.text ? '<div>' + escHtml(r.text) + '</div>' : '') + '<div class="meta">' + d + '</div></div>';
+    }
+    html += list.slice(0, REVIEWS_VISIBLE).map(card).join('');
+    if (list.length > REVIEWS_VISIBLE) {
+        html += '<div id="moreReviews" style="display:' + (portalReviewsExpanded ? 'block' : 'none') + ';">' + list.slice(REVIEWS_VISIBLE).map(card).join('') + '</div>' +
+            '<button type="button" class="review-more" onclick="toggleMoreReviews()">' + (portalReviewsExpanded ? 'Show fewer' : 'Show ' + (list.length - REVIEWS_VISIBLE) + ' more') + '</button>';
+    }
+    box.innerHTML = html;
+    box.style.display = 'block';
+}
+
+function setReviewRating(n) {
+    var t = document.getElementById('reviewText');
+    var keep = t ? t.value : '';
+    portalReviewRating = n;
+    renderPortalReviews();
+    var t2 = document.getElementById('reviewText'); if (t2) t2.value = keep;
+}
+
+function toggleMoreReviews() { portalReviewsExpanded = !portalReviewsExpanded; renderPortalReviews(); }
+
+function submitPortalReview() {
+    var client = window.currentPortalClient;
+    var msg = document.getElementById('reviewMsg');
+    if (!client) return;
+    if (!portalReviewRating) { msg.textContent = 'Please choose a star rating.'; return; }
+    var now = new Date().toISOString();
+    var prev = portalReviews[reviewKey(client.id)];
+    var first = String(client.name || '').trim().split(/\s+/)[0];
+    var review = {
+        rating: portalReviewRating,
+        text: document.getElementById('reviewText').value.trim().slice(0, 500),
+        name: (first && first !== 'Undefined') ? first : 'Client',
+        createdAt: prev && prev.createdAt ? prev.createdAt : now,
+        updatedAt: now
+    };
+    msg.textContent = 'Saving...';
+    fbDb.ref('workshops/' + workshopUid + '/reviews/' + reviewKey(client.id)).set(review)
+        .then(function () {
+            portalReviews[reviewKey(client.id)] = review;
+            renderPortalReviews();
+            document.getElementById('reviewMsg').textContent = 'Thank you! Your review is saved.';
+        })
+        .catch(function () { msg.textContent = 'Could not save your review. Please try again.'; });
+}
+
 function goBack() {
     stopPortalMessageListener();
     portalThreadMessages = [];
     window.currentPortalClient = null;
+    portalReviewRating = 0;
+    renderPortalReviews();
     var pm = document.getElementById('portalMessageInput');
     var ps = document.getElementById('portalMsgStatus');
     if (pm) pm.value = '';
