@@ -1,0 +1,3117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Repair Status Check</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFiElEQVR4nLWXTWxcVxXHf+fe+95MbGcgTkULsnDdILcJVQViE74idrCoShBxQViBTRqhRAlQKhArFuxATaBJCC0QFnwqVlUrygIhVQipGwSy2rSEpqmbpM1HlcTBdmzPzHvvnsNiPPbMZGyaxKxG9547/989555z7rsCMDJifmxM4q7vvTNQKpX2q8bHNBZDYppgKmBghljjFzOgOdalOaHFvmgTzDByEXfOi5yI9dozh3619eLIyHE/NvZ4lCb8ie+f/3JS6jvkXfhgkVexImuIt4hKC7wx1i4ballP0w7eeYJP0SK7ktXn9x059pnnR0aOewHY/YNL20vl9S/EvEqRV6NgTow79lzMAO2YUzNTDS71wafUatNfOnxs27js/eG1DxV5fso731/kVXWIb/X8buGdUcM0Bpc4jdmNwnjEFfXak2nas/H/AsdwAiKta/BFUdM09Gx0Gp8MwPYir5qYObA1gzsMU6NaKwCjnDoEwxoariiq5rDtwUwHLWYisKbwPIuEIDy4uYJF5fzkLKZGCA1JjTlmOhgcBHRtw57nkf7+lCf2DDM41AfAmdPT/PrIaapzOcGDmSEQ3FonnMOIufKV0SEGh/qI0dBoPLjl/XxxxxBZrUCEpT4R1jTbacB6ez0DH+7FDJwTMEPV2DRcoVRyaNQlPdfeue6u1ARDVYl5RFURAVUjRsM54cb1Glm9wMmyvpOOWr3bOs+qBV/duYmN95RRNbwXQuJYmM85OTaJd4Au64XVPOc24E7g5kzG46MP8Mlt96LRcF546cXLTF1b4JV/XOPdS3OUSw5T7dhAN/hiQok07Na0d8kZ72F2us4XHh3g848OkOdKkjhOHH+LF/5wljRxpKm0wZs5E5a9bPfcYcSoZPUIZpRSwTswvRV+c7rOpz77AUZGH6AoGvC//eUiJ8cm6e8vNRyI2uZ5kxu6nbmYEVUplYSv77wf7+CPv79AdaEgTQTTZfjcbMbDj2zgG7uHiYURgmPi71f507Ez9PYGNGq7fsfRhm4JJwLV+YLPbbuXrVv7AejvTzl88HXqtYI0bZTWwnzB4P297N6/GecE54Sz/57mN4f/RZpKa+vtCm8rw9ZsN1PSRDj/1hx5rsRobPpIH99+6iHKZUeeKXkW2bghZc93PkpPb8A54fLFeZ59+hSYLh7XyvBG9eniBjp2ZdEol4Q3zszy3NE3MQONxuBQH996agtpAO9gz3e30H9PCTOYvlHn6I9fprqQLR7T6p43E1r27n/VVio152BuJuNjH9/AN/cN430jzJNvzJJlkc0Pb0DVyOqRgz+a4O3JGXp6Ahrjqp53XFwrG7VQKpXAyxNT/OJnrxNjY6+bhisNeDQw+OVPX+Pc2Wl6em8P3p4DXZqMWONiqawPvDIxxdGDp8mzCNBor1747bOnOfXPq1TWJ2jx3uFN/eUIrNReMWIRqVQCr05c5+dPv8b8XI73wvO/O8tLL16i8r6EeBvwtqjv3TNh0rm4RaC1TzgH1fmc++5bx7oez4U3ZyiX3f/M9q7OLa4LAu8JzuJV27POc/3qAhr1ruFiRjDVQmi/lLrBm39WNZIgSLhDOMt6Zlo40AveeZNGf10V3tYr7hTe0DYvzlAuOKc6nvhUzFTbmsQK8Ea+3DlczECjBpeIoeNOk+RAVr85FVzqMI23fpysOTwGl7p6tjDlsQPuyJFPXFbiruBTCS54sxjNtK07Lotol7nWcZdSawm7aYzeJT64IKpx109OfO2yGxk57g8/9+nxau0/OwS5Ukp6fXBBpMNz6fC8s3RvsVu7PYiXctLjMbuyUJ/ZceDk6PjS47T5VN43+teBpFzeb1o8phaHWHyedz+KVsCqr2gTI3ci5xxyYr668MyhP+9cep7/F0c1A6ptwThMAAAAAElFTkSuQmCC">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAng0lEQVR4nO2deZRdVZ3vv7+9z7lTTQkZGBICARJJgsZuaJUxSSva64m2tqtKBSUgGCKBOEA/7V5v9U25Vq8GISrIGIg48JSu27Y2Cu8pz04Ci1EQMpAICZlJSAgZarrDOXv/3h/nnjuee+vWrVNVt6rOby2oe/Y9e+/vOedzf/mdPRKG3ZgWxdfLxVisOztJu6nxOIv3cGBuxuaFpPBBhp4HYBaRaAPr00FkgnVBMc4fKjwo+q4kzT0uTS5M4OIPVHRaWcYKZQ6sJad5QC1edVbXQtW0DJC32nVQRT0MMAFgi0js06xOgLEXRNsIeA3S3DhlyvvfLH3WWL9edG5YrEoV+2008Cn1GTPTqlXrZWfnEttNWxY/OstU9kVK2x8HcAGY50gzFBFkgFlDa9v5q2wA5TA7gmuBOZvWADA7Zdeft9p1UFEW/2AGe9znMi0EKSSIBEhIEBG0UlAqnQJoOwgvGyT+oKTx3N13n7fXzRWPrzNWrVqsiIYHbP+BZqZFq9bLDVmQb4wfamabPsngLxLz5WY4FgMISqWh7DS0VprAzi1kJgIIVKBrPMBcTUuVvI0Ls3PMYAYTE4HBjhMTgoSUYRgyBAbDsvr7wfQUgX5p0bEn7rtvSS8AxBetM1ZtWKzIZ4/tK9DtXSwTHaQAYNm3355lhM1rWfNSw4jOBhhWpheslWIQAyyIQGAvDeU3fszCXGfexoa5JG+xFmZmBkgTMRGENM0YCIBtp3YR4afa7nvk7jWX7gWA9naWiYTDjB/mC9DxOIvOTqEBxvJbdkynWOutYP5qKNw8yUr3Qdlplb1bAqAC71vbjQ9gzp/X4DB7aGGmbPwoZUiaZhTpTN9xAXooxck7H3jg4sOAyxDp8kIGZ0MGelF8nbGhc4nd3t4lp85ddCMEfScUajotnToBrZQNQBBBlGUc7zCPyzCjJG8NWqgoiTXAWpA0wuEWWJn+AyB129tHdt2XSHSo+KJ1RueG/DtXPVY/0MzU3gGRSJC6/jt7zjeN6I/McOxCK9MLZVs2AdLxxvXf+DELc515xzPMxVqYmaGkNIyQ2QTLSj6ftvtuvv/hS19pb++SiUS7rrc1pNxz1mDxOAsQcSJBavk/H1wZMmPPScO8MNV/VCnbYgIZAcyDyztxYAYAIiIYSlmcTB1XQhoXho3Yc19f9uLKRKJDAcTxONfF5qA9tPvit+zbb7XJUOsDphn7QiZ1nJm1BpH048aPWZiDMAPAQDCX52VmRSARDreQZfU/luTjy9esufyE4607BvXCOKhfQTzORqKD1PXfeWuuDLc+Y4ZiX0glj9oMjQDmAbQEMFfRAglopFLddshs+kJUnPTMiuufnptIdKh4fJ3hIbSi1eyh3eaV6/5p3wdCMvSEYUZnZlInLBCZxTonIMx15g1gLk9j1lY43GzaVnp/RqU+ef/ayzYNxlPX5KHjcTYSCVJf/c6ej0XM2LMk5Mx06rgKYA5g9hNmACAiM53qUURiZsRoevZr1z7zscF46gE9tBszf+WWHeeFY20vARzVdlqBSBbrnIAw1wtBALN3eQVaGKwMEZIAJ1N234ce+PGSLbV46qoeOh5nkeggdcP/2jcnEmt7koCoCmCuDEataQHMA2oRIKl1WhFRNGI0P7nymvVzHE9dvfWjoodmZuroSIiWM5fEQiH9vBmKLkinjisiEcBcZ94A5grleWhxNTNrFQ61SMtOvR5S9oW7ew70d3W160qDmyrSvmoVZCLRoQwjvTYcaV6QTp2wApizWirlzX0XwOwHzM5nIdOpHitsxhakiNcmEh1q1ar10qMgD11Z6+pi2dFB6qvf2XtTtGnKj9LJYxaA4AWwzrwBzBXKGwDmIi0MKxJpNVPpYzffvXbRPS6jpSWWeej29i7Z0UHqa//0zgdMM/r9TKpbMbNRVkGZtgDmAGZvLUOGGQCDjXSmT0kZ+f7K657+QEcHqfb2rjJPXR5ytLejvYulhrVWSMNkbTsdlRMZZq4vbwBzhfIGCTPgdJZrtiHIMFljbXs7e4YdRUDH4+uMRAepya/uWx6JnXRBJt1rT/gewErlDZA3gLlCeXXAnDuPITOZfjsabbvglOanl7sj9ArPKQCaBbBeL4u/PZWE8S+ZTJ8GICY8zIFnbgiYC+6LyGSSWgj5L8uWrZuKxes1EM9xnPsQj0N0dnZqZPS3I9FJ05WV0gQSNVRQfmHjAWauL28Ac4Xy/IEZRBBKZXQk3DI9YtG3Ozs7dTy+OMcxAe5sAfAN/7zvNCJjG4Bm1goTdgjoECHwyhvAXJxSD8x500wkAc29Qsl5P/jZRQficabOTtIu2QIgJojrw5FJLVopNWFhrlTeENICmItThgYzAyDSWqtwuLVFCft6J3G9cHUTAHzploOxWMjeZsjwTGWnGcG0qZrzVruOAObilKHDnCtWG9IkW6X3H7PS8x599BP9AEPE4ywBcHOY/y4SaTvdtlM6gNlDSwBzRS0jDXNWp7BVWkdCLaefFIr8HQCOx9dLsXVrVpLmpc70c6+yxjnMlcqrJS2AuSYtfsLsHjjLtzCDsRQAtm59lwkAvvKP754WMqy3QBxhVoxgqYEB8wYwVyhvhGDOlstEkpg5ZZM4+94fX3JAAICQyUWhSHNEa/dlcHAVjFmYuUre3HcBzI0JM+C8HCoVNpsiZFuLgGw7tCS6nKj4UYx7mCuVV0taAHNNWoYXZrhOh4kIUtDlAEDt8S2hyem2V81QdL6V6ddEJCYEzD49tABmby0jAjMYzNCmGRG2ndp6oO/wX4kp/bHZBJyj7DTICUtqqmDMwsxV8ua+C2AeCzADABFIqTQAPue00JTZgo3QQsOMhLRWGqXXWaGCMQtzpfJqSQtgrknLSMLsVqm11oYRDpHEQgHWfy2EUcE1jzOYfXpoAczeWkYBZud7AgsyoFn8taGBOcxeznkcwVxNS5W8AcwVymsgmF0trDUgMEcQeDZrBS5ap3kcwVypvAHyBjCXpxEBROULeo86zAxiViDwbANEkx0PzeQUMc5g9skDTUSYhaBsMQytGUrltUhJENnVvpkJrNnX+1IrzM7JTMwazDzZIMYMpSwQgbwqGLMwV9NSJe9Eh5kAkACUAvr7bGjNME2BSFQgGjVzLq+vx0IqaUPZDMMghMMSJACtRxhmAAQipW0QMMMAyBx3G/QMEQKvvBMBZiEIdkYhlVJoaTNx3gem4Nz5kzDj9BgmnRRCS7MJEMAaOHE8g/feS2H3W73YtuUYdm3vRiajEI0ZEILyYA8zzEUFkTDphu/s4dJ0p+AxCnOdeSeyZ3YHO/T1WjhpShiXLTkFH7l4GqZOi3ho87bdb/Xg6T8exJ9eOAwroxFtMqCVrnwdfsOc/Wh4pQcw588b7zALQbAtDSujsORjp+KKz5yOtkkh5yzNuTOJSl8FAXdwpiDCmWe34MyzW3DZR0/Ff/77TmzddAzNzUZ2S8OBtfgBMwA4Hno8wFwvBBMc5kxaIRwWuHLpWfibj0wD4MTBRAQPhisaM4PZKZOZ8Zuu3fj943sRicrc95W0+AUzwDDGBcyVyqslbYLCTESwMhqRiMDKW+fjzLNaoJTTsuG2bgzG3B+A+2P47OdnY/JJYfzix28i1mRU1OInzEDBrO8xDXMdeSc2zIBWGoYBrLx1QQ5mKQfnlb1MCGfYvVKMxZefhi9eOwf9fVbJj2R4YAYA4UwqHKMwc5W8ue8CmEvzEgiplMKVS8/GmWc152D2zchpp1aKseTjM3DJktPQ22NByHxAPRwwA4Dww6N5VRCEGcWHjQKzEE5rxkWXTMeHL5rmP8xFdTkjhD5/9Tk49bQYMmnbCU2KpPl7X4onw44lmOvIO9FhJgDK1mhuMfCZ9lm5l7jhMqcXkRGOSPx9x2xYGY1cdcMAM4ELgB4rMHN9eSc6zGAHsGS/wsWXnYzJJ4XBzEOOmQcy10v/1d9Mw1lz2pBOKZROjioSOQSYwa6HHiswVypvgLwBzM7/tGZEohIXXTYdzBh2mHPVa4aQhAsXnQIro8oGN+VEVrsvVdIKm23FmII58Mx1w0yCkE4rnHVOC06bEXPKGiGiKRtnLDx/KlrbTGeQU6nIge7LQP9qZ638pbDWCgo+BGFG8WGjwQw43ti2GXPmtjlfeQ0iGiYjAsCMSZPDmDGrGVZGFcTu9d8Xrw41jz1WGgzmSuUNkDeAuTxNEDBzluOdK/y7P2yms+PfTp3RBNvW+YdQ7b5USavUO2yUJjQczIFn9gVm1oxQSOCkqWF4FDpiNvWUaF6fj57ZTTCKEhoJ5oF+uQHMFbV4laezQDc3G9lyR5jobHWtbWHkBlUX2dBhBgDD+yZVryAYaFR82Ogwu1qYK1zmCFq1QUrFH+tjQ5SmDVTBqMfM1dICmL21FBRd3sIwsqas0jHS/sEMFO2hMnAFQcxcfDgmYGbnj5SEVNLG0SPpbFUjDHa2usPv9DvXWdq54gPMAJe2cowizFwlb+67AOZ6f+REgFIa7x5OVZQwnOY2eb97KOkMUuLa7stgQ1BRy0lBmFF8ONZgduuQkrD9jRPwqGzYjQTBsjTe3tML0ySPWHroMAM5oEcZZr8eWgCzpxYCZz0048SxTLbbe+SI1tqZzbJr+wkcfqcPRkg6l+0zzEBhK4fHSUFrRvHhWIVZCEIyqTBjZhOWLpvrkW/4jQh4YcMBKJuzo/Dcb/xlQ1Q6KQgzig/HKswkCLatEY1KLFt5LqZMDQMY/lF2OVXsTMl691A/Xn3pMKIxAzrX0uKzo2MubbYbQZh9emgBzN5acmGGraEVcNMtCzBjZlNuzt9ImTuq78lf7UJ/n519IcxqLjE/1lQp2/o4GGhUfDiWYQYA22Jcu3wuzprTCq14WAf0l5pb36ZXjuCFpw8i1mRmvfPwwAyUvBSOepgRwFxRy2BgBpxWhd5uCx1XnYULPuJMtRLDNNXKy3S2vvfeTeHRB7fCMAVK3gSLNfsAM1AwfDQIM4oPxzLMUhK6j2XwmY7ZWPKJ04Z13qCXuTAfP5rGvbe/ir5eC6YhPDtz/F66zXAKrX6SL2GGV3kD5A1grlDeADD3dFu47KOn4op/mAWtGXKEwgx3pSUhCYcO9uPB1RtxYF8fYjEDWuuy84djHUKjYZvmJvjCiXV75uMWzv/wVCxdNteZ+kQ0rJ0ozoAnZ81oyq7J8adn38G//+QNJPtsxNw17kpsuNgwajlpSGGGV3lDSAtgLk5xNQtJ6Ou1ce6CNlyzfK5TtQ8w5zr0uKRuyi4qQ/lOmt07TuD3/7Ubr750GKGQRDgsRhRmYhfoIMwY2zALQjqpMG16BDd8fT6iUQOsOTeXr14rnEhbqanvxLE0tm87jpeePYhtm47CyijEYibcRdJLbThhBgCjocKMAGbv8gaAOZNWaGoysPLb56Gl1YTWQ2+ec1/stv/lOH7btROnzGjCpMkhgABWwOFD/Tj6bgqHDvah+7gzgi8SNWCOQNNcaQYq+MqodNKohBkBzDVpyTXNEbIr6AssWzkP00+O+gNzdtmB/bt78cCdm9DbY+GN14/lX+zY+SFJSTBMQqzJzOUbTZgBrzmFZWUOEmafHloAs7eWQpiZgVTSxopbFmDOuW2+NM9x9gdx9EgKD921GcmkQnOrWT5LnAEGA25oUeW+jBTMQOmcwrIyBwFzvYIDmL3LqwKze5Tqt7D0hrlYeP4Uf2Bmp6Uik9G4f/UmHDqYRKzZgLLzntnzOhoEZqB0+OhQPLNHpTWlBTDXpKVQsxSE3u4MrvjcGbh40SnQPsEMMGxb44HVm7BvVy+amgu2lRgDMAOFC80MBWafHloAs7eWIpgl4fixNC7/5Ex86h/O8KdLm+G0ihDhsR+/iU2vHEFTswFVbY+Uoo+NATM412xX/STfBQcwe5dXk2e28JFLTkb7VWf58gIIAJqdH0XXz7Zj/R/2o21SaEzCDHDpJNlBemaPSmtKC2CuSUspzH29Fs6Z24rrbjw326kx9BX33RFxf3xyH/74u71obasB5ippowkzUGlOYclJZYLLvqr/oQUwe2sp1CwEob/PxoxZTbjxlgWQBhV1etRrbrjy8vOH8NgjbyDWnB1zMdB9qcbGKMIMeM0p9DipTHAA88jBTE7HSdskE8tunofmFjM7SN+jqEGY1s6L5JbX3sNP7tuKpmbTU0ut96URYAYGsSVFMJ45r2WkYCZyZkobBuHm//l+nHJazL+OE0HYv6cXP7l3qzMeQwBcNuyihmeOxoEZqHFLiiDMyGsZMZgBsNYAGF+9eR5mzmryZcaJ23Fy/Gga99y+EamkDdMUYK81mws/VmOjQWAGatiSIggz8lpGrtPE8c79fTa+eM05OG/hSb40zzE7A5Z6eyzc+72N6D6eRigiCiatelxHlfvSaDCDB9iSoibBlSooHW5YKLgoy9BhJnJiTQFAUOWL9SyvRi0jBjM76zh3n0jj818+GxcvOsW3XkCwM/bjkXtfx56d3YjGJLQ9fmAG4O4kW0FwhUqHkuYXzEROR4BSDMvSzj/HAKRBME3nd+oMXxxbMDszTjL4+BWn42P/Y2bu5W1IxgCy3nntXVuw+c9H0NJqQo0zmIHShWYKBZflr/+h+Q2zEIBlMdJphaYmiZkzomhqklA248iRNI4dtcBgRKPCQ05jw9x9PI0PXXwyPv/ls52XNx+WHHBHz/3q0R3403PvOPucjEOYAY/ho43eAygE0NdnY9q0MBYvnoYPfrAN06eHcy9Lfb02drzVhw3rD2PLxuMIhSWEO+G4wWHu7clg4flTcc3y9+W6ooc648QNV/7w+B48+etdmDQ55L1pT9nHsQczUDJ8tNF7AF2YP/zhk3DllafnVqN3iyACmpoNLFzYhoUL2/D8c0fwi0f3Zh9qQTUNBrOQhGTSwsxZTbj+pnMRCgn4sYegO2jp2XUH8Otf7sh2aZfqGT8wA16b1/tcgd8wX3LJFCxbNhvNzQaU4lx29+EzZweaa8aFF03FjTedA600dBb4hoNZOGOaJ08OY+W3349ozMh75yGYO+PkL1uO4Rdr30AoIp0xzeMYZqBw83ouzV8ieBRhJmKk0xpnnBHDl740KzvT2PlnuvS5U3byphDOC+O8+a246uozkepXBd3FjQGzs9WaRixm4IZvzMekyWGnF9CnGSd7d/Xgvjs2wjCcB83Vnm9pWqHmMQIzuNo+hbWmDTPMgOOtbFvjiitOdToBavznWEoH6ksunYal185Gsl+B4ZF3lGBmZtiWxvU3nYszZrf40nHi9gIeOtiPB7+/CVprSCFKegHHJ8yAu7adzxX4CzOQyWicemoE739/G5gHt+G6lAStGJcucqAu9tR5LSMJs/shmbRx/U3zMO+8yT51nDj3Jtlv4/47NuLokRRCIVky+3r8wkyotiVFnRX432niTAmafWZT8crvgzCR9dSXLpqGq6+djWRSOV6yUHMNWooP64dZSOd94HNfPAvnf3iabzNOCEA6rXDP7Rtx6GC/s2JRUYvG+IYZqGP46EjCnDPNmDYt5JG3dst76ulYeu1s9PfbALIvEYPRMkSYpQROHMvgis+egU9ccbpvnpmZoZnx8we34c2tRxFrMkqa56rc+1LNYxRmYJDDR0cDZspqqcMxl1neU0/H0q+chf4+G1qXvCgOM8w93RYWX34a/r79zNzL21DNHXD02CNv4oUNB51B+kUdJyVaKlzHWIcZGMTw0VHxzFktQhAOH0p5lDF4K/TUy1fMBcjZHUoIGkaYnXbw3h4LCxZOxpevn5ON44e+n6vbPPfEr3Zh/R/2oXXSADCXphVqHuMwAzUOHx0tmAkMZmdL3127+pBOaxDRkL2166kv+PAU3LhyrtOKYumCl02/PTOht9fGWXNasfzrC+BG7X7NOHnh6YP4zWM70JRbtahEQKnmEhsvMINrGD46mjC7RZimwKFDKbz66rFcc9dQzW3Smze/DSu+/r4CqL3k1g+zEEAqpXDyyVF89eZ5iESdLku/egH//OJh/PT+rWhuNkvu98QJMwq1iGoXO9ow54tihEyB3z1+AMmkghBD99JAHupz57dhxTfeBxLOuhQ5Tz1EmEkAlqURCgnceMsCTJka8bXjZOebJ/CzB7bCDAlHgdfzmABhRqEWUfDzrbmCkR6c74Yd7xxM4ZGHd+XaVf2Hel7eU1fqUawVZnLWeSMAK245D6fO8Hf61LuH+nHfHa9B2QwpC1fHn7gwA6UxdA0VjNZME60ZTc0GXn75KNY88FbuAfoP9bm5Luly+GqD2fngTG798vVzMefctmGZPpXsV07Paa7jZGLDDHgC3Xgwu6YVo7XVwEsvvpeHumyMQn1WBPU3vaCuHWaRneZ01Vfm4EMXT/etrRkEpFMKa3+0Be/s70MkUtgLGMAMePUUNijMbppSjNZWEy+98B7W3P9Wzjv5C/UkrPjGfGfWtZ19UawVZkno7bXwqc+dgUv/9lRfegFdIIgID9+9GW9sOYrmFrOg4ySA2c1Q3FPY4DC7pmwX6iNYc/+O4Qk/FjieWoBLmvQqwywloed4BpcsPtXXjhN3s8z//fBfsPFPR9DSGgpg9srLhT2FYwRm96NSGq1tphN+DBfU8ydhxTfngwg5T10N5u5uCxdcOA1fvm6Obzu2uuHK41078d9P7nXmAgYwl+fN/hEjOTu78NCPpQZy4ceL72HNfdtzw0r99dQO1IIAZZU26TkfpCT099s4Z24rli57H4T0b905KQl/fHIvnviPnWibFA5g9spb8JX3SyEaH2bXlGK0thhOTH3fdqTTyvfOFxdqEtkXxfzYU2e4ZlJhytQIbrr1vIIZJ0Or2+3Sfu1P7+I/fr7d2fQ9aJorz1uixXP46FiB2dWiFKOtzcTLLx3F6tu2obfHAhF57sI0WCuE+sZvLgAh36PoDm1tbTNx063n5ded86njZMdfjuOhH25GOCwLpo8FMFdjrWz46FiDGXA0K8VoaTGwa2cP7lr9F/T22BDCP6i1C/W35ud6AAHHEy9bOd/3jpP9e3qx5gebnWVzcz2jAcwDsVa+ef0YhNk1pTSamw3s3tmLu+7c5ivUogDqFbcsQCxmoK/Xxte+MR9nz2n1teOk+0QGa36wGb3dmYKOkyr3vsAmMswAQDeu3MxOoaj7YhsB5kIt7ui2M2c34eu3zkdzi+HfavfZ2Hbfnl7s2dWLSxaf4kvZ7rSw/j4bP/juK9i/t9eJm0u3SQs8c1UtwikUdV9so8EMOOFHc7PEnl29uOvOrejtsZwBTT55ambG6Wc045LFpwx6jqOXuTNOLEvjkXu3YM/OnoLpUwHMtbIGcHZtw3EEs3uglDP2oxBq8in8cMdk+7HwOODALATh0TXb8OqL7xZ0nAQwDwZmoNqcwiFW0AhL2irFaGrKxtR35D21P1AP3TMD+T1OfvXodjy//mB+w54AZtTKWk4zKs0pHGIFjQCze5h7USwJP/yAeqjm9gKu//1+/N/f7C4YnxHAXA/MQKWFZsYJzG6aE1Mb2L2zB3fd8XpDQO0uovinZ9/BLx7+C5pbQ/nlf10LYK5JSyEb5T2F4wxm1/JQ94461G6X9rbNR/HzB7chGjOy1xrAPBSYgdKewnEKs/uFskcfarcX8J23+/DQDzc7rSQSxV31Acw1aSljgws99DiH2U12PfWenT24+44tIwo156ZPJXHXv76KTLp0xgmq3pcA5nyaF8xAbo+ViQGzazrXo9iDu783MlBztuekr9fCwz/cjGNH0wiFpbPRZdE1FH3IWQBzPq0SzIA7fLTOCsYizK5mpRjNTWYO6u4Twwe1c1nO6KIHv78Ju9/qRlOTAa0CmP2EGagyfHQ8w+x+7YYfe3f34PbOV/H2vj7/oWbk4uNHfvQ63thyLNs8F8DsN8xApdVHJwDM7gelGLGYgaPvpnDX7ZtxwIW6bB+S+kxl4+bf/HIHnl1/sBzmclHFmgOYs+XWpqW8p3ACweyaUoxIzEBvdwZ33bbJgVoO3VO7zXO//6/dePJX7oY9JZ65wnUEMOfTaoUZKO0pnIAwu6ZtjXBYoqfHwg9v2zTk8MMdlffiMwfxm8feQnOrCRW8AGKwz3cwMIMLewonMMyuFq0Z4bBEb4+Fu27bmId6kOGHC/PWje/hkXu2IhyWnvoCmKtrGSzMQNHWyJUrmAgwu+ZALXJQ58KPGqF2Yd755gk8dNcWhMKieOIuV76OAOZ8Wj0wA5xdrLFKBRMJZve8nKfutvDDf8t6aklQduWF15md9UKEJLz3bhIP/3AzMikbhkH5XsAqWgKY82n1wgwMsCXFRITZ/aMVIxwR6O3O4Ee3bcTuHd2QhrM0gbsPYuF/RM4+4wf39+Huf30Nx4+nEY4WLNUVwFyTlqHADAC0YsVr5bkmOMyFaUIQrIyCaQh8/NNn4OIlp6K1rXy/l75eCy88/Q7+z3/uQjJpIxwWAcwjDDMA0IoVrxanBDAXpRGQWxIh2WdhyrQI5sybhDNmtyLaJJFKKezf1YM3tx7D4XeSiEYlpEEBzKMAM1AKdABzURoVHTrxsW1ppFOqKC4mAkJhmd0UVBe/AFbQEsCcT/MLZnDh5vUBzEVppTAD+Y6SpmbTIYcLimAOBhoVZhgFmAFkgQ5gLkrzgrmwKGZd930JYM6n+Q0zABg0xIudSDBX0hLAXJBhFGEGqm1eH8Bck5YA5oIMowwzMMgtKWqtIIC52AKY82nDCTNhEFtS1FpBAHOxBTDn04YbZqDGLSlqrWBCwlwlLYA5nzYSMANuK0cAc81aAs9ckKGRYM7+EQHMtWsJYC7I0IAwA4AAe2wuOYgKJiTMVdICmPNpIw0z4Hhoy6maB13BhIQ5d5sCmBsNZjBbgoG3pZTgwqV7ApjLyxtASwBzPm2kYWZolkKCCW8LgI8RCeRuXQBzeXkDaAlgzqeNvGdmAMTkTAs6JsDYRSRBBA5g9ihvAC0BzPm00YEZIGYWJMHALkGktzt0D1xBAHOxBTDn00YL5sKzBOvtgrT4s1YKzEzVKghgLrYA5nzaaMPMAGltg1n+WVikN1p2MiMEifIzA5gDmKtrGW2YwcwCJCw7nRGU2Sjeey+2C8AOKcPggig6gNk7bwBzPm30YQaYwVKaIMKO3eEdu0QicV6GgBcNIwQAurCCAOZiC2DOpzUCzAADxNqQIQB4MZHozAgA0KyecpqhmQKYvfMGMOfTGgZm5w+BAdL8FOBuvGmYG9Lp3pQgZ3OEAOZiC2DOpzUUzGAWQsqU1ZcCYQMAiPb2LnnvvecfYFZPmWaM4YYdhYUFMNeVN4DZo7wKWgYPM8AMHTIiDFZP3fH4lQfa27ukmD9/mqOT6KeCCu/FBIG5SloAcz5t1GH2TGMQmEDipwAw//A0IoAJINzypd/HMrFJ26QRmmmrDBMGXvduzMMceOaatIw6zB73hQFtCIOUyuznpD1v9VNX9wMMARDH4+vk6kc/0UeC1ppmjMCsA5jryxvA7FFeBS31wuyY1iEZIQBrVz91dV980ToJEGenYC3WAJNk++F0urtHkJTwvvIA5gDmqlpGCGYWkDJp9fYoZTwMgLB4vQayrRydnaTj8fXyBw9e9LbW+sFIuJWYWQUw1543gNmjvApahgYzg5lVxGwi1vrBHzzR8XZ80TrZ2dmpS3THRTwOHDz4qZMi4NdJiKlKWSAqXBQ9gDmA2VvLyMEMbZABzeqI0mpBy/lvHu3sBIDOvId2rFMDi8WaNRccUTrz3VAoJgDWA1UQwBzAPFIwZ//qkBkRStvf/f7vrjqC9YuFC3O5fgDt7V0SaMfJk154IRRquiCT6VMESM8KApi9tSCAudT8gJk1q7AZlWkr9fLeiPxIO4CORIcqPNNj5SQgkSAlNK7TyrYEieLpWW4FAczeWhDAXGpDhpkBZmZBBrRWFoGvSyQ6VMLj7DKgE4kO1dXF8u61F26yVepb4VCzJJBdWoGn4CJNAcwBzP7A7JRDdjgUlZZKf+vO3165qau9SyZKvDNQwUN3dJCKx9cZ9zx00T3J1IlEJNJmMmsrgBkBzF7lVdDiT8wMMLMVMZvNZKY7sfq3V90TX7TOKA018nVWMGamjo6EOLPltFjaCD1vmuEF6XSPIgiZzxzAHMDsrcUvz8ysVTjUJC07/To4fOHucKa/K9GuqeSOu+bpoQGAiHj+/Ha+48eX9KQz/Z+1rcw+Q0YkgxUhgLnwvADmYvMPZlaGEZZKZfbB7vvsHY9/pmf+/Ne5EsxO3QNYezZWWf6VdeeFjeaXCIhqnVYAyWKdDQBzlbwBzPm0hobZlcSsDGlKMCdtO/Wh1U9cvaW9QtxcaBU9tGuJRIeKx9cZD/x4yRZlpT4tiHqlDEtmrRoKZq6cN4A5n9bQMGefIbN2YAb1pu3kp1c/cfWW+KJ1xkAwOxpqNPfXsfK6pz8gZPgJQ4ZnptM9FhGZ5dpGAebywrNlBzCPGZiB7AtgzLRVer/SyU/e+dtrNtXimV0b0EO75nrqu9detslKpj9qq8zmaKTNZIZddIXBeObK+iYyzAOmMTPYjoZbTKWtzVYm9dE7f3vNplo9c17LIM39tSxrf6otNrn1gZAR/UIq08PMWhMgK96owDMPqGXcwjzAfWFmRSREJBQjy0o+dqzv+PI1/++GE13tXbJS81wlGzTQABCPs+jsJA0AX7/u+ZVCijsEyVAm068ACCKigisJYA5gLi8P7PRAM+uwGZNKqQxz5h+/9/iVdwNAPB4X7gi6wVhdQGcFUXt7QiQSHWrl0v8+X5qxH5lm9MKM1Q+lLJuIJZwV84ouoqjSAGan7AkHs2ZmKClMI2REYFmp5207c/PqJ656pb29S1ZrZx7Iao6hy404kehQ8UXrjLt/+rev7D+x99KM1bcSoAPRSKtBJIkZNrM76TaAeaLDzIBmaJsgKRZqNQg4YFnJlTtDXZeufuKqV+KL4kYi0aHqhdnR5oMVhiDLv/T76ZFo663Q/NWQ2TTJsvqhdFplKxN5rx3APEFgZmZnGLIhDRmSUaTt/uOC6CELyTtX//rqw0D9IUa5Ph+tq51lR4IUAKz88jOzRFheC62XmmZ0Nphh2f3QWisADIYgAuU1BDCPD5idyBgEDWYSQsiQjAAEWHZ6FyB+SrZ+5PbfdewFgHpe/KqZr0ADAINp1aL1snPDEhsAbmxf1xxpjXySWX8RzJebZjRGBNgqA6Uy0Fprd21qZhCIiVC0vm8Ac4PCzNAMptxyWwyQAAkpTRgyBDAjYyf7QXhKEH7ZLfHEfYmOXgCIL4obqzasGlJ44WW+A+0aM9OqxXmwAWDlsmdmSVtcxFp/HIQLGHqOIcyIEBKsGcwKzBpK2yh/mAHMjQQzAEghQSTgLFxL0NqGrawUkdgO4GUi8Qcy1HO3JxxvDAwfyHmtw25M8UXrJRYv1m6cDThxd8/B5+aqjL0Qmj/IpOYRaBZAbWB9OkiY+ZsbwDzqMJdmYbaIaB+DTzDzXgFsA8RrhhQbQ+//3JulzxrrV4nODatU6R322/4/hPKaTr8/lW8AAAAASUVORK5CYII=">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Use min-height instead of fixed height to allow natural scrolling */
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .portal-bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+        .portal-bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.32);
+            pointer-events: none;
+            display: none;
+        }
+
+        body.portal-has-wallpaper {
+            background: #1a202c;
+        }
+
+        body.portal-has-wallpaper .portal-bg-layer,
+        body.portal-has-wallpaper .portal-bg-overlay {
+            display: block;
+        }
+
+        body.portal-has-wallpaper .portal-card,
+        body.portal-has-wallpaper .portal-footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        body.portal-has-wallpaper .portal-footer {
+            background: transparent;
+            color: rgba(255,255,255,0.75);
+        }
+
+        body.portal-has-wallpaper .portal-footer strong {
+            color: #fff;
+        }
+
+        .portal-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 0;
+            width: 100%;
+            max-width: 520px;
+            /* REMOVED height: 100vh — this was the main cause of content clipping */
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow: visible;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: slideUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header - compact on mobile */
+        .portal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 16px 18px;
+            text-align: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .portal-logo {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 8px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .portal-logo img {
+            width: 100%; height: 100%;
+            object-fit: cover; border-radius: 12px;
+        }
+
+        .portal-logo i { font-size: 24px; color: white; }
+
+        .portal-header h1 { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+        .portal-header p { font-size: 11px; opacity: 0.85; }
+
+        /* Body - natural flow, no internal scroll */
+        .portal-body {
+            padding: 20px 16px;
+            flex-grow: 1;
+            /* REMOVED overflow-y: auto — let page scroll naturally */
+        }
+
+        .portal-input-group { margin-bottom: 16px; }
+
+        .portal-input-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: #2d3748; margin-bottom: 8px;
+        }
+
+        .portal-input-group input {
+            width: 100%; padding: 14px 14px;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            /* 16px minimum prevents iOS zoom on focus */
+            font-size: 16px; text-align: center;
+            letter-spacing: 3px; font-weight: 700;
+            text-transform: uppercase; color: #2d3748;
+            transition: all 0.3s ease; background: #f7fafc;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .portal-input-group select, .portal-input-group textarea {
+            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-family: inherit; background: #fff;
+        }
+        .portal-input-group input:focus {
+            outline: none; border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+            background: white;
+        }
+
+        .portal-input-group input::placeholder {
+            letter-spacing: 1px; text-transform: none;
+            font-weight: 400; font-size: 13px; color: #a0aec0;
+        }
+
+        .submit-btn {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            /* 48px+ touch target per Apple/Google guidelines */
+            min-height: 50px;
+            -webkit-appearance: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102,126,234,0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 10px rgba(102,126,234,0.3);
+        }
+
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* Error */
+        .error-msg {
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            color: #c53030; padding: 12px 16px; border-radius: 10px;
+            font-size: 13px; margin-top: 14px; display: none;
+            text-align: center; font-weight: 500;
+        }
+
+        /* Loading */
+        .loading-state {
+            text-align: center; padding: 45px 20px; display: none;
+        }
+
+        .spinner {
+            width: 44px; height: 44px;
+            border: 3px solid #e2e8f0; border-top: 3px solid #667eea;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Connection loading */
+        .connecting-state {
+            text-align: center; padding: 45px 20px;
+        }
+
+        .connecting-state .spinner {
+            border-top-color: white;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* Connection error full page */
+        .connection-error {
+            text-align: center; padding: 35px 20px; display: none;
+        }
+
+        .connection-error i { font-size: 44px; color: #fc8181; margin-bottom: 14px; }
+        .connection-error h3 { color: #2d3748; margin-bottom: 8px; font-size: 17px; }
+        .connection-error p { color: #718096; font-size: 13px; line-height: 1.6; }
+
+        .retry-btn {
+            margin-top: 18px; padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            min-height: 48px;
+            -webkit-appearance: none;
+        }
+
+        .retry-btn:active { opacity: 0.85; }
+
+        /* ===================== RESULTS ===================== */
+        .results-section { display: none; animation: slideUp 0.4s ease; }
+
+        .portal-client-photo {
+            margin: 0 auto 14px;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.95);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            background: #edf2f7;
+        }
+        .portal-client-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .result-status {
+            text-align: center; padding: 20px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .status-icon {
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px; font-size: 26px;
+        }
+
+        .status-icon.pending { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #9c4221; }
+        .status-icon.in-progress { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #2b6cb0; }
+        .status-icon.completed { background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #276749; }
+        .status-icon.delivered { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .status-icon.failed { background: linear-gradient(135deg, #feb2b2, #fc8181); color: #742a2a; }
+        .status-icon.failed-delivered { background: linear-gradient(135deg, #718096, #4a5568); color: white; }
+        .status-icon.abandoned { background: linear-gradient(135deg, #e2e8f0, #edf2f7); color: #718096; }
+
+        .result-status h2 {
+            font-size: 17px; color: #2d3748; margin-bottom: 6px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px 5px 10px;
+            border-radius: 20px; font-size: 11px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .status-badge::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            background: currentColor; flex-shrink: 0;
+        }
+
+        .status-badge.pending { background: rgba(237,137,54,0.16); color: #c05621; }
+        .status-badge.in-progress { background: rgba(66,153,225,0.16); color: #2b6cb0; }
+        .status-badge.completed { background: rgba(72,187,120,0.16); color: #276749; }
+        .status-badge.delivered { background: rgba(102,126,234,0.16); color: #4c51bf; }
+        .status-badge.failed { background: rgba(229,62,62,0.16); color: #c53030; }
+        .status-badge.failed-delivered { background: rgba(74,85,104,0.16); color: #2d3748; }
+        .status-badge.abandoned { background: rgba(160,174,192,0.2); color: #4a5568; }
+
+        .status-message {
+            color: #718096; font-size: 13px; margin-top: 10px; line-height: 1.5;
+            padding: 0 4px;
+        }
+
+        /* ===================== DETAIL ROWS ===================== */
+        /* Stacked layout on mobile for maximum readability */
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f4f8;
+            gap: 2px;
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-row .label {
+            font-size: 11px; color: #718096;
+            display: flex; align-items: center; gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .detail-row .label i { width: 16px; color: #667eea; font-size: 12px; }
+
+        .detail-row .value {
+            font-size: 15px; font-weight: 700; color: #2d3748;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            padding-left: 22px; /* align with label text (icon width + gap) */
+        }
+
+        /* Balance row - highlighted */
+        .balance-row {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 10px;
+            margin: 10px 14px;
+            padding: 14px 16px !important;
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .balance-row .label {
+            font-size: 13px;
+            text-transform: none;
+        }
+        .balance-row .label strong { color: #2d3748; }
+
+        .balance-row .value {
+            padding-left: 0;
+        }
+
+        .balance-row .value.owed { color: #e53e3e; font-size: 18px; }
+        .balance-row .value.paid { color: #38a169; font-size: 18px; }
+
+        /* Repair details section */
+        .repair-details {
+            padding: 14px 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .repair-details h4 {
+            font-size: 13px; color: #667eea; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .repair-issue {
+            background: #f7fafc; padding: 12px 14px; border-radius: 10px;
+            font-size: 13px; color: #4a5568; line-height: 1.6;
+            border-left: 3px solid #667eea;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .failed-reason {
+            background: #fff5f5; padding: 12px 14px; border-radius: 10px;
+            font-size: 13px; color: #742a2a; line-height: 1.6;
+            border-left: 3px solid #fc8181; margin-top: 8px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        /* Warranty */
+        .warranty-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; margin-top: 10px;
+        }
+
+        .warranty-badge.active { background: #c6f6d5; color: #276749; }
+        .warranty-badge.expired { background: #fed7d7; color: #c53030; }
+        .warranty-badge.pending { background: #e2e8f0; color: #718096; }
+
+        /* Photos - 2-col grid on small screens for bigger thumbnails */
+        .photos-section {
+            padding: 16px 16px; display: none;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .photos-section h4 {
+            font-size: 13px; color: #718096; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .photos-grid img {
+            width: 100%; aspect-ratio: 1; object-fit: cover;
+            border-radius: 10px; border: 2px solid #e2e8f0;
+            cursor: pointer; transition: transform 0.2s ease;
+        }
+
+        .photos-grid img:hover { transform: scale(1.03); }
+        .photos-grid img:active { transform: scale(0.97); }
+
+        .portal-message-section {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .portal-message-section.has-wallpaper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, var(--portal-msg-overlay, 0.88));
+            pointer-events: none;
+            z-index: 0;
+        }
+        .portal-message-section.has-wallpaper > * {
+            position: relative;
+            z-index: 1;
+        }
+        .portal-message-section h4 {
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .portal-call-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 13px;
+            border: 2px solid #48bb78;
+            background: #fff;
+            color: #276749;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .portal-call-btn:hover { background: #f0fff4; }
+        .portal-call-btn:active { transform: scale(0.98); }
+        .portal-call-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .portal-thread-msg.call-request .portal-thread-bubble {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+            font-weight: 600;
+        }
+        .portal-message-section textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 96px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .portal-message-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+        }
+
+        .workshop-contact-card {
+            margin-bottom: 14px;
+            background: linear-gradient(145deg, #f7fafc 0%, #edf2f7 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.08);
+        }
+        .workshop-contact-card h3 {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .contact-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .contact-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .contact-chip:active { transform: scale(0.97); }
+        .contact-chip.phone {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+        }
+        .contact-chip.email {
+            background: linear-gradient(135deg, #bee3f8, #90cdf4);
+            color: #2c5282;
+        }
+        .contact-chip.maps {
+            background: linear-gradient(135deg, #e9d8fd, #d6bcfa);
+            color: #553c9a;
+            width: 100%;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        .contact-address {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            padding-left: 2px;
+        }
+
+        .payment-methods-card {
+            margin-bottom: 14px;
+            background: linear-gradient(145deg, #fffaf0 0%, #feebc8 100%);
+            border: 1px solid #fbd38d;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(237, 137, 54, 0.1);
+        }
+        .payment-methods-card h3 {
+            font-size: 12px;
+            color: #c05621;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .payment-choice-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .payment-choice-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.85);
+            border: 1px solid #fbd38d;
+            border-radius: 12px;
+            padding: 9px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #744210;
+            cursor: pointer;
+            flex: 1 1 auto;
+            min-width: 120px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .payment-choice-chip:active { transform: scale(0.97); }
+        .payment-choice-chip .icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        /* Payment instructions modal */
+        .pay-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26,26,26,0.6); z-index: 9998;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .pay-modal-overlay.active { display: flex; }
+        .pay-modal {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+        .pay-modal-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-radius: 16px 16px 0 0;
+            background: linear-gradient(135deg, #ffcc00, #f59e0b);
+        }
+        .pay-modal-hdr h3 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .pay-modal-close {
+            border: none;
+            background: rgba(0,0,0,0.1);
+            color: #1a1a1a;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .pay-modal-client {
+            padding: 12px 18px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .pay-modal-client-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a202c;
+        }
+        .pay-modal-client-id {
+            font-size: 11px;
+            color: #94a3b8;
+            font-family: monospace;
+            margin-top: 2px;
+        }
+        .pay-modal-amount {
+            background: #f0fff4;
+            color: #276749;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .pay-phone-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #fffaf0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+        }
+        .pay-ussd-link {
+            color: #0ea5e9;
+            font-weight: 800;
+            text-decoration: underline;
+        }
+        .pay-step-action-row { margin-top: 6px; }
+        .pay-step-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #ffcc00;
+            color: #1a1a1a;
+            border-radius: 7px;
+            padding: 5px 11px;
+            font-size: 11px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        .pay-modal-body { padding: 14px 18px 18px; }
+
+        /* Terms of Service modal */
+        .tos-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26,26,26,0.6); z-index: 9998;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .tos-modal-overlay.active { display: flex; }
+        .tos-modal {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 460px;
+            width: 100%;
+            max-height: 82vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+        .tos-modal-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-radius: 16px 16px 0 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: sticky;
+            top: 0;
+        }
+        .tos-modal-hdr h3 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0;
+        }
+        .tos-modal-close {
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tos-modal-body {
+            padding: 16px 18px 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #374151;
+        }
+        .tos-modal-body p { margin-bottom: 12px; }
+        .tos-modal-body p:last-child { margin-bottom: 0; }
+        .pay-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .pay-step:last-of-type { border-bottom: none; }
+        .pay-step-num {
+            background: linear-gradient(135deg, #ffcc00, #f59e0b);
+            color: #1a1a1a;
+            border-radius: 50%;
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 900;
+            flex-shrink: 0; margin-top: 1px;
+        }
+        .pay-step-content { font-size: 13px; color: #374151; flex: 1; min-width: 0; word-break: break-word; }
+        .pay-step-label { color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 1px; }
+        .pay-step-copy {
+            border: none;
+            background: #ffcc00;
+            color: #1a1a1a;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+        .pay-modal-note {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            color: #0369a1;
+            font-size: 12px;
+        }
+        .pay-modal-notify-btn {
+            width: 100%;
+            margin-top: 14px;
+            padding: 11px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .preview-mode-banner {
+            background: repeating-linear-gradient(45deg, #2d3748, #2d3748 10px, #1a202c 10px, #1a202c 20px);
+            color: #fff;
+            text-align: center;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .pickup-overdue-banner {
+            margin: 0 16px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 2px solid #fc8181;
+            animation: pulseWarn 2s ease-in-out infinite;
+        }
+        .pickup-overdue-banner h4 {
+            font-size: 14px;
+            color: #c53030;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pickup-overdue-banner p {
+            font-size: 12px;
+            color: #742a2a;
+            line-height: 1.55;
+        }
+        @keyframes pulseWarn {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.25); }
+            50% { box-shadow: 0 0 0 6px rgba(245, 101, 101, 0); }
+        }
+
+        .portal-thread {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+        .portal-thread-empty {
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            padding: 16px 8px;
+        }
+        .portal-thread-msg {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .portal-thread-msg:last-child { margin-bottom: 0; }
+        .portal-thread-msg.client { align-items: flex-end; }
+        .portal-thread-msg.workshop { align-items: flex-start; }
+        .portal-thread-bubble {
+            max-width: 88%;
+            padding: 10px 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .portal-thread-msg.client .portal-thread-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .portal-thread-msg.workshop .portal-thread-bubble {
+            background: #edf2f7;
+            color: #2d3748;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .portal-thread-meta {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+        .portal-thread-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .portal-thread-photos img {
+            width: 88px;
+            height: 88px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.8);
+            cursor: pointer;
+        }
+        .portal-thread-msg.workshop .portal-thread-photos img {
+            border-color: #e2e8f0;
+        }
+        .portal-attach-preview {
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .portal-attach-preview.active { display: flex; }
+        .portal-attach-thumb {
+            position: relative;
+            width: 72px;
+            height: 72px;
+        }
+        .portal-attach-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+        .portal-attach-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            background: #f56565;
+            color: white;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .portal-compose-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+            margin-bottom: 10px;
+        }
+        .portal-compose-row textarea {
+            flex: 1;
+            margin-bottom: 0 !important;
+        }
+        .portal-attach-btn {
+            flex-shrink: 0;
+            width: 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f7fafc;
+            color: #667eea;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .portal-attach-btn:active { background: #edf2f7; }
+
+        /* Back button */
+        .back-btn {
+            width: calc(100% - 32px); padding: 13px;
+            background: #f7fafc; border: 2px solid #e2e8f0;
+            border-radius: 12px; font-size: 13px; font-weight: 600;
+            color: #718096; cursor: pointer; margin: 16px 16px;
+            transition: all 0.2s ease; text-align: center;
+            min-height: 48px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            -webkit-appearance: none;
+        }
+
+        .back-btn:hover { background: #edf2f7; color: #2d3748; }
+        .back-btn:active { background: #e2e8f0; }
+
+        /* Footer */
+        .portal-footer {
+            text-align: center; padding: 16px; color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            background: rgba(255,255,255,0.97);
+            flex-shrink: 0;
+        }
+
+        .portal-footer strong { color: #667eea; }
+
+        .portal-tos-link {
+            display: inline-block;
+            margin-top: 2px;
+            background: none;
+            border: none;
+            padding: 4px 10px;
+            color: #a0aec0;
+            font-size: 10px;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .portal-tos-link:active { opacity: 0.6; }
+
+        body.portal-has-wallpaper .portal-tos-link {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Image lightbox */
+        .lightbox {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 9999;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; padding: 16px;
+        }
+
+        .lightbox.active { display: flex; }
+
+        .lightbox img {
+            max-width: 100%; max-height: 90vh;
+            border-radius: 10px; object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); border: none;
+            color: white; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ========== WIDER SCREENS (tablets, etc.) ========== */
+        @media (min-width: 520px) {
+            body {
+                padding: 16px;
+            }
+
+            .portal-card {
+                border-radius: 20px;
+                min-height: auto;
+                max-height: none;
+                overflow: hidden;
+            }
+
+            .portal-header {
+                position: relative;
+                padding: 24px 20px;
+            }
+
+            .portal-logo { width: 64px; height: 64px; border-radius: 16px; }
+            .portal-logo i { font-size: 30px; }
+
+            .portal-header h1 { font-size: 19px; }
+            .portal-header p { font-size: 12px; }
+
+            /* Side-by-side layout on wider screens */
+            .detail-row {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+                padding: 13px 18px;
+                gap: 10px;
+            }
+
+            .detail-row .label {
+                text-transform: none;
+                font-size: 12px;
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+
+            .detail-row .value {
+                text-align: right;
+                padding-left: 0;
+                font-size: 13px;
+                min-width: 0;
+            }
+
+            .photos-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .portal-footer {
+                background: transparent;
+                color: rgba(255,255,255,0.7);
+            }
+
+            .portal-footer strong { color: white; }
+        }
+
+        /* ========== VERY SMALL PHONES (< 340px like iPhone SE gen1) ========== */
+        @media (max-width: 340px) {
+            .portal-header { padding: 16px 12px 14px; }
+            .portal-header h1 { font-size: 15px; }
+
+            .portal-logo { width: 44px; height: 44px; border-radius: 12px; }
+            .portal-logo i { font-size: 20px; }
+
+            .portal-body { padding: 16px 12px; }
+
+            .portal-input-group input {
+                padding: 12px 10px;
+                letter-spacing: 2px;
+            }
+
+            .submit-btn { font-size: 14px; padding: 13px; }
+
+            .detail-row { padding: 9px 12px; }
+            .detail-row .label { font-size: 10px; }
+            .detail-row .value { font-size: 13px; padding-left: 22px; }
+
+            .balance-row { margin: 8px 10px; padding: 12px 12px !important; }
+            .balance-row .value.owed,
+            .balance-row .value.paid { font-size: 16px; }
+
+            .result-status { padding: 16px 12px; }
+            .result-status h2 { font-size: 15px; }
+            .status-icon { width: 50px; height: 50px; font-size: 22px; }
+
+            .repair-details { padding: 12px 12px; }
+            .repair-issue, .failed-reason { font-size: 12px; padding: 10px 12px; }
+
+            .photos-section { padding: 14px 12px; }
+
+        .portal-message-section {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        .portal-message-section h4 {
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        .portal-message-section textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 96px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .portal-message-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+        }
+
+            .back-btn { width: calc(100% - 24px); margin: 14px 12px; font-size: 12px; }
+        }
+
+        /* ========== LANDSCAPE ORIENTATION ========== */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .portal-header {
+                padding: 12px 20px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                text-align: left;
+            }
+
+            .portal-logo { width: 36px; height: 36px; margin: 0; border-radius: 10px; }
+            .portal-logo i { font-size: 16px; }
+
+            .portal-header h1 { font-size: 15px; margin-bottom: 0; }
+            .portal-header p { font-size: 10px; }
+
+            .portal-body { padding: 12px 16px; }
+
+            .result-status { padding: 14px; }
+            .status-icon { width: 44px; height: 44px; font-size: 20px; margin-bottom: 6px; }
+
+            .detail-row {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 8px 16px;
+            }
+
+            .detail-row .value {
+                padding-left: 0;
+                text-align: right;
+            }
+        }
+
+        /* ========== SAFE AREA (notched phones) ========== */
+        @supports (padding: max(0px)) {
+            .portal-header {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+                padding-top: max(20px, env(safe-area-inset-top));
+            }
+
+            .portal-body {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+
+            .results-section .detail-row {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+
+            .back-btn {
+                margin-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+
+            .portal-footer {
+                padding-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+        }
+        .portal-client-photo-wrap { position: relative; width: 96px; margin: 0 auto 14px; }
+        .portal-client-photo-wrap .portal-client-photo { margin: 0; }
+        .device-photo-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: rgba(102,126,234,0.95);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border: 2px solid var(--card-bg, #fff);
+        }
+        .portal-rating { margin-top: 4px; font-size: 12px; color: #fff; }
+        .hdr-stars span { color: rgba(255,255,255,0.4); } .hdr-stars span.on { color: #fbd34d; }
+        .portal-reviews-list, .portal-review-form-block {
+            padding: 16px; background:#fff; border-radius:12px; border:1px solid #e2e8f0;
+        }
+        .portal-reviews-list { margin-top:20px; }
+        .portal-review-form-block { margin:0 16px 16px; }
+        .portal-reviews-list h3, .portal-review-form-block h3 {
+            font-size:14px; color:#2d3748; margin-bottom:10px;
+            display:flex; align-items:center; gap:6px;
+        }
+        .review-reply {
+            margin-top:8px; padding:8px 10px; background:#e6fffa;
+            border-left:3px solid #38b2ac; border-radius:6px;
+            font-size:12px; color:#234e52;
+        }
+        .review-reply strong {
+            display:block; margin-bottom:2px; color:#285e61; font-size:11px;
+        }
+        .not-rated-label { font-size:11px; color:rgba(255,255,255,.75); font-weight:600; }
+        .review-card { padding: 10px 0; border-bottom: 1px solid #f0f4f8; font-size: 13px; color: #2d3748; }
+        .review-card .meta { font-size: 11px; color: #a0aec0; margin-top: 2px; }
+        .review-stars span { color: #cbd5e0; } .review-stars span.on { color: #ecc94b; }
+        .review-form { background: #f7fafc; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+        .review-pick button { background: none; border: 0; font-size: 26px; color: #cbd5e0; cursor: pointer; padding: 0 2px; }
+        .review-pick button.on { color: #ecc94b; }
+        .review-form textarea { width: 100%; min-height: 70px; margin: 8px 0; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; font: inherit; font-size: 13px; resize: vertical; }
+        .review-form .btn-review { background: #667eea; color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 600; cursor: pointer; }
+        .review-more { background: none; border: 0; color: #667eea; font-weight: 600; cursor: pointer; padding: 10px 0 0; }
+    </style>
+</head>
+<body>
+
+<div id="portalBgLayer" class="portal-bg-layer" aria-hidden="true"></div>
+<div id="portalBgOverlay" class="portal-bg-overlay" aria-hidden="true"></div>
+
+<div class="portal-card" id="portalCard">
+    <div id="previewModeBanner" style="display:none;"></div>
+    <!-- Header -->
+    <div class="portal-header" id="portalHeader">
+        <div class="portal-logo" id="portalLogo">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div>
+            <h1 id="workshopName">Repair Workshop</h1>
+            <p>Client Repair Status Portal</p>
+            <div class="portal-rating" id="portalRatingSummary"></div>
+        </div>
+    </div>
+
+    <!-- Connecting state -->
+    <div class="connecting-state" id="connectingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Connecting to workshop...</p>
+    </div>
+
+    <!-- Connection error -->
+    <div class="connection-error" id="connectionError">
+        <i class="fas fa-exclamation-circle"></i>
+        <h3>Connection Failed</h3>
+        <p id="connectionErrorMsg">Could not connect to the workshop database. Please check your internet connection and try again.</p>
+        <button class="retry-btn" onclick="location.reload()">
+            <i class="fas fa-redo"></i> Try Again
+        </button>
+    </div>
+
+    <!-- Lookup Form -->
+    <div class="portal-body" id="lookupForm" style="display:none;">
+        <div id="workshopContactLookup" class="workshop-contact-card" style="display:none;"></div>
+        <div class="portal-input-group">
+            <label><i class="fas fa-id-badge"></i> Enter Your Client ID</label>
+            <input type="text" id="clientIdInput" placeholder="e.g. A3B7X2K" maxlength="10" autocomplete="off" inputmode="text" enterkeyhint="search">
+            <p style="font-size: 11px; color: #a0aec0; margin-top: 8px; text-align: center;">
+                Your Client ID is on the receipt you received at the workshop
+            </p>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="lookupClient()">
+            <i class="fas fa-search"></i> Check My Repair Status
+        </button>
+        <div class="error-msg" id="errorMsg"></div>
+
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0;">
+            <h3 style="font-size:14px;color:#2d3748;margin-bottom:10px;">
+                <i class="fas fa-clipboard-check"></i> Pre-check-in your device
+            </h3>
+            <p style="font-size:12px;color:#718096;margin-bottom:12px;">
+                Save your details now so pickup is faster. Bring your device
+                during working hours and we'll have your info ready.
+            </p>
+            <div class="portal-input-group"><label>Your name *</label><input id="pciName" type="text" placeholder="Full name"></div>
+            <div class="portal-input-group"><label>Phone number *</label><input id="pciPhone" type="tel" placeholder="e.g. 0771234567"></div>
+            <div class="portal-input-group"><label>Device brand *</label>
+                <select id="pciBrand">
+                    <option value="">Choose brand</option>
+                    <option>ALCATEL</option><option>GOOGLE PIXEL</option><option>HONOR</option><option>HUAWEI</option>
+                    <option>INFINIX</option><option>IPHONE</option><option>ITEL</option><option>KGTEL</option>
+                    <option>LENOVO</option><option>LG</option><option>NOKIA</option><option>ONEPLUS</option>
+                    <option>OPPO</option><option>REALME</option><option>REDMI</option><option>SAMSUNG</option>
+                    <option>TECNO</option><option>VIVO</option><option>XIAOMI</option><option>Other</option>
+                </select>
+            </div>
+            <div class="portal-input-group"><label>Model</label><input id="pciModel" type="text" placeholder="e.g. Galaxy S21"></div>
+            <div class="portal-input-group"><label>What's the issue? *</label><textarea id="pciIssue" rows="3"></textarea></div>
+            <div class="portal-input-group"><label>Preferred drop-off date (optional)</label><input id="pciPreferredDate" type="date"></div>
+            <button class="submit-btn" id="pciSubmitBtn" onclick="submitPreCheckin()">
+                <i class="fas fa-paper-plane"></i> Send pre-check-in
+            </button>
+            <div class="error-msg" id="pciError" style="margin-top:10px;"></div>
+            <div id="pciSuccess" style="display:none;text-align:center;padding:20px;color:#276749;">
+                <i class="fas fa-check-circle" style="font-size:40px;margin-bottom:10px;"></i>
+                <p style="font-weight:600;">Received! See you soon.</p>
+                <p style="font-size:13px;margin-top:6px;">Show this confirmation at the counter:</p>
+                <p id="pciRefNumber" style="font-size:16px;font-weight:800;font-family:monospace;margin-top:8px;"></p>
+            </div>
+        </div>
+        <div id="portalReviewsList" class="portal-reviews-list" style="display:none;"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Looking up your repair...</p>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="resultsSection">
+        <div id="pickupOverdueBanner" style="display:none;"></div>
+        <div class="result-status" id="resultStatus"></div>
+        <div id="resultDetails"></div>
+        <div id="paymentMethodsResults" class="payment-methods-card" style="display:none; margin: 12px 16px 0;"></div>
+        <div id="workshopContactResults" class="workshop-contact-card" style="display:none; margin: 12px 16px 0;"></div>
+        <div class="repair-details" id="repairDetailsSection" style="display:none;">
+            <h4><i class="fas fa-tools"></i> Repair Details</h4>
+            <div id="repairDetailsContent"></div>
+        </div>
+        <div class="photos-section" id="photosSection">
+            <h4><i class="fas fa-camera"></i> Device Photos</h4>
+            <div class="photos-grid" id="photosGrid"></div>
+        </div>
+        <div class="photos-section" id="afterPhotosSection">
+            <h4><i class="fas fa-camera-retro"></i> After-Repair Photos</h4>
+            <div class="photos-grid" id="afterPhotosGrid"></div>
+        </div>
+        <div class="portal-message-section" id="portalMessageSection">
+            <h4><i class="fas fa-comments"></i> Message the workshop</h4>
+            <p style="font-size:12px;color:#718096;margin-bottom:10px;line-height:1.5;">
+                Chat with the workshop team here. You can send messages and see their replies in real time.
+            </p>
+            <div class="portal-thread" id="portalMessageThread">
+                <div class="portal-thread-empty">No messages yet. Say hello below!</div>
+            </div>
+            <div class="portal-attach-preview" id="portalAttachPreview"></div>
+            <div class="portal-compose-row">
+                <button type="button" class="portal-attach-btn" onclick="attachPhotoToPortal()" title="Attach photo">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <textarea id="portalMessageInput" maxlength="500" rows="3" placeholder="Write your message..."></textarea>
+            </div>
+            <button type="button" class="submit-btn" id="portalSendBtn" onclick="sendPortalMessage()">
+                <i class="fas fa-paper-plane"></i> Send message
+            </button>
+            <button type="button" class="portal-call-btn" id="portalCallBtn" onclick="requestPortalCall()">
+                <i class="fas fa-phone"></i> Request a call
+            </button>
+            <p id="portalMsgStatus" style="font-size:12px;text-align:center;margin-top:10px;min-height:18px;color:#718096;"></p>
+        </div>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i> Look Up Another ID
+        </button>
+        <div id="portalReviewFormBlock" class="portal-review-form-block" style="display:none;"></div>
+    </div>
+</div>
+
+<div class="portal-footer" id="portalFooter">
+    <p>Powered by <strong>RepairPro</strong></p>
+    <button type="button" class="portal-tos-link" id="portalTosLink" onclick="openTermsModal()" style="display:none;">Terms of Service</button>
+</div>
+
+<!-- Terms of Service modal -->
+<div class="tos-modal-overlay" id="tosModalOverlay" onclick="if(event.target===this)closeTermsModal();">
+    <div class="tos-modal">
+        <div class="tos-modal-hdr">
+            <h3><i class="fas fa-file-contract"></i> Terms of Service</h3>
+            <button class="tos-modal-close" onclick="closeTermsModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="tos-modal-body" id="tosModalBody"></div>
+    </div>
+</div>
+
+<!-- Lightbox for photos -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <button class="lightbox-close" aria-label="Close"><i class="fas fa-times"></i></button>
+    <img id="lightboxImg" src="" alt="Photo">
+</div>
+
+<!-- Payment instructions modal -->
+<div class="pay-modal-overlay" id="payModalOverlay" onclick="if(event.target===this)closePayModal();">
+    <div class="pay-modal">
+        <div class="pay-modal-hdr">
+            <h3 id="payModalTitle"><i class="fas fa-wallet"></i> Pay</h3>
+            <button class="pay-modal-close" onclick="closePayModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="pay-modal-client">
+            <div class="pay-modal-client-name" id="payModalClientName"></div>
+            <div class="pay-modal-client-id" id="payModalClientId"></div>
+        </div>
+        <div class="pay-modal-body" id="payModalBody"></div>
+    </div>
+</div>
+
+<script>
+// ---- Workshop currency (Settings → Currency). Every money label reads CUR, so changing the setting changes everything. ----
+Object.defineProperty(window,'CUR',{configurable:true,get:function(){ try{ var c=(window.__portalCurrency); return (c&&String(c).trim())||'UGX'; }catch(e){ return 'UGX'; } }});
+function refreshCurrencyLabels(){ try{ document.querySelectorAll('.cur-code').forEach(function(e){ if(e.textContent!==CUR) e.textContent=CUR; }); }catch(e){} }
+document.addEventListener('DOMContentLoaded',function(){ refreshCurrencyLabels(); });
+
+// ============ READ CONFIG FROM URL ============
+var fbDb = null;
+var fbAuth = null;
+var workshopUid = null;
+var workshopData = null;
+var portalChatListener = null;
+var portalChatQuery = null;
+var portalThreadMessages = [];
+var portalAttachments = [];
+var PORTAL_MAX_PHOTOS = 2;
+var portalAutoClientId = null;
+var portalPreviewMode = false;
+var portalMode = 'legacy';           // 'legacy' (?d=...) | 'code' (?w=...&c=...)
+var portalClaimedClientId = null;    // code mode: the clientId this anonymous session has claimed
+var portalPublicReviews = null;      // code mode: value of workshops/{w}/reviewsPublic (null = absent)
+var portalOwnReview = null;          // code mode: value of workshops/{w}/reviews/{claimedClientId}
+var portalOwnReviewRef = null;
+// Public Firebase web config (not secret). The new URL carries no apiKey/databaseURL, so it must live here.
+var PORTAL_FIREBASE_CONFIG = { apiKey: '', databaseURL: '', projectId: '' };
+
+(function init() {
+    var params = new URLSearchParams(window.location.search);
+    portalPreviewMode = params.get('preview') === 'payment';
+
+    if (params.get('d')) {
+        portalMode = 'legacy';
+        portalAutoClientId = params.get('c');   // legacy: c = auto-open client ID (unchanged)
+        runExistingEmailPasswordFlow(params.get('d'));
+    } else if (params.get('w') && params.get('c')) {
+        portalMode = 'code';
+        portalPreviewMode = false;              // preview is a legacy/owner feature
+        connectViaPortalCode(params.get('w'), params.get('c'));   // here c = portal code
+    } else {
+        showConnectionError('Invalid link. Please scan the QR code at the workshop.');
+    }
+})();
+
+// Exact body of the old init() try/catch, moved verbatim. No functional change.
+function runExistingEmailPasswordFlow(encoded) {
+    try {
+        var config = JSON.parse(atob(decodeURIComponent(encoded)));
+        connectToFirebase(config);
+    } catch(e) {
+        showConnectionError('Invalid QR code data. Please ask the workshop for a new QR code.');
+    }
+}
+
+// ============ CONNECT TO FIREBASE ============
+function normalizeFirebaseList(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data.filter(Boolean);
+    return Object.keys(data)
+        .filter(function(k) { return k !== 'length'; })
+        .sort(function(a, b) {
+            var na = parseInt(a, 10), nb = parseInt(b, 10);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            return String(a).localeCompare(String(b));
+        })
+        .map(function(k) { return data[k]; })
+        .filter(Boolean);
+}
+
+function findClientById(clients, clientId) {
+    var id = String(clientId || '').trim().toUpperCase();
+    for (var i = 0; i < clients.length; i++) {
+        var c = clients[i];
+        if (c && c.id && String(c.id).toUpperCase() === id) return c;
+    }
+    return null;
+}
+
+function connectToFirebase(config) {
+    try {
+        var fbConfig = {
+            apiKey: config.k,
+            databaseURL: config.u,
+            projectId: config.p,
+            authDomain: config.p + '.firebaseapp.com'
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(fbConfig);
+        }
+        fbDb = firebase.database();
+        fbAuth = firebase.auth();
+        workshopUid = config.i;
+
+        // Sign in with embedded credentials
+        fbAuth.signInWithEmailAndPassword(config.e, config.w)
+            .then(function() {
+                workshopUid = (fbAuth.currentUser && fbAuth.currentUser.uid) || config.i;
+                if (!workshopUid) throw new Error('Authentication failed');
+                if (config.i && config.i !== workshopUid) {
+                    console.warn('[Portal] Config UID outdated; using authenticated UID:', workshopUid);
+                }
+                return fbDb.ref('workshops/' + workshopUid + '/settings').once('value');
+            })
+            .then(function(snapshot) {
+                var ws = snapshot.val() || {};
+                workshopData = ws;
+
+                // Set workshop name
+                if (ws.currencyCode) window.__portalCurrency = ws.currencyCode;   // workshop's chosen currency
+                if (ws.workshopName) {
+                    document.getElementById('workshopName').textContent = ws.workshopName;
+                    document.title = ws.workshopName + ' - Repair Status';
+                }
+
+                // Set logo
+                if (ws.workshopLogo) {
+                    document.getElementById('portalLogo').innerHTML =
+                        '<img src="' + escAttr(ws.workshopLogo) + '" alt="Logo">';
+                }
+
+                applyPortalBackground(ws);
+                applyPortalMessageBackground(ws);
+
+                renderWorkshopContact(ws, 'workshopContactLookup');
+                renderWorkshopContact(ws, 'workshopContactResults');
+
+                var tosLink = document.getElementById('portalTosLink');
+                if (tosLink) tosLink.style.display = (ws.termsOfService && ws.termsOfService.trim()) ? 'inline-block' : 'none';
+
+                loadPortalReviews();
+                document.getElementById('connectingState').style.display = 'none';
+
+                // Preview mode: skip the real lookup and show a synthetic client so
+                // the workshop owner can see exactly how their configured payment
+                // methods will look and behave, without needing a real client record.
+                if (portalPreviewMode) {
+                    showPreviewModeBanner();
+                    var previewClient = {
+                        id: 'PREVIEW-0001',
+                        name: 'Preview Client',
+                        status: 'in-progress',
+                        deviceBrand: 'Sample',
+                        deviceModel: 'Device',
+                        issue: 'This is a preview — no real client data.',
+                        agreedAmount: 25000,
+                        depositedAmount: 0,
+                        signInDate: new Date().toISOString()
+                    };
+                    showResults(previewClient);
+                    return;
+                }
+
+                // Show lookup form or auto-open client status
+                if (portalAutoClientId) {
+                    document.getElementById('clientIdInput').value = portalAutoClientId;
+                    lookupClient(portalAutoClientId);
+                } else {
+                    document.getElementById('lookupForm').style.display = 'block';
+                    setTimeout(function() {
+                        document.getElementById('clientIdInput').focus();
+                    }, 300);
+                }
+            })
+            .catch(function(err) {
+                console.error('Auth error:', err);
+                var msg = 'Could not connect to workshop.';
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    msg = 'Workshop credentials have changed. Please ask for a new QR code.';
+                } else if (err.code === 'auth/user-not-found') {
+                    msg = 'Workshop account not found. Please ask for a new QR code.';
+                } else if (err.code === 'auth/network-request-failed') {
+                    msg = 'No internet connection. Please check your connection and try again.';
+                }
+                showConnectionError(msg);
+            });
+
+    } catch(e) {
+        showConnectionError('Connection error: ' + e.message);
+    }
+}
+
+function connectViaPortalCode(workshopUidParam, portalCode) {
+    // w and c are interpolated into database paths, so validate their shape first
+    if (!/^[A-Za-z0-9_-]{6,128}$/.test(workshopUidParam) ||
+        !/^[^\/.#$\[\]\s]{16,64}$/.test(portalCode)) {
+        showConnectionError('Invalid link. Please scan the QR code at the workshop.');
+        return;
+    }
+    var cfg = PORTAL_FIREBASE_CONFIG;
+    if (!cfg || !cfg.apiKey || !cfg.databaseURL || !cfg.projectId) {
+        console.error('[Portal] PORTAL_FIREBASE_CONFIG is not filled in');
+        showConnectionError('Could not connect. Scan a fresh QR from the workshop.');
+        return;
+    }
+
+    var stage = 'init';
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp({
+                apiKey: cfg.apiKey,
+                databaseURL: cfg.databaseURL,
+                projectId: cfg.projectId,
+                authDomain: cfg.projectId + '.firebaseapp.com'
+            });
+        }
+        fbDb = firebase.database();
+        fbAuth = firebase.auth();
+        workshopUid = workshopUidParam;
+    } catch (e) {
+        console.error('[Portal] init failed:', e);
+        showConnectionError('Could not connect. Scan a fresh QR from the workshop.');
+        return;
+    }
+
+    stage = 'auth';
+    fbAuth.signInAnonymously()
+        .then(function () {
+            var user = fbAuth.currentUser;
+            if (!user) throw new Error('No anonymous user after sign-in');
+            stage = 'session';
+            // The rules reject this write unless the code exists under portalCodes
+            return fbDb.ref('workshops/' + workshopUid + '/portalSessions/' + user.uid)
+                .set({ code: portalCode });
+        })
+        .then(function () {
+            stage = 'settings';
+            return fbDb.ref('workshops/' + workshopUid + '/settings').once('value');
+        })
+        .then(function (snapshot) {
+            var ws = snapshot.val() || {};
+            workshopData = ws;
+            applyPortalWorkshopSettings(ws);
+            loadPortalReviews();   // code mode: reviewsPublic only (own review loads after a client is claimed)
+            document.getElementById('connectingState').style.display = 'none';
+            document.getElementById('lookupForm').style.display = 'block';
+            setTimeout(function () {
+                var inp = document.getElementById('clientIdInput');
+                if (inp) inp.focus();
+            }, 300);
+        })
+        .catch(function (err) {
+            console.error('[Portal] code flow failed at stage "' + stage + '":', err);
+            if (stage === 'session' && err && err.code === 'PERMISSION_DENIED') {
+                showConnectionError('This QR code is invalid or has been revoked. Ask the workshop for a fresh one.');
+            } else {
+                showConnectionError('Could not connect. Scan a fresh QR from the workshop.');
+            }
+        });
+}
+
+// Same branding/contact rendering connectToFirebase does inline (that function is left untouched).
+function applyPortalWorkshopSettings(ws) {
+    if (ws.currencyCode) window.__portalCurrency = ws.currencyCode;
+    if (ws.workshopName) {
+        document.getElementById('workshopName').textContent = ws.workshopName;
+        document.title = ws.workshopName + ' - Repair Status';
+    }
+    if (ws.workshopLogo) {
+        document.getElementById('portalLogo').innerHTML =
+            '<img src="' + escAttr(ws.workshopLogo) + '" alt="Logo">';
+    }
+    applyPortalBackground(ws);
+    applyPortalMessageBackground(ws);
+    renderWorkshopContact(ws, 'workshopContactLookup');
+    renderWorkshopContact(ws, 'workshopContactResults');
+    var tosLink = document.getElementById('portalTosLink');
+    if (tosLink) tosLink.style.display = (ws.termsOfService && ws.termsOfService.trim()) ? 'inline-block' : 'none';
+}
+
+function renderWorkshopContact(ws, elementId) {
+    var el = document.getElementById(elementId);
+    if (!el || !ws) return;
+
+    var phone1 = (ws.workshopPhone1 || '').trim();
+    var phone2 = (ws.workshopPhone2 || '').trim();
+    var email1 = (ws.workshopEmail1 || '').trim();
+    var email2 = (ws.workshopEmail2 || '').trim();
+    var mapLink = (ws.workshopMapLink || '').trim();
+    var address = (ws.workshopAddress || ws.workshopMapLabel || '').trim();
+
+    if (!phone1 && !phone2 && !email1 && !email2 && !mapLink) {
+        el.style.display = 'none';
+        el.innerHTML = '';
+        return;
+    }
+
+    var html = '<h3><i class="fas fa-store"></i> Contact the workshop</h3>';
+    if (address) {
+        html += '<div class="contact-address"><i class="fas fa-location-dot" style="color:#667eea;"></i> ' + escHtml(address) + '</div>';
+    }
+
+    var chips = '';
+    if (phone1) {
+        chips += '<a class="contact-chip phone" href="tel:' + escAttr(phone1.replace(/\s/g, '')) + '"><i class="fas fa-phone"></i> ' + escHtml(phone1) + '</a>';
+    }
+    if (phone2) {
+        chips += '<a class="contact-chip phone" href="tel:' + escAttr(phone2.replace(/\s/g, '')) + '"><i class="fas fa-phone-alt"></i> ' + escHtml(phone2) + '</a>';
+    }
+    if (email1) {
+        chips += '<a class="contact-chip email" href="mailto:' + escAttr(email1) + '"><i class="fas fa-envelope"></i> ' + escHtml(email1) + '</a>';
+    }
+    if (email2) {
+        chips += '<a class="contact-chip email" href="mailto:' + escAttr(email2) + '"><i class="fas fa-envelope"></i> ' + escHtml(email2) + '</a>';
+    }
+    if (chips) html += '<div class="contact-chip-row">' + chips + '</div>';
+    if (mapLink) {
+        html += '<a class="contact-chip maps" href="' + escAttr(mapLink) + '" target="_blank" rel="noopener"><i class="fas fa-map-marked-alt"></i> Open in Google Maps</a>';
+    }
+
+    el.innerHTML = html;
+    el.style.display = 'block';
+}
+
+var PAYMENT_TYPE_ICON = {
+    mobile_money_personal: 'fa-mobile-screen-button',
+    mobile_money_merchant: 'fa-store',
+    bank: 'fa-building-columns',
+    cash: 'fa-money-bill-wave',
+    other: 'fa-credit-card'
+};
+
+var portalPaymentMethods = [];
+var portalPaymentBalance = 0;
+var portalPaymentClient = null;
+var portalPaymentWorkshop = null;
+
+// Normalizes older/legacy payment method records so the portal never breaks
+// on data saved before the Personal/Merchant split existed.
+function normalizePortalPaymentMethod(pm) {
+    if (!pm) return pm;
+    if (pm.type === 'mobile_money') {
+        pm = Object.assign({}, pm, {
+            type: 'mobile_money_personal',
+            phoneNumber: pm.phoneNumber || pm.accountNumber || '',
+            steps: (pm.steps && pm.steps.length) ? pm.steps : (pm.instructions ? [pm.instructions] : [])
+        });
+    }
+    return pm;
+}
+
+function renderPaymentMethods(ws, balance, client) {
+    var el = document.getElementById('paymentMethodsResults');
+    if (!el || !ws) return;
+
+    var methods = normalizeFirebaseList(ws.paymentMethods)
+        .map(normalizePortalPaymentMethod)
+        .filter(function(pm) { return pm && pm.enabled !== false; });
+
+    portalPaymentMethods = methods;
+    portalPaymentBalance = balance;
+    portalPaymentClient = client;
+    portalPaymentWorkshop = ws;
+
+    if (methods.length === 0 || !(balance > 0)) {
+        el.style.display = 'none';
+        el.innerHTML = '';
+        return;
+    }
+
+    var html = '<h3><i class="fas fa-wallet"></i> How to pay your balance</h3>';
+    html += '<div class="payment-choice-row">';
+    html += methods.map(function(pm) {
+        var icon = PAYMENT_TYPE_ICON[pm.type] || PAYMENT_TYPE_ICON.other;
+        return '<div class="payment-choice-chip" onclick="openPayModal(\'' + escAttr(pm.id) + '\')">' +
+            '<span class="icon"><i class="fas ' + icon + '"></i></span>' +
+            '<span>' + escHtml(pm.provider || '') + '</span>' +
+        '</div>';
+    }).join('');
+    html += '</div>';
+
+    el.innerHTML = html;
+    el.style.display = 'block';
+}
+
+function fmtUGX(n) {
+    return ('' + CUR + ' ') + Math.round(n || 0).toLocaleString();
+}
+
+// Detects USSD-style codes like *165*3# inside free text and turns them into
+// tap-to-dial links, leaving the rest of the text untouched.
+var USSD_PATTERN = /(\*[0-9\*]+#)/g;
+function linkifyUssd(text) {
+    var escaped = escHtml(text);
+    return escaped.replace(USSD_PATTERN, function(match) {
+        return '<a href="tel:' + encodeURIComponent(match) + '" class="pay-ussd-link">' + match + '</a>';
+    });
+}
+
+function normalizePortalStep(step) {
+    if (typeof step === 'string') return { text: step, type: 'text' };
+    return step && step.text ? step : { text: '', type: 'text' };
+}
+
+function buildStepActionHtml(step) {
+    var type = step.type;
+    var value = (step.value || '').trim();
+
+    if (type === 'copy') {
+        return '<button type="button" class="pay-step-action" onclick="copyPaymentDetail(this, \'' + escAttr(step.text) + '\')"><i class="fas fa-copy"></i> Copy</button>';
+    }
+    if (!value) return '';
+
+    if (type === 'ussd') {
+        return '<a href="tel:' + encodeURIComponent(value) + '" class="pay-step-action"><i class="fas fa-phone-volume"></i> Dial</a>';
+    }
+    if (type === 'phone') {
+        return '<a href="tel:' + encodeURIComponent(value) + '" class="pay-step-action"><i class="fas fa-phone"></i> Call</a>';
+    }
+    if (type === 'sms') {
+        var smsHref = 'sms:' + encodeURIComponent(value) + (step.message ? '?body=' + encodeURIComponent(step.message) : '');
+        return '<a href="' + smsHref + '" class="pay-step-action"><i class="fas fa-comment-sms"></i> Message</a>';
+    }
+    if (type === 'whatsapp') {
+        var digits = value.replace(/[^0-9]/g, '');
+        var waHref = 'https://wa.me/' + digits + (step.message ? '?text=' + encodeURIComponent(step.message) : '');
+        return '<a href="' + escAttr(waHref) + '" target="_blank" rel="noopener" class="pay-step-action"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
+    }
+    if (type === 'web') {
+        var webHref = /^https?:\/\//i.test(value) ? value : ('https://' + value);
+        return '<a href="' + escAttr(webHref) + '" target="_blank" rel="noopener" class="pay-step-action"><i class="fas fa-arrow-up-right-from-square"></i> Open Link</a>';
+    }
+    if (type === 'email') {
+        return '<a href="mailto:' + escAttr(value) + '" class="pay-step-action"><i class="fas fa-envelope"></i> Email</a>';
+    }
+    if (type === 'maps') {
+        var mapsHref = /^https?:\/\//i.test(value) ? value : ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(value));
+        return '<a href="' + escAttr(mapsHref) + '" target="_blank" rel="noopener" class="pay-step-action"><i class="fas fa-location-dot"></i> Open Map</a>';
+    }
+    return '';
+}
+
+function buildTypedStepHtml(rawStep, number) {
+    var step = normalizePortalStep(rawStep);
+    var displayText = (step.type === 'text' || !step.type) ? linkifyUssd(step.text) : escHtml(step.text);
+    var action = buildStepActionHtml(step);
+
+    return '<div class="pay-step">' +
+        '<span class="pay-step-num">' + number + '</span>' +
+        '<div class="pay-step-content">' + displayText +
+            (action ? '<div class="pay-step-action-row">' + action + '</div>' : '') +
+        '</div>' +
+    '</div>';
+}
+
+function buildPayStep(number, label, valueHtml, copyValue) {
+    var copyBtn = copyValue ?
+        '<button type="button" class="pay-step-copy" onclick="copyPaymentDetail(this, \'' + escAttr(copyValue) + '\')"><i class="fas fa-copy"></i> Copy</button>' : '';
+    return '<div class="pay-step">' +
+        '<span class="pay-step-num">' + number + '</span>' +
+        '<div class="pay-step-content"><span class="pay-step-label">' + escHtml(label) + '</span>' + valueHtml + copyBtn + '</div>' +
+    '</div>';
+}
+
+function openPayModal(id) {
+    var pm = portalPaymentMethods.find(function(m) { return m.id === id; });
+    if (!pm) return;
+
+    var icon = PAYMENT_TYPE_ICON[pm.type] || PAYMENT_TYPE_ICON.other;
+    var title = escHtml(pm.provider || 'Payment');
+    document.getElementById('payModalTitle').innerHTML = '<i class="fas ' + icon + '"></i> Pay with ' + title;
+
+    var clientName = portalPaymentClient ? (portalPaymentClient.name || '') : '';
+    var clientId = portalPaymentClient ? (portalPaymentClient.id || '') : '';
+    document.getElementById('payModalClientName').textContent = clientName;
+    document.getElementById('payModalClientId').textContent = clientId ? ('Client ID: ' + clientId) : '';
+
+    var amountText = fmtUGX(portalPaymentBalance);
+    var html = '<div class="pay-modal-amount"><i class="fas fa-circle-info"></i> Amount due: <strong>' + amountText + '</strong></div>';
+
+    if (pm.type === 'mobile_money_personal') {
+        if (pm.phoneNumber) {
+            html += '<div class="pay-phone-row">' +
+                '<div><span class="pay-step-label">Send Money To</span><strong>' + escHtml(pm.phoneNumber) + '</strong></div>' +
+                '<button type="button" class="pay-step-copy" onclick="copyPaymentDetail(this, \'' + escAttr(pm.phoneNumber) + '\')"><i class="fas fa-copy"></i> Copy</button>' +
+            '</div>';
+        }
+        var steps = pm.steps || [];
+        html += steps.map(function(step, i) {
+            return buildTypedStepHtml(step, i + 1);
+        }).join('');
+    } else if (pm.type === 'mobile_money_merchant') {
+        var workshopName = pm.workshopName || (portalPaymentWorkshop && portalPaymentWorkshop.workshopName) || '';
+        var n = 1;
+        if (pm.ussdCode) {
+            var dialLink = '<a href="tel:' + encodeURIComponent(pm.ussdCode) + '" class="pay-ussd-link">' + escHtml(pm.ussdCode) + '</a>';
+            html += buildPayStep(n++, 'Dial', dialLink, null);
+        }
+        if (pm.merchantId) {
+            html += buildPayStep(n++, 'Merchant / Till Number', escHtml(pm.merchantId), pm.merchantId);
+        }
+        if (workshopName) {
+            html += buildPayStep(n++, 'Workshop Name', escHtml(workshopName), null);
+        }
+    } else if (pm.type === 'bank') {
+        var n2 = 1;
+        if (pm.accountNumber) html += buildPayStep(n2++, 'Account Number', escHtml(pm.accountNumber), pm.accountNumber);
+        if (pm.accountName) html += buildPayStep(n2++, 'Account Name', escHtml(pm.accountName), null);
+    } else if (pm.type === 'other') {
+        var workshopNameOther = pm.workshopName || (portalPaymentWorkshop && portalPaymentWorkshop.workshopName) || '';
+        var n4 = 1;
+        if (workshopNameOther) html += buildPayStep(n4++, 'Workshop Name', escHtml(workshopNameOther), null);
+        if (pm.paymentAgent) html += buildPayStep(n4++, 'Payment Agent', escHtml(pm.paymentAgent), null);
+        var otherSteps = pm.steps || [];
+        html += otherSteps.map(function(step) {
+            return buildTypedStepHtml(step, n4++);
+        }).join('');
+    } else {
+        var n3 = 1;
+        if (pm.accountName) html += buildPayStep(n3++, 'Details', escHtml(pm.accountName), null);
+        if (pm.accountNumber) html += buildPayStep(n3++, 'Reference', escHtml(pm.accountNumber), pm.accountNumber);
+    }
+
+    if (pm.instructions) {
+        html += '<div class="pay-modal-note"><i class="fas fa-circle-info"></i> ' + escHtml(pm.instructions) + '</div>';
+    }
+
+    html += '<button type="button" class="pay-modal-notify-btn" onclick="notifyWorkshopOfPayment(\'' + escAttr(pm.provider || '') + '\')">' +
+        '<i class="fas fa-comment-dots"></i> I\u2019ve paid \u2014 let the workshop know</button>';
+
+    document.getElementById('payModalBody').innerHTML = html;
+    document.getElementById('payModalOverlay').classList.add('active');
+}
+
+function closePayModal() {
+    document.getElementById('payModalOverlay').classList.remove('active');
+}
+
+function openTermsModal() {
+    var text = (workshopData && workshopData.termsOfService) || '';
+    var body = document.getElementById('tosModalBody');
+    var paragraphs = text.split(/\n\s*\n/).map(function(p) { return p.trim(); }).filter(Boolean);
+    body.innerHTML = paragraphs.length
+        ? paragraphs.map(function(p) { return '<p>' + escHtml(p).replace(/\n/g, '<br>') + '</p>'; }).join('')
+        : '<p>No terms have been set yet.</p>';
+    document.getElementById('tosModalOverlay').classList.add('active');
+}
+
+function closeTermsModal() {
+    document.getElementById('tosModalOverlay').classList.remove('active');
+}
+
+function notifyWorkshopOfPayment(providerName) {
+    closePayModal();
+    var input = document.getElementById('portalMessageInput');
+    if (input) {
+        input.value = 'Hi, I\u2019ve just made a payment of ' + fmtUGX(portalPaymentBalance) +
+            ' via ' + providerName + '. Transaction ID: ';
+        input.focus();
+    }
+    var section = document.getElementById('portalMessageSection');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function copyPaymentDetail(btn, value) {
+    var restore = btn.innerHTML;
+    var done = function() {
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+        setTimeout(function() { btn.innerHTML = restore; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(done).catch(done);
+    } else {
+        done();
+    }
+}
+
+
+function getPickupOverdueNotice(client) {
+    if (!client || !workshopData) return null;
+    var reminderDays = parseInt(workshopData.reminderDays, 10) || 40;
+    if (client.status === 'delivered' || client.status === 'abandoned') return null;
+
+    var days = 0;
+    var title = '';
+    var message = '';
+
+    if (client.status === 'completed') {
+        var refDate = client.jobFinishedAt || client.updatedAt || client.signInDate;
+        if (!refDate) return null;
+        days = Math.floor((Date.now() - new Date(refDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (days < reminderDays) return null;
+        title = 'Pickup reminder';
+        message = 'Your device has been <strong>ready for pickup</strong> for <strong>' + days + ' day' + (days !== 1 ? 's' : '') + '</strong>. ' +
+            'The workshop allows up to <strong>' + reminderDays + ' days</strong> before a pickup is considered overdue. Please visit or message us to arrange collection.';
+    } else if (client.signInDate) {
+        days = Math.floor((Date.now() - new Date(client.signInDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (days < reminderDays) return null;
+        title = 'Long stay notice';
+        message = 'Your device has been with the workshop for <strong>' + days + ' day' + (days !== 1 ? 's' : '') + '</strong>, ' +
+            'which exceeds the <strong>' + reminderDays + '-day</strong> pickup window set by the workshop. Please contact us or pick up your device soon.';
+    } else {
+        return null;
+    }
+
+    return { title: title, message: message, days: days };
+}
+
+function showPreviewModeBanner() {
+    var banner = document.getElementById('previewModeBanner');
+    if (!banner) return;
+    banner.className = 'preview-mode-banner';
+    banner.innerHTML = '<i class="fas fa-eye"></i> PREVIEW MODE — sample client, no messages will be sent';
+    banner.style.display = 'block';
+}
+
+function showPickupOverdueBanner(client) {
+    var banner = document.getElementById('pickupOverdueBanner');
+    if (!banner) return;
+    var notice = getPickupOverdueNotice(client);
+    if (!notice) {
+        banner.style.display = 'none';
+        banner.innerHTML = '';
+        return;
+    }
+    banner.innerHTML =
+        '<div class="pickup-overdue-banner">' +
+        '<h4><i class="fas fa-bell"></i> ' + escHtml(notice.title) + '</h4>' +
+        '<p>' + notice.message + '</p></div>';
+    banner.style.display = 'block';
+}
+
+function isPortalThreadMessage(msg, clientId) {
+    if (!msg || !clientId) return false;
+    var cid = String(clientId).toUpperCase();
+    if (msg.threadId && String(msg.threadId).toUpperCase() === cid) return true;
+    if (msg.clientId && String(msg.clientId).toUpperCase() === cid) return true;
+    if (msg.senderId === 'PORTAL-' + clientId) return true;
+    if (msg.target && String(msg.target).toLowerCase() === 'portal-' + String(clientId).toLowerCase()) return true;
+    if ((msg.senderType === 'portal' || (msg.senderId && String(msg.senderId).indexOf('PORTAL-') === 0)) &&
+        msg.clientId && String(msg.clientId).toUpperCase() === cid) return true;
+    return false;
+}
+
+function mergePortalThreadMessages(incoming) {
+    if (!incoming || !incoming.length) return;
+    var activeClient = window.currentPortalClient;
+    incoming.forEach(function(m) {
+        if (!m || !m.id) return;
+        if (activeClient && !isPortalThreadMessage(m, activeClient.id)) return;
+        var idx = -1;
+        for (var i = 0; i < portalThreadMessages.length; i++) {
+            if (portalThreadMessages[i].id === m.id) { idx = i; break; }
+        }
+        if (idx >= 0) portalThreadMessages[idx] = m;
+        else portalThreadMessages.push(m);
+    });
+    portalThreadMessages.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+    renderPortalThread(portalThreadMessages);
+}
+
+function addPortalMessageOptimistic(msg) {
+    if (!msg || !msg.id) return;
+    portalThreadMessages.push(msg);
+    portalThreadMessages.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+    renderPortalThread(portalThreadMessages);
+}
+
+function stopPortalMessageListener() {
+    if (portalChatQuery && portalChatListener) {
+        portalChatQuery.off('value', portalChatListener);
+    }
+    portalChatQuery = null;
+    portalChatListener = null;
+}
+
+function startPortalMessageListener(client) {
+    stopPortalMessageListener();
+    portalThreadMessages = [];
+    if (!fbDb || !workshopUid || !client) return;
+
+    portalChatListener = function(snapshot) {
+        var msgs = [];
+        snapshot.forEach(function(child) {
+            var m = child.val();
+            if (m && isPortalThreadMessage(m, client.id)) msgs.push(m);
+        });
+        mergePortalThreadMessages(msgs);
+    };
+
+    // Code mode: the rules only allow the clientId query for the claimed ID.
+    // The threadId query and the full-path fallback below would be denied, so don't try them.
+    if (portalMode === 'code') {
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+            .orderByChild('clientId')
+            .equalTo(portalClaimedClientId || client.id);
+        portalChatQuery.on('value', portalChatListener, function(err) {
+            console.warn('Portal chat listener failed:', err);
+        });
+        return;
+    }
+
+    function useFullFallback() {
+        console.warn('Indexed portal listeners failed, using filtered full-path fallback');
+        stopPortalMessageListener();
+        portalThreadMessages = [];
+        portalChatListener = function(snapshot) {
+            var msgs = [];
+            snapshot.forEach(function(child) {
+                var m = child.val();
+                if (m && isPortalThreadMessage(m, client.id)) msgs.push(m);
+            });
+            mergePortalThreadMessages(msgs);
+        };
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages');
+        portalChatQuery.on('value', portalChatListener);
+    }
+
+    function tryThreadIdIndex() {
+        stopPortalMessageListener();
+        portalThreadMessages = [];
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+            .orderByChild('threadId')
+            .equalTo(client.id);
+        portalChatQuery.on('value', portalChatListener, function(err) {
+            console.warn('threadId index failed:', err);
+            useFullFallback();
+        });
+    }
+
+    portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+        .orderByChild('clientId')
+        .equalTo(client.id);
+    portalChatQuery.on('value', portalChatListener, function(err) {
+        console.warn('clientId index failed:', err);
+        tryThreadIdIndex();
+    });
+}
+
+function renderPortalThreadPhotos(attachments) {
+    if (!attachments || !attachments.length) return '';
+    var photos = attachments.filter(function(a) { return a && a.type === 'photo' && a.data; });
+    if (!photos.length) return '';
+    return '<div class="portal-thread-photos">' + photos.map(function(a) {
+        return '<img src="' + escAttr(a.data) + '" alt="Photo" onclick="openLightbox(this.src)">';
+    }).join('') + '</div>';
+}
+
+function renderPortalThread(msgs) {
+    var container = document.getElementById('portalMessageThread');
+    if (!container) return;
+
+    if (!msgs || msgs.length === 0) {
+        container.innerHTML = '<div class="portal-thread-empty">No messages yet. Say hello below!</div>';
+        return;
+    }
+
+    container.innerHTML = msgs.map(function(msg) {
+        var isClient = msg.senderType === 'portal' || (msg.senderId && String(msg.senderId).indexOf('PORTAL-') === 0);
+        var isCallReq = msg.messageType === 'call_request';
+        var who = isClient ? 'You' : escHtml(msg.senderName || 'Workshop');
+        var time = msg.timestamp ? new Date(msg.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        var textHtml = msg.text ? '<div>' + escHtml(msg.text) + '</div>' : '';
+        return '<div class="portal-thread-msg ' + (isClient ? 'client' : 'workshop') + (isCallReq ? ' call-request' : '') + '">' +
+            '<div class="portal-thread-bubble">' + textHtml + renderPortalThreadPhotos(msg.attachments) + '</div>' +
+            '<div class="portal-thread-meta">' + who + (time ? ' · ' + time : '') + '</div></div>';
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+function compressPortalImage(file, targetKB) {
+    return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var w = img.width, h = img.height;
+                var maxDim = 1600;
+                if (w > maxDim || h > maxDim) {
+                    if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                    else { w = Math.round(w * maxDim / h); h = maxDim; }
+                }
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                var quality = 0.88;
+                var result = canvas.toDataURL('image/jpeg', quality);
+                while (result.length / 1024 > targetKB && quality > 0.2) {
+                    quality -= 0.06;
+                    result = canvas.toDataURL('image/jpeg', quality);
+                }
+                resolve(result);
+            };
+            img.onerror = function() { reject(new Error('Failed to load image')); };
+            img.src = e.target.result;
+        };
+        reader.onerror = function() { reject(new Error('Failed to read file')); };
+        reader.readAsDataURL(file);
+    });
+}
+
+function updatePortalAttachPreview() {
+    var el = document.getElementById('portalAttachPreview');
+    if (!el) return;
+    if (!portalAttachments.length) {
+        el.classList.remove('active');
+        el.innerHTML = '';
+        return;
+    }
+    el.classList.add('active');
+    el.innerHTML = portalAttachments.map(function(att, i) {
+        return '<div class="portal-attach-thumb"><img src="' + escAttr(att.data) + '" alt="Attached">' +
+            '<button type="button" class="portal-attach-remove" onclick="removePortalAttachment(' + i + ')"><i class="fas fa-times"></i></button></div>';
+    }).join('');
+}
+
+function removePortalAttachment(index) {
+    portalAttachments.splice(index, 1);
+    updatePortalAttachPreview();
+}
+
+function clearPortalAttachments() {
+    portalAttachments = [];
+    updatePortalAttachPreview();
+}
+
+function attachPhotoToPortal() {
+    if (portalAttachments.length >= PORTAL_MAX_PHOTOS) {
+        var statusEl = document.getElementById('portalMsgStatus');
+        if (statusEl) statusEl.textContent = 'Maximum ' + PORTAL_MAX_PHOTOS + ' photos per message.';
+        return;
+    }
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 8 * 1024 * 1024) {
+            var statusEl = document.getElementById('portalMsgStatus');
+            if (statusEl) statusEl.textContent = 'Photo too large. Max 8MB.';
+            return;
+        }
+        var statusEl = document.getElementById('portalMsgStatus');
+        if (statusEl) statusEl.textContent = 'Compressing photo...';
+        compressPortalImage(file, 450).then(function(data) {
+            portalAttachments.push({ type: 'photo', data: data, name: file.name });
+            updatePortalAttachPreview();
+            if (statusEl) statusEl.textContent = '';
+        }).catch(function(err) {
+            if (statusEl) statusEl.textContent = 'Could not attach photo.';
+            console.error(err);
+        });
+    };
+    input.click();
+}
+
+// ============ SHOW CONNECTION ERROR ============
+function showConnectionError(msg) {
+    document.getElementById('connectingState').style.display = 'none';
+    document.getElementById('connectionError').style.display = 'block';
+    document.getElementById('connectionErrorMsg').textContent = msg;
+}
+
+// ============ CLIENT LOOKUP ============
+function lookupClient(prefilledId) {
+    var input = document.getElementById('clientIdInput');
+    var clientId = (prefilledId || input.value).trim().toUpperCase();
+
+    if (!clientId || clientId.length < 3) {
+        showError('Please enter a valid Client ID (from your receipt)');
+        return;
+    }
+
+    // Show loading
+    document.getElementById('lookupForm').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('resultsSection').style.display = 'none';
+
+    // ---- CODE MODE: claim the ID on the session, then read ONE client node ----
+    if (portalMode === 'code') {
+        var sessionUid = fbAuth && fbAuth.currentUser && fbAuth.currentUser.uid;
+        var notFoundMsg = 'No repair found with ID: ' + clientId + '. Please check the ID on your receipt.';
+        if (!sessionUid || !/^[A-Za-z0-9]{3,32}$/.test(clientId)) {
+            // IDs the rules would refuse to claim can't exist as a client key
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('lookupForm').style.display = 'block';
+            showError(notFoundMsg);
+            return;
+        }
+        var lookupStage = 'claim';
+        fbDb.ref('workshops/' + workshopUid + '/portalSessions/' + sessionUid + '/clientId').set(clientId)
+            .then(function() {
+                lookupStage = 'read';
+                return fbDb.ref('workshops/' + workshopUid + '/clients/' + clientId).once('value');
+            })
+            .then(function(snapshot) {
+                var client = snapshot.val();
+                document.getElementById('loadingState').style.display = 'none';
+                if (!client || typeof client !== 'object') {
+                    document.getElementById('lookupForm').style.display = 'block';
+                    showError(notFoundMsg);
+                    return;
+                }
+                delete client.faceDescriptor; // biometric data has no reason to ever reach the client-facing portal
+                client.id = clientId;          // node key IS the id; chat/review rules compare against this exact value
+                portalClaimedClientId = clientId;
+                loadOwnPortalReview(clientId);
+                showResults(client);
+            })
+            .catch(function(err) {
+                console.error('Lookup error (' + lookupStage + '):', err);
+                document.getElementById('loadingState').style.display = 'none';
+                var denied = err && err.code === 'PERMISSION_DENIED';
+                if (denied && lookupStage === 'claim') {
+                    showConnectionError('This QR code is invalid or has been revoked. Ask the workshop for a fresh one.');
+                    return;
+                }
+                document.getElementById('lookupForm').style.display = 'block';
+                if (denied) {
+                    showError('This client is not visible from this portal link. Scan a fresh QR.');
+                } else {
+                    showError('Could not fetch data. Please check your internet and try again.');
+                }
+            });
+        return;
+    }
+
+    // ---- LEGACY MODE: unchanged ----
+    fbDb.ref('workshops/' + workshopUid + '/clients').once('value')
+        .then(function(snapshot) {
+            var allClients = normalizeFirebaseList(snapshot.val());
+            allClients.forEach(function(c) { if (c) delete c.faceDescriptor; }); // biometric data has no reason to ever reach the client-facing portal
+            var client = findClientById(allClients, clientId);
+
+            document.getElementById('loadingState').style.display = 'none';
+
+            if (!client) {
+                document.getElementById('lookupForm').style.display = 'block';
+                showError('No repair found with ID: ' + clientId + '. Please check the ID on your receipt.');
+                return;
+            }
+
+            showResults(client);
+        })
+        .catch(function(err) {
+            console.error('Lookup error:', err);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('lookupForm').style.display = 'block';
+            var msg = 'Could not fetch data. Please check your internet and try again.';
+            if (err && (err.code === 'PERMISSION_DENIED' || err.message && err.message.indexOf('permission') >= 0)) {
+                msg = 'Access denied. The portal link may be outdated — please ask the workshop for a new QR code or link.';
+            }
+            showError(msg);
+        });
+}
+
+// ============ SHOW RESULTS ============
+// Display helper: falls back to device info when a client has no name / photo
+function getClientCardDisplay(c) {
+    const REAL_NAME = (c.name || '').trim();
+    const isPlaceholderName = !REAL_NAME || REAL_NAME === 'Undefined Name';
+    const deviceLabel = [c.deviceBrand, c.deviceModel].filter(Boolean).join(' ').trim();
+
+    const displayName = !isPlaceholderName
+        ? c.name
+        : (deviceLabel || ('Client ' + c.id));
+
+    const clientPhoto = c.profilePhoto || null;
+    const firstDevicePhoto = (Array.isArray(c.photos) && c.photos[0]) || null;
+
+    return {
+        name: displayName,
+        photo: clientPhoto || firstDevicePhoto || null,
+        photoIsDevice: !clientPhoto && !!firstDevicePhoto,
+        isPlaceholderName,
+    };
+}
+
+// Payment history for the client: ONLY the date and amount are shown.
+// Method, note, loggedBy and the balance transition are workshop-internal and must never be rendered here.
+function renderPortalPaymentHistory(client) {
+    var payments = Array.isArray(client.payments) ? client.payments : [];
+    var useful = payments.filter(function (p) { return !String(p.id || '').startsWith('PAY-LEGACY-'); });
+    if (useful.length === 0) return '';
+
+    var sorted = useful.slice().sort(function (a, b) { return new Date(b.at || 0) - new Date(a.at || 0); });
+    var totalPaid = useful.filter(function (p) { return p.type === 'payment'; })
+        .reduce(function (s, p) { return s + (parseFloat(p.amount) || 0); }, 0);
+
+    var rows = sorted.map(function (p) {
+        var isRefund = p.type === 'refund';
+        var date = p.at ? new Date(p.at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+        var sign = isRefund ? '\u2212' : '';
+        var color = isRefund ? '#c53030' : '#2d3748';
+        var bg = isRefund ? 'background:rgba(245,101,101,0.08);' : '';
+        return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f4f8;color:' + color + ';' + bg + '">' +
+            '<span style="font-size:13px;">' + escHtml(date) + '</span>' +
+            '<span style="font-weight:700;font-size:14px;">' + sign + CUR + ' ' + (parseFloat(p.amount) || 0).toLocaleString() + '</span>' +
+            '</div>';
+    }).join('');
+
+    return '<div style="padding:15px 0 0;margin-top:12px;border-top:1px solid #e2e8f0;">' +
+        '<h4 style="font-size:13px;color:#718096;margin-bottom:10px;"><i class="fas fa-history"></i> Payment History</h4>' +
+        rows +
+        '<div style="text-align:right;font-weight:700;font-size:13px;color:#276749;margin-top:10px;">Total paid: ' + CUR + ' ' + totalPaid.toLocaleString() + '</div>' +
+        '</div>';
+}
+
+function showResults(client) {
+    var statusMap = {
+        'pending':     { icon: 'fa-clock',         label: 'Pending',           msg: 'Your device is waiting to be repaired. We will get to it as soon as possible.' },
+        'in-progress': { icon: 'fa-tools',          label: 'In Progress',       msg: 'Your device is currently being repaired! We are working on it.' },
+        'completed':   { icon: 'fa-check-circle',   label: 'Ready for Pickup',  msg: '&#127881; Great news! Your device is repaired and ready for pickup!' },
+        'delivered':   { icon: 'fa-handshake',       label: 'Delivered',         msg: 'Your device has been collected. Thank you for choosing us!' },
+        'failed':      { icon: 'fa-times-circle',    label: 'Repair Failed',     msg: 'Unfortunately, the repair could not be completed. Please contact us for details.' },
+        'failed-delivered': { icon: 'fa-times-circle', label: 'Repair Failed',   msg: 'Unfortunately, the repair could not be completed. Your device has been returned to you — please contact us if you have any questions.' },
+        'abandoned':    { icon: 'fa-archive',         label: 'Abandoned',        msg: 'This repair has been abandoned. Please contact us for further assistance.' }
+    };
+
+    var st = statusMap[client.status] || statusMap['pending'];
+    var agreed = parseFloat(client.agreedAmount) || 0;
+    var deposited = parseFloat(client.depositedAmount) || 0;
+    var balance = agreed - deposited;
+
+    // Status section
+    var warrantyHtml = getWarrantyHtml(client);
+
+    var display = getClientCardDisplay(client);
+    var profileBlock = '';
+    if (display.photo && String(display.photo).trim()) {
+        profileBlock = '<div class="portal-client-photo-wrap"><div class="portal-client-photo"><img src="' + escAttr(display.photo) + '" alt=""></div>' +
+            (display.photoIsDevice ? '<span class="device-photo-badge" title="Device photo">📱</span>' : '') + '</div>';
+    }
+
+    var claimBadge = '';
+    if (client.isWarrantyClaim) {
+        claimBadge = '<div style="margin-top:8px;"><span class="warranty-badge active">' +
+            '<i class="fas fa-shield-alt"></i> Warranty claim' +
+            (client.originalJobId ? ' — original job ' + escHtml(client.originalJobId) : '') +
+            '</span></div>';
+    }
+    document.getElementById('resultStatus').innerHTML =
+        profileBlock +
+        '<div class="status-icon ' + client.status + '"><i class="fas ' + st.icon + '"></i></div>' +
+        '<h2>' + escHtml(display.name) + '</h2>' +
+        '<span class="status-badge ' + client.status + '">' + st.label + '</span>' +
+        claimBadge +
+        '<p class="status-message">' + st.msg + '</p>' +
+        warrantyHtml +
+        '<p style="color:#a0aec0;font-size:10px;margin-top:10px;font-family:monospace;">ID: ' + client.id + '</p>';
+
+    // Details
+    var html = '';
+
+    html += detailRow('fa-mobile-alt', 'Device',
+        escHtml((client.deviceBrand || 'N/A') + ' ' + (client.deviceModel || '')));
+
+    html += detailRow('fa-calendar-check', 'Sign-in Date', fmtDate(client.signInDate));
+
+    if (client.estimatedCompletion && client.status !== 'completed' && client.status !== 'delivered') {
+        var eta = getETA(client);
+        html += detailRow('fa-hourglass-half', 'Est. Completion',
+            fmtDate(client.estimatedCompletion) +
+            (eta ? ' <span style="font-size:11px;color:' + (eta.overdue ? '#e53e3e' : '#38a169') + ';">(' + eta.text + ')</span>' : ''));
+    }
+
+    if (client.technicianId) {
+        html += detailRow('fa-user-cog', 'Technician', client.technicianId);
+    }
+
+    html += detailRow('fa-money-bill-wave', 'Agreed', ('' + CUR + ' ') + agreed.toLocaleString());
+    html += detailRow('fa-hand-holding-usd', 'Deposited',
+        ('<span style="color:#38a169;">' + CUR + ' ') + deposited.toLocaleString() + '</span>');
+
+    // Balance (highlighted)
+    html += '<div class="balance-row detail-row">' +
+        '<span class="label"><i class="fas fa-wallet" style="width:16px;color:#667eea;"></i> <strong>Balance Due</strong></span>' +
+        '<span class="value ' + (balance > 0 ? 'owed' : 'paid') + ('">' + CUR + ' ') + balance.toLocaleString() + '</span></div>';
+
+    html += renderPortalPaymentHistory(client);
+
+    if (client.status !== 'completed' && client.status !== 'delivered') {
+        html += '<div style="margin:12px 0 0;padding:12px 14px;background:#fffaf0;border:1px solid #fbd38d;border-radius:10px;font-size:12px;color:#744210;line-height:1.5;">' +
+            '<strong><i class="fas fa-info-circle"></i> About payments</strong><br>' +
+            'Deposits shown here may be held until your repair is marked <strong>completed</strong> or <strong>delivered</strong>. ' +
+            'The workshop counts money as fully earned only after the job is finished and collected. Contact them if you have questions.' +
+            '</div>';
+    }
+
+    document.getElementById('resultDetails').innerHTML = html;
+
+    // Repair details (issue description, failed reason, notes)
+    var repairHtml = '';
+    if (client.issueDescription) {
+        repairHtml += '<div class="repair-issue"><strong>Issue:</strong> ' + escHtml(client.issueDescription) + '</div>';
+    }
+    if (client.status === 'failed' && client.failedComment) {
+        repairHtml += '<div class="failed-reason"><i class="fas fa-exclamation-triangle"></i> <strong>Failure Reason:</strong> ' + escHtml(client.failedComment) + '</div>';
+    }
+    if (client.warrantyClaimReason) {
+        repairHtml += '<div class="failed-reason"><i class="fas fa-shield-alt"></i> <strong>Warranty claim reason:</strong> ' + escHtml(client.warrantyClaimReason) + '</div>';
+    }
+    if (client.additionalNotes) {
+        repairHtml += '<div class="repair-issue" style="margin-top:8px;border-left-color:#ed8936;"><strong>Notes:</strong> ' + escHtml(client.additionalNotes) + '</div>';
+    }
+
+    if (repairHtml) {
+        document.getElementById('repairDetailsSection').style.display = 'block';
+        document.getElementById('repairDetailsContent').innerHTML = repairHtml;
+    } else {
+        document.getElementById('repairDetailsSection').style.display = 'none';
+    }
+
+    // Photos
+    var photosSection = document.getElementById('photosSection');
+    var photosGrid = document.getElementById('photosGrid');
+
+    if (client.photos) {
+        var photoList = normalizeFirebaseList(client.photos);
+        if (photoList.length > 0) {
+        photosSection.style.display = 'block';
+        photosGrid.innerHTML = photoList.map(function(photo, i) {
+            return '<img src="' + photo + '" alt="Photo ' + (i+1) + '" loading="lazy" onclick="openLightbox(this.src)">';
+        }).join('');
+        } else {
+            photosSection.style.display = 'none';
+        }
+    } else {
+        photosSection.style.display = 'none';
+    }
+
+    // After-Repair Photos
+    var afterPhotosSection = document.getElementById('afterPhotosSection');
+    var afterPhotosGrid = document.getElementById('afterPhotosGrid');
+
+    if (client.afterRepairPhotos) {
+        var afterPhotoList = normalizeFirebaseList(client.afterRepairPhotos);
+        if (afterPhotoList.length > 0) {
+            afterPhotosSection.style.display = 'block';
+            afterPhotosGrid.innerHTML = afterPhotoList.map(function(photo, i) {
+                return '<img src="' + photo + '" alt="After-Repair Photo ' + (i+1) + '" loading="lazy" onclick="openLightbox(this.src)">';
+            }).join('');
+        } else {
+            afterPhotosSection.style.display = 'none';
+        }
+    } else {
+        afterPhotosSection.style.display = 'none';
+    }
+
+    showPickupOverdueBanner(client);
+    if (workshopData) renderWorkshopContact(workshopData, 'workshopContactResults');
+    if (workshopData) renderPaymentMethods(workshopData, balance, client);
+
+    // Show results
+    document.getElementById('resultsSection').style.display = 'block';
+
+    window.currentPortalClient = client;
+    portalReviewRating = 0;
+    renderPortalReviews();
+    var pm = document.getElementById('portalMessageInput');
+    var ps = document.getElementById('portalMsgStatus');
+    if (pm) pm.value = '';
+    if (ps) ps.textContent = '';
+    var sb = document.getElementById('portalSendBtn');
+    if (sb) sb.disabled = false;
+
+    if (!portalPreviewMode) startPortalMessageListener(client);
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function sendPortalMessage() {
+    var client = window.currentPortalClient;
+    var statusEl = document.getElementById('portalMsgStatus');
+    var btn = document.getElementById('portalSendBtn');
+    var input = document.getElementById('portalMessageInput');
+    if (portalPreviewMode) {
+        if (statusEl) statusEl.textContent = 'Preview mode — messages are not actually sent.';
+        return;
+    }
+    if (!client || !fbDb || !workshopUid ||
+        (portalMode === 'code' && portalClaimedClientId !== client.id)) {
+        if (statusEl) statusEl.textContent = 'Cannot send right now.';
+        return;
+    }
+    var text = (input && input.value || '').trim();
+    if (text.length < 1 && portalAttachments.length < 1) {
+        if (statusEl) statusEl.textContent = 'Please enter a message or attach a photo.';
+        return;
+    }
+    var phone = String(client.phone1 || client.phone2 || '').replace(/\s/g, '');
+    var msgId = 'PMSG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 8);
+    var localTs = Date.now();
+    var attachmentsCopy = portalAttachments.length ? portalAttachments.slice() : null;
+    var optimisticMsg = {
+        id: msgId,
+        senderId: 'PORTAL-' + client.id,
+        senderName: client.name,
+        senderType: 'portal',
+        clientId: client.id,
+        clientName: client.name,
+        clientPhone: phone,
+        threadId: client.id,
+        text: text,
+        attachments: attachmentsCopy,
+        target: 'broadcast',
+        timestamp: localTs,
+        readBy: {}
+    };
+
+    if (btn) btn.disabled = true;
+    if (statusEl) statusEl.textContent = 'Sending...';
+    if (input) input.value = '';
+    clearPortalAttachments();
+    addPortalMessageOptimistic(optimisticMsg);
+
+    var msgRef = fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId);
+    var writeP;
+    if (portalMode === 'code') {
+        // Rules allow create-only (!data.exists()). The legacy follow-up write to /timestamp
+        // would be denied, so stamp the server time in the single initial write.
+        writeP = msgRef.set(Object.assign({}, optimisticMsg, { timestamp: firebase.database.ServerValue.TIMESTAMP }));
+    } else {
+        writeP = msgRef.set(optimisticMsg)
+            .then(function() {
+                return fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId + '/timestamp')
+                    .set(firebase.database.ServerValue.TIMESTAMP);
+            });
+    }
+    writeP
+        .then(function() {
+            if (statusEl) statusEl.textContent = 'Message sent!';
+            if (btn) btn.disabled = false;
+        })
+        .catch(function(err) {
+            console.error(err);
+            portalThreadMessages = portalThreadMessages.filter(function(m) { return m.id !== msgId; });
+            renderPortalThread(portalThreadMessages);
+            if (input) input.value = text;
+            if (attachmentsCopy) portalAttachments = attachmentsCopy.slice();
+            updatePortalAttachPreview();
+            if (statusEl) statusEl.textContent = 'Could not send. Check connection and try again.';
+            if (btn) btn.disabled = false;
+        });
+}
+
+// ============ HELPERS ============
+function detailRow(icon, label, value) {
+    return '<div class="detail-row">' +
+        '<span class="label"><i class="fas ' + icon + '" style="width:16px;color:#667eea;"></i> ' + label + '</span>' +
+        '<span class="value">' + value + '</span></div>';
+}
+
+function fmtDate(d) {
+    if (!d) return 'N/A';
+    return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function escHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function escAttr(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function applyPortalBackground(ws) {
+    var bg = (ws && ws.portalBackground) ? ws.portalBackground : '';
+    var layer = document.getElementById('portalBgLayer');
+    if (!layer) return;
+
+    if (bg) {
+        layer.style.backgroundImage = 'url("' + bg + '")';
+        document.body.classList.add('portal-has-wallpaper');
+    } else {
+        layer.style.backgroundImage = '';
+        document.body.classList.remove('portal-has-wallpaper');
+    }
+}
+
+function applyPortalMessageBackground(ws) {
+    var section = document.getElementById('portalMessageSection');
+    if (!section || !ws) return;
+    var useWallpaper = ws.portalMessageWallpaper !== false;
+    var bg = ws.portalBackground;
+    var opacity = typeof ws.portalMessageBgOpacity === 'number' ? ws.portalMessageBgOpacity : 88;
+    if (useWallpaper && bg) {
+        section.classList.add('has-wallpaper');
+        section.style.backgroundImage = 'url("' + bg + '")';
+        section.style.setProperty('--portal-msg-overlay', String(opacity / 100));
+    } else {
+        section.classList.remove('has-wallpaper');
+        section.style.backgroundImage = '';
+    }
+}
+
+function requestPortalCall() {
+    var client = window.currentPortalClient;
+    var statusEl = document.getElementById('portalMsgStatus');
+    var btn = document.getElementById('portalCallBtn');
+    if (!client || !fbDb || !workshopUid) {
+        if (statusEl) statusEl.textContent = 'Cannot send request right now.';
+        return;
+    }
+    var lastReq = sessionStorage.getItem('portalCallReq_' + client.id);
+    if (lastReq && Date.now() - parseInt(lastReq, 10) < 10 * 60 * 1000) {
+        if (statusEl) statusEl.textContent = 'Call already requested. The workshop will contact you soon.';
+        return;
+    }
+    var phone = String(client.phone1 || client.phone2 || '').replace(/\s/g, '');
+    var msgId = 'PMSG-CALL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 8);
+    var optimisticMsg = {
+        id: msgId,
+        senderId: 'PORTAL-' + client.id,
+        senderName: client.name,
+        senderType: 'portal',
+        messageType: 'call_request',
+        clientId: client.id,
+        clientName: client.name,
+        clientPhone: phone,
+        threadId: client.id,
+        text: 'Call requested — please call me back.',
+        attachments: null,
+        target: 'broadcast',
+        timestamp: Date.now(),
+        readBy: {}
+    };
+    if (btn) btn.disabled = true;
+    if (statusEl) statusEl.textContent = 'Sending call request...';
+    addPortalMessageOptimistic(optimisticMsg);
+    fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set(optimisticMsg)
+        .then(function() {
+            sessionStorage.setItem('portalCallReq_' + client.id, String(Date.now()));
+            if (statusEl) statusEl.textContent = 'Call request sent! The workshop will call you soon.';
+            if (btn) btn.disabled = false;
+        })
+        .catch(function(err) {
+            console.error(err);
+            portalThreadMessages = portalThreadMessages.filter(function(m) { return m.id !== msgId; });
+            renderPortalThread(portalThreadMessages);
+            if (statusEl) statusEl.textContent = 'Could not send request. Try again.';
+            if (btn) btn.disabled = false;
+        });
+}
+
+function getETA(client) {
+    if (!client.estimatedCompletion) return null;
+    var eta = new Date(client.estimatedCompletion);
+    var now = new Date();
+    var daysLeft = Math.ceil((eta - now) / (1000*60*60*24));
+    if (daysLeft > 0) return { overdue: false, text: daysLeft + ' day' + (daysLeft > 1 ? 's' : '') + ' left' };
+    if (daysLeft === 0) return { overdue: false, text: 'Due today' };
+    return { overdue: true, text: Math.abs(daysLeft) + ' day' + (Math.abs(daysLeft) > 1 ? 's' : '') + ' overdue' };
+}
+
+function getWarrantyHtml(client) {
+    if (!client.warrantyDays || client.warrantyDays === 0) return '';
+    if (client.status !== 'completed' && client.status !== 'delivered') {
+        return '<div style="margin-top:10px;"><span class="warranty-badge pending"><i class="fas fa-shield-alt"></i> ' + client.warrantyDays + '-day warranty (starts after repair)</span></div>';
+    }
+    var completedDate = new Date(client.updatedAt || client.createdAt);
+    var expiry = new Date(completedDate);
+    expiry.setDate(expiry.getDate() + client.warrantyDays);
+    var daysLeft = Math.ceil((expiry - new Date()) / (1000*60*60*24));
+    if (daysLeft > 0) {
+        return '<div style="margin-top:10px;"><span class="warranty-badge active"><i class="fas fa-shield-alt"></i> Warranty: ' + daysLeft + ' days remaining</span></div>';
+    }
+    return '<div style="margin-top:10px;"><span class="warranty-badge expired"><i class="fas fa-shield-alt"></i> Warranty expired</span></div>';
+}
+
+function showError(msg) {
+    var el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 8000);
+}
+
+// ---- Ratings & reviews: workshops/{uid}/reviews/{clientId} (one per client, so posting again edits it) ----
+var portalReviews = {};
+var portalReviewRating = 0;
+var portalReviewsExpanded = false;
+var REVIEWS_VISIBLE = 3;
+var REVIEWS_MIN_FOR_RATING = 10;
+var portalReviewsRef = null;
+
+function reviewKey(id) { return String(id).replace(/[.#$\[\]\/]/g, '_'); }
+
+function loadPortalReviews() {
+    if (portalReviewsRef) portalReviewsRef.off();
+    if (portalMode === 'code') {
+        // Code mode can't read the whole reviews node: summary/list come from reviewsPublic
+        portalReviewsRef = fbDb.ref('workshops/' + workshopUid + '/reviewsPublic');
+        portalReviewsRef.on('value', function (snap) {
+            portalPublicReviews = snap.val() || null;
+            rebuildPortalReviewsFromCode();
+        }, function (err) {
+            console.warn('reviewsPublic listener failed:', err);
+            portalPublicReviews = null;
+            rebuildPortalReviewsFromCode();
+        });
+        return;
+    }
+    portalReviewsRef = fbDb.ref('workshops/' + workshopUid + '/reviews');
+    portalReviewsRef.on('value', function (snap) {
+        portalReviews = snap.val() || {};
+        renderPortalReviews();
+    }, function (err) {
+        console.warn('Reviews listener failed:', err);
+        portalReviews = {};
+        renderPortalReviews();
+    });
+}
+
+function loadOwnPortalReview(clientId) {
+    if (portalOwnReviewRef) portalOwnReviewRef.off();
+    portalOwnReview = null;
+    portalOwnReviewRef = fbDb.ref('workshops/' + workshopUid + '/reviews/' + reviewKey(clientId));
+    portalOwnReviewRef.on('value', function (snap) {
+        portalOwnReview = snap.val() || null;
+        rebuildPortalReviewsFromCode();
+    }, function (err) {
+        console.warn('Own review listener failed:', err);
+        portalOwnReview = null;
+        rebuildPortalReviewsFromCode();
+    });
+}
+
+function rebuildPortalReviewsFromCode() {
+    var merged = {};
+    if (portalPublicReviews && typeof portalPublicReviews === 'object') {
+        Object.keys(portalPublicReviews).forEach(function (k) { merged[k] = portalPublicReviews[k]; });
+    }
+    if (portalOwnReview && portalClaimedClientId) {
+        merged[reviewKey(portalClaimedClientId)] = portalOwnReview;   // own review wins over its public copy
+    }
+    portalReviews = merged;
+    renderPortalReviews();
+}
+
+function starRow(n, cls) {
+    var h = '';
+    for (var i = 1; i <= 5; i++) h += '<span class="' + (i <= Math.round(n) ? 'on' : '') + '">\u2605</span>';
+    return '<span class="' + cls + '">' + h + '</span>';
+}
+
+function reviewCardHtml(r) {
+    var d = r.updatedAt ? new Date(r.updatedAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+    var reply = (r.reply && r.reply.text)
+        ? '<div class="review-reply"><strong><i class="fas fa-reply"></i> Workshop reply</strong>' + escHtml(r.reply.text) + '</div>' : '';
+    return '<div class="review-card">' + starRow(r.rating, 'review-stars')
+        + ' <strong>' + escHtml(r.name || 'Client') + '</strong>'
+        + (r.text ? '<div>' + escHtml(r.text) + '</div>' : '')
+        + reply + '<div class="meta">' + d + '</div></div>';
+}
+
+function renderPortalReviews() {
+    var list = Object.keys(portalReviews).map(function (k) { return portalReviews[k]; })
+        .filter(function (r) { return r && r.rating >= 1 && r.rating <= 5; })
+        .sort(function (a, b) { return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0); });
+
+    var count = list.length;
+    var avg = count ? list.reduce(function (s, r) { return s + r.rating; }, 0) / count : 0;
+
+    // Header summary under the workshop logo
+    var summary = document.getElementById('portalRatingSummary');
+    if (summary) {
+        if (portalMode === 'code' && portalPublicReviews === null) {
+            summary.innerHTML = '';   // no reviewsPublic -> no rating summary
+        } else {
+            summary.innerHTML = (count >= REVIEWS_MIN_FOR_RATING)
+                ? starRow(avg, 'hdr-stars') + ' <strong>' + avg.toFixed(1) + '</strong> (' + count + ')'
+                : '<span class="not-rated-label">Not rated</span>';
+        }
+    }
+
+    // Reviews list on the lookup screen
+    var listBox = document.getElementById('portalReviewsList');
+    if (listBox) {
+        if (count === 0) { listBox.style.display = 'none'; listBox.innerHTML = ''; }
+        else {
+            var html = '<h3><i class="fas fa-star" style="color:#ecc94b;"></i> Client Reviews</h3>';
+            html += list.slice(0, REVIEWS_VISIBLE).map(reviewCardHtml).join('');
+            if (count > REVIEWS_VISIBLE) {
+                html += '<div id="moreReviews" style="display:' + (portalReviewsExpanded ? 'block' : 'none') + ';">'
+                    + list.slice(REVIEWS_VISIBLE).map(reviewCardHtml).join('') + '</div>';
+                html += '<button type="button" class="review-more" onclick="toggleMoreReviews()">'
+                    + (portalReviewsExpanded ? 'Show fewer' : 'Show ' + (count - REVIEWS_VISIBLE) + ' more') + '</button>';
+            }
+            listBox.innerHTML = html;
+            listBox.style.display = 'block';
+        }
+    }
+
+    // Write / edit form on the results screen
+    var formBox = document.getElementById('portalReviewFormBlock');
+    if (formBox) {
+        var client = window.currentPortalClient;
+        var canReview = client && String(client.id).indexOf('PREVIEW') !== 0;
+        if (!canReview) { formBox.style.display = 'none'; formBox.innerHTML = ''; }
+        else {
+            var mine = portalReviews[reviewKey(client.id)];
+            if (!portalReviewRating && mine) portalReviewRating = mine.rating;
+            var pick = '';
+            for (var i = 1; i <= 5; i++)
+                pick += '<button type="button" class="' + (i <= portalReviewRating ? 'on' : '') + '" onclick="setReviewRating(' + i + ')" aria-label="' + i + ' star">\u2605</button>';
+            formBox.innerHTML =
+                '<h3><i class="fas fa-pen" style="color:#667eea;"></i> ' + (mine ? 'Edit your review' : 'Leave a review') + '</h3>'
+                + '<div class="review-form"><div class="review-pick">' + pick + '</div>'
+                + '<textarea id="reviewText" maxlength="500" placeholder="Write your review (optional)">' + escHtml(mine ? mine.text || '' : '') + '</textarea>'
+                + '<button type="button" class="btn-review" onclick="submitPortalReview()">' + (mine ? 'Update review' : 'Post review') + '</button>'
+                + '<span id="reviewMsg" style="font-size:12px;margin-left:8px;color:#718096;"></span></div>';
+            formBox.style.display = 'block';
+        }
+    }
+}
+
+function setReviewRating(n) {
+    var t = document.getElementById('reviewText');
+    var keep = t ? t.value : '';
+    portalReviewRating = n;
+    renderPortalReviews();
+    var t2 = document.getElementById('reviewText'); if (t2) t2.value = keep;
+}
+
+function toggleMoreReviews() { portalReviewsExpanded = !portalReviewsExpanded; renderPortalReviews(); }
+
+function submitPortalReview() {
+    var client = window.currentPortalClient;
+    var msg = document.getElementById('reviewMsg');
+    if (!client) return;
+    if (!portalReviewRating) { if (msg) msg.textContent = 'Please choose a star rating.'; return; }
+    var now = new Date().toISOString();
+    var prev = portalReviews[reviewKey(client.id)];
+    var first = String(client.name || '').trim().split(/\s+/)[0];
+    // update() only touches these fields, so a workshop reply on the same review is kept
+    var patch = {
+        rating: portalReviewRating,
+        text: document.getElementById('reviewText').value.trim().slice(0, 500),
+        name: (first && first !== 'Undefined') ? first : 'Client',
+        createdAt: prev && prev.createdAt ? prev.createdAt : now,
+        updatedAt: now
+    };
+    if (msg) msg.textContent = 'Saving...';
+    fbDb.ref('workshops/' + workshopUid + '/reviews/' + reviewKey(client.id)).update(patch)
+        .then(function () {
+            portalReviews[reviewKey(client.id)] = Object.assign({}, prev || {}, patch);
+            renderPortalReviews();
+            var m = document.getElementById('reviewMsg');
+            if (m) m.textContent = 'Thank you! Your review is saved.';
+        })
+        .catch(function () {
+            var m = document.getElementById('reviewMsg');
+            if (m) m.textContent = 'Could not save your review. Please try again.';
+        });
+}
+
+async function submitPreCheckin() {
+    const name = document.getElementById('pciName').value.trim();
+    const phone = document.getElementById('pciPhone').value.trim();
+    const brand = document.getElementById('pciBrand').value;
+    const model = document.getElementById('pciModel').value.trim();
+    const issue = document.getElementById('pciIssue').value.trim();
+    const prefDate = document.getElementById('pciPreferredDate').value;
+    const errEl = document.getElementById('pciError');
+    errEl.style.display = 'none';
+
+    if (!name) { errEl.textContent = 'Please enter your name'; errEl.style.display = 'block'; return; }
+    if (!phone) { errEl.textContent = 'Please enter your phone number'; errEl.style.display = 'block'; return; }
+    if (!brand) { errEl.textContent = 'Please choose your device brand'; errEl.style.display = 'block'; return; }
+    if (!issue) { errEl.textContent = 'Please describe the issue'; errEl.style.display = 'block'; return; }
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 6) { errEl.textContent = 'Please enter a valid phone number'; errEl.style.display = 'block'; return; }
+
+    // Rate limit: 3 per phone per 24h (kept in this browser only)
+    const rlKey = 'pciRate_' + phoneDigits;
+    let rl = { count: 0, resetAt: 0 };
+    try { rl = JSON.parse(localStorage.getItem(rlKey)) || rl; } catch (e) {}
+    if (Date.now() > rl.resetAt) rl = { count: 0, resetAt: Date.now() + 86400000 };
+    if (rl.count >= 3) {
+        errEl.textContent = 'Too many submissions from this number today. Please visit the workshop directly.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    const id = 'PCI-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+    const submission = {
+        id, name, phone, brand, model, issue,
+        preferredDate: prefDate || null,
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        submittedFromDevice: 'portal'
+    };
+
+    const btn = document.getElementById('pciSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = 'Sending...';
+
+    try {
+        await fbDb.ref('workshops/' + workshopUid + '/preCheckins/' + id).set(submission);
+        rl.count++;
+        try { localStorage.setItem(rlKey, JSON.stringify(rl)); } catch (e) {}
+        document.getElementById('pciSubmitBtn').style.display = 'none';
+        document.getElementById('pciSuccess').style.display = 'block';
+        document.getElementById('pciRefNumber').textContent = id;
+    } catch (e) {
+        errEl.textContent = 'Could not send — check connection and try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send pre-check-in';
+    }
+}
+
+function goBack() {
+    stopPortalMessageListener();
+    portalThreadMessages = [];
+    window.currentPortalClient = null;
+    portalReviewRating = 0;
+    portalReviewsExpanded = false;
+    renderPortalReviews();
+    var pm = document.getElementById('portalMessageInput');
+    var ps = document.getElementById('portalMsgStatus');
+    if (pm) pm.value = '';
+    if (ps) ps.textContent = '';
+    var banner = document.getElementById('pickupOverdueBanner');
+    if (banner) { banner.style.display = 'none'; banner.innerHTML = ''; }
+    var thread = document.getElementById('portalMessageThread');
+    if (thread) thread.innerHTML = '<div class="portal-thread-empty">No messages yet. Say hello below!</div>';
+    clearPortalAttachments();
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('lookupForm').style.display = 'block';
+    document.getElementById('clientIdInput').value = '';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('clientIdInput').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+    if (e.target.id === 'lightbox' || e.target.closest('.lightbox-close')) {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Enter key handler
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('clientIdInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') lookupClient();
+    });
+    var portalInput = document.getElementById('portalMessageInput');
+    if (portalInput) {
+        portalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPortalMessage();
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
