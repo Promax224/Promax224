@@ -155,6 +155,9 @@
             appearance: none;
         }
 
+        .portal-input-group select, .portal-input-group textarea {
+            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-family: inherit; background: #fff;
+        }
         .portal-input-group input:focus {
             outline: none; border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
@@ -1317,6 +1320,41 @@
             <i class="fas fa-search"></i> Check My Repair Status
         </button>
         <div class="error-msg" id="errorMsg"></div>
+
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0;">
+            <h3 style="font-size:14px;color:#2d3748;margin-bottom:10px;">
+                <i class="fas fa-clipboard-check"></i> Pre-check-in your device
+            </h3>
+            <p style="font-size:12px;color:#718096;margin-bottom:12px;">
+                Save your details now so pickup is faster. Bring your device
+                during working hours and we'll have your info ready.
+            </p>
+            <div class="portal-input-group"><label>Your name *</label><input id="pciName" type="text" placeholder="Full name"></div>
+            <div class="portal-input-group"><label>Phone number *</label><input id="pciPhone" type="tel" placeholder="e.g. 0771234567"></div>
+            <div class="portal-input-group"><label>Device brand *</label>
+                <select id="pciBrand">
+                    <option value="">Choose brand</option>
+                    <option>ALCATEL</option><option>GOOGLE PIXEL</option><option>HONOR</option><option>HUAWEI</option>
+                    <option>INFINIX</option><option>IPHONE</option><option>ITEL</option><option>KGTEL</option>
+                    <option>LENOVO</option><option>LG</option><option>NOKIA</option><option>ONEPLUS</option>
+                    <option>OPPO</option><option>REALME</option><option>REDMI</option><option>SAMSUNG</option>
+                    <option>TECNO</option><option>VIVO</option><option>XIAOMI</option><option>Other</option>
+                </select>
+            </div>
+            <div class="portal-input-group"><label>Model</label><input id="pciModel" type="text" placeholder="e.g. Galaxy S21"></div>
+            <div class="portal-input-group"><label>What's the issue? *</label><textarea id="pciIssue" rows="3"></textarea></div>
+            <div class="portal-input-group"><label>Preferred drop-off date (optional)</label><input id="pciPreferredDate" type="date"></div>
+            <button class="submit-btn" id="pciSubmitBtn" onclick="submitPreCheckin()">
+                <i class="fas fa-paper-plane"></i> Send pre-check-in
+            </button>
+            <div class="error-msg" id="pciError" style="margin-top:10px;"></div>
+            <div id="pciSuccess" style="display:none;text-align:center;padding:20px;color:#276749;">
+                <i class="fas fa-check-circle" style="font-size:40px;margin-bottom:10px;"></i>
+                <p style="font-weight:600;">Received! See you soon.</p>
+                <p style="font-size:13px;margin-top:6px;">Show this confirmation at the counter:</p>
+                <p id="pciRefNumber" style="font-size:16px;font-weight:800;font-family:monospace;margin-top:8px;"></p>
+            </div>
+        </div>
         <div id="portalReviewsList" class="portal-reviews-list" style="display:none;"></div>
     </div>
 
@@ -1430,25 +1468,40 @@ var portalAttachments = [];
 var PORTAL_MAX_PHOTOS = 2;
 var portalAutoClientId = null;
 var portalPreviewMode = false;
+var portalMode = 'legacy';           // 'legacy' (?d=...) | 'code' (?w=...&c=...)
+var portalClaimedClientId = null;    // code mode: the clientId this anonymous session has claimed
+var portalPublicReviews = null;      // code mode: value of workshops/{w}/reviewsPublic (null = absent)
+var portalOwnReview = null;          // code mode: value of workshops/{w}/reviews/{claimedClientId}
+var portalOwnReviewRef = null;
+// Public Firebase web config (not secret). The new URL carries no apiKey/databaseURL, so it must live here.
+var PORTAL_FIREBASE_CONFIG = { apiKey: '', databaseURL: '', projectId: '' };
 
 (function init() {
     var params = new URLSearchParams(window.location.search);
-    var encoded = params.get('d');
-    portalAutoClientId = params.get('c');
     portalPreviewMode = params.get('preview') === 'payment';
 
-    if (!encoded) {
+    if (params.get('d')) {
+        portalMode = 'legacy';
+        portalAutoClientId = params.get('c');   // legacy: c = auto-open client ID (unchanged)
+        runExistingEmailPasswordFlow(params.get('d'));
+    } else if (params.get('w') && params.get('c')) {
+        portalMode = 'code';
+        portalPreviewMode = false;              // preview is a legacy/owner feature
+        connectViaPortalCode(params.get('w'), params.get('c'));   // here c = portal code
+    } else {
         showConnectionError('Invalid link. Please scan the QR code at the workshop.');
-        return;
     }
+})();
 
+// Exact body of the old init() try/catch, moved verbatim. No functional change.
+function runExistingEmailPasswordFlow(encoded) {
     try {
         var config = JSON.parse(atob(decodeURIComponent(encoded)));
         connectToFirebase(config);
     } catch(e) {
         showConnectionError('Invalid QR code data. Please ask the workshop for a new QR code.');
     }
-})();
+}
 
 // ============ CONNECT TO FIREBASE ============
 function normalizeFirebaseList(data) {
@@ -1576,6 +1629,94 @@ function connectToFirebase(config) {
     } catch(e) {
         showConnectionError('Connection error: ' + e.message);
     }
+}
+
+function connectViaPortalCode(workshopUidParam, portalCode) {
+    // w and c are interpolated into database paths, so validate their shape first
+    if (!/^[A-Za-z0-9_-]{6,128}$/.test(workshopUidParam) ||
+        !/^[^\/.#$\[\]\s]{16,64}$/.test(portalCode)) {
+        showConnectionError('Invalid link. Please scan the QR code at the workshop.');
+        return;
+    }
+    var cfg = PORTAL_FIREBASE_CONFIG;
+    if (!cfg || !cfg.apiKey || !cfg.databaseURL || !cfg.projectId) {
+        console.error('[Portal] PORTAL_FIREBASE_CONFIG is not filled in');
+        showConnectionError('Could not connect. Scan a fresh QR from the workshop.');
+        return;
+    }
+
+    var stage = 'init';
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp({
+                apiKey: cfg.apiKey,
+                databaseURL: cfg.databaseURL,
+                projectId: cfg.projectId,
+                authDomain: cfg.projectId + '.firebaseapp.com'
+            });
+        }
+        fbDb = firebase.database();
+        fbAuth = firebase.auth();
+        workshopUid = workshopUidParam;
+    } catch (e) {
+        console.error('[Portal] init failed:', e);
+        showConnectionError('Could not connect. Scan a fresh QR from the workshop.');
+        return;
+    }
+
+    stage = 'auth';
+    fbAuth.signInAnonymously()
+        .then(function () {
+            var user = fbAuth.currentUser;
+            if (!user) throw new Error('No anonymous user after sign-in');
+            stage = 'session';
+            // The rules reject this write unless the code exists under portalCodes
+            return fbDb.ref('workshops/' + workshopUid + '/portalSessions/' + user.uid)
+                .set({ code: portalCode });
+        })
+        .then(function () {
+            stage = 'settings';
+            return fbDb.ref('workshops/' + workshopUid + '/settings').once('value');
+        })
+        .then(function (snapshot) {
+            var ws = snapshot.val() || {};
+            workshopData = ws;
+            applyPortalWorkshopSettings(ws);
+            loadPortalReviews();   // code mode: reviewsPublic only (own review loads after a client is claimed)
+            document.getElementById('connectingState').style.display = 'none';
+            document.getElementById('lookupForm').style.display = 'block';
+            setTimeout(function () {
+                var inp = document.getElementById('clientIdInput');
+                if (inp) inp.focus();
+            }, 300);
+        })
+        .catch(function (err) {
+            console.error('[Portal] code flow failed at stage "' + stage + '":', err);
+            if (stage === 'session' && err && err.code === 'PERMISSION_DENIED') {
+                showConnectionError('This QR code is invalid or has been revoked. Ask the workshop for a fresh one.');
+            } else {
+                showConnectionError('Could not connect. Scan a fresh QR from the workshop.');
+            }
+        });
+}
+
+// Same branding/contact rendering connectToFirebase does inline (that function is left untouched).
+function applyPortalWorkshopSettings(ws) {
+    if (ws.currencyCode) window.__portalCurrency = ws.currencyCode;
+    if (ws.workshopName) {
+        document.getElementById('workshopName').textContent = ws.workshopName;
+        document.title = ws.workshopName + ' - Repair Status';
+    }
+    if (ws.workshopLogo) {
+        document.getElementById('portalLogo').innerHTML =
+            '<img src="' + escAttr(ws.workshopLogo) + '" alt="Logo">';
+    }
+    applyPortalBackground(ws);
+    applyPortalMessageBackground(ws);
+    renderWorkshopContact(ws, 'workshopContactLookup');
+    renderWorkshopContact(ws, 'workshopContactResults');
+    var tosLink = document.getElementById('portalTosLink');
+    if (tosLink) tosLink.style.display = (ws.termsOfService && ws.termsOfService.trim()) ? 'inline-block' : 'none';
 }
 
 function renderWorkshopContact(ws, elementId) {
@@ -1988,6 +2129,18 @@ function startPortalMessageListener(client) {
         mergePortalThreadMessages(msgs);
     };
 
+    // Code mode: the rules only allow the clientId query for the claimed ID.
+    // The threadId query and the full-path fallback below would be denied, so don't try them.
+    if (portalMode === 'code') {
+        portalChatQuery = fbDb.ref('workshops/' + workshopUid + '/chat/messages')
+            .orderByChild('clientId')
+            .equalTo(portalClaimedClientId || client.id);
+        portalChatQuery.on('value', portalChatListener, function(err) {
+            console.warn('Portal chat listener failed:', err);
+        });
+        return;
+    }
+
     function useFullFallback() {
         console.warn('Indexed portal listeners failed, using filtered full-path fallback');
         stopPortalMessageListener();
@@ -2167,6 +2320,56 @@ function lookupClient(prefilledId) {
     document.getElementById('loadingState').style.display = 'block';
     document.getElementById('resultsSection').style.display = 'none';
 
+    // ---- CODE MODE: claim the ID on the session, then read ONE client node ----
+    if (portalMode === 'code') {
+        var sessionUid = fbAuth && fbAuth.currentUser && fbAuth.currentUser.uid;
+        var notFoundMsg = 'No repair found with ID: ' + clientId + '. Please check the ID on your receipt.';
+        if (!sessionUid || !/^[A-Za-z0-9]{3,32}$/.test(clientId)) {
+            // IDs the rules would refuse to claim can't exist as a client key
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('lookupForm').style.display = 'block';
+            showError(notFoundMsg);
+            return;
+        }
+        var lookupStage = 'claim';
+        fbDb.ref('workshops/' + workshopUid + '/portalSessions/' + sessionUid + '/clientId').set(clientId)
+            .then(function() {
+                lookupStage = 'read';
+                return fbDb.ref('workshops/' + workshopUid + '/clients/' + clientId).once('value');
+            })
+            .then(function(snapshot) {
+                var client = snapshot.val();
+                document.getElementById('loadingState').style.display = 'none';
+                if (!client || typeof client !== 'object') {
+                    document.getElementById('lookupForm').style.display = 'block';
+                    showError(notFoundMsg);
+                    return;
+                }
+                delete client.faceDescriptor; // biometric data has no reason to ever reach the client-facing portal
+                client.id = clientId;          // node key IS the id; chat/review rules compare against this exact value
+                portalClaimedClientId = clientId;
+                loadOwnPortalReview(clientId);
+                showResults(client);
+            })
+            .catch(function(err) {
+                console.error('Lookup error (' + lookupStage + '):', err);
+                document.getElementById('loadingState').style.display = 'none';
+                var denied = err && err.code === 'PERMISSION_DENIED';
+                if (denied && lookupStage === 'claim') {
+                    showConnectionError('This QR code is invalid or has been revoked. Ask the workshop for a fresh one.');
+                    return;
+                }
+                document.getElementById('lookupForm').style.display = 'block';
+                if (denied) {
+                    showError('This client is not visible from this portal link. Scan a fresh QR.');
+                } else {
+                    showError('Could not fetch data. Please check your internet and try again.');
+                }
+            });
+        return;
+    }
+
+    // ---- LEGACY MODE: unchanged ----
     fbDb.ref('workshops/' + workshopUid + '/clients').once('value')
         .then(function(snapshot) {
             var allClients = normalizeFirebaseList(snapshot.val());
@@ -2273,11 +2476,19 @@ function showResults(client) {
             (display.photoIsDevice ? '<span class="device-photo-badge" title="Device photo">📱</span>' : '') + '</div>';
     }
 
+    var claimBadge = '';
+    if (client.isWarrantyClaim) {
+        claimBadge = '<div style="margin-top:8px;"><span class="warranty-badge active">' +
+            '<i class="fas fa-shield-alt"></i> Warranty claim' +
+            (client.originalJobId ? ' — original job ' + escHtml(client.originalJobId) : '') +
+            '</span></div>';
+    }
     document.getElementById('resultStatus').innerHTML =
         profileBlock +
         '<div class="status-icon ' + client.status + '"><i class="fas ' + st.icon + '"></i></div>' +
         '<h2>' + escHtml(display.name) + '</h2>' +
         '<span class="status-badge ' + client.status + '">' + st.label + '</span>' +
+        claimBadge +
         '<p class="status-message">' + st.msg + '</p>' +
         warrantyHtml +
         '<p style="color:#a0aec0;font-size:10px;margin-top:10px;font-family:monospace;">ID: ' + client.id + '</p>';
@@ -2329,6 +2540,9 @@ function showResults(client) {
     }
     if (client.status === 'failed' && client.failedComment) {
         repairHtml += '<div class="failed-reason"><i class="fas fa-exclamation-triangle"></i> <strong>Failure Reason:</strong> ' + escHtml(client.failedComment) + '</div>';
+    }
+    if (client.warrantyClaimReason) {
+        repairHtml += '<div class="failed-reason"><i class="fas fa-shield-alt"></i> <strong>Warranty claim reason:</strong> ' + escHtml(client.warrantyClaimReason) + '</div>';
     }
     if (client.additionalNotes) {
         repairHtml += '<div class="repair-issue" style="margin-top:8px;border-left-color:#ed8936;"><strong>Notes:</strong> ' + escHtml(client.additionalNotes) + '</div>';
@@ -2409,7 +2623,8 @@ function sendPortalMessage() {
         if (statusEl) statusEl.textContent = 'Preview mode — messages are not actually sent.';
         return;
     }
-    if (!client || !fbDb || !workshopUid) {
+    if (!client || !fbDb || !workshopUid ||
+        (portalMode === 'code' && portalClaimedClientId !== client.id)) {
         if (statusEl) statusEl.textContent = 'Cannot send right now.';
         return;
     }
@@ -2444,11 +2659,20 @@ function sendPortalMessage() {
     clearPortalAttachments();
     addPortalMessageOptimistic(optimisticMsg);
 
-    fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId).set(optimisticMsg)
-        .then(function() {
-            return fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId + '/timestamp')
-                .set(firebase.database.ServerValue.TIMESTAMP);
-        })
+    var msgRef = fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId);
+    var writeP;
+    if (portalMode === 'code') {
+        // Rules allow create-only (!data.exists()). The legacy follow-up write to /timestamp
+        // would be denied, so stamp the server time in the single initial write.
+        writeP = msgRef.set(Object.assign({}, optimisticMsg, { timestamp: firebase.database.ServerValue.TIMESTAMP }));
+    } else {
+        writeP = msgRef.set(optimisticMsg)
+            .then(function() {
+                return fbDb.ref('workshops/' + workshopUid + '/chat/messages/' + msgId + '/timestamp')
+                    .set(firebase.database.ServerValue.TIMESTAMP);
+            });
+    }
+    writeP
         .then(function() {
             if (statusEl) statusEl.textContent = 'Message sent!';
             if (btn) btn.disabled = false;
@@ -2611,6 +2835,19 @@ function reviewKey(id) { return String(id).replace(/[.#$\[\]\/]/g, '_'); }
 
 function loadPortalReviews() {
     if (portalReviewsRef) portalReviewsRef.off();
+    if (portalMode === 'code') {
+        // Code mode can't read the whole reviews node: summary/list come from reviewsPublic
+        portalReviewsRef = fbDb.ref('workshops/' + workshopUid + '/reviewsPublic');
+        portalReviewsRef.on('value', function (snap) {
+            portalPublicReviews = snap.val() || null;
+            rebuildPortalReviewsFromCode();
+        }, function (err) {
+            console.warn('reviewsPublic listener failed:', err);
+            portalPublicReviews = null;
+            rebuildPortalReviewsFromCode();
+        });
+        return;
+    }
     portalReviewsRef = fbDb.ref('workshops/' + workshopUid + '/reviews');
     portalReviewsRef.on('value', function (snap) {
         portalReviews = snap.val() || {};
@@ -2620,6 +2857,32 @@ function loadPortalReviews() {
         portalReviews = {};
         renderPortalReviews();
     });
+}
+
+function loadOwnPortalReview(clientId) {
+    if (portalOwnReviewRef) portalOwnReviewRef.off();
+    portalOwnReview = null;
+    portalOwnReviewRef = fbDb.ref('workshops/' + workshopUid + '/reviews/' + reviewKey(clientId));
+    portalOwnReviewRef.on('value', function (snap) {
+        portalOwnReview = snap.val() || null;
+        rebuildPortalReviewsFromCode();
+    }, function (err) {
+        console.warn('Own review listener failed:', err);
+        portalOwnReview = null;
+        rebuildPortalReviewsFromCode();
+    });
+}
+
+function rebuildPortalReviewsFromCode() {
+    var merged = {};
+    if (portalPublicReviews && typeof portalPublicReviews === 'object') {
+        Object.keys(portalPublicReviews).forEach(function (k) { merged[k] = portalPublicReviews[k]; });
+    }
+    if (portalOwnReview && portalClaimedClientId) {
+        merged[reviewKey(portalClaimedClientId)] = portalOwnReview;   // own review wins over its public copy
+    }
+    portalReviews = merged;
+    renderPortalReviews();
 }
 
 function starRow(n, cls) {
@@ -2649,9 +2912,13 @@ function renderPortalReviews() {
     // Header summary under the workshop logo
     var summary = document.getElementById('portalRatingSummary');
     if (summary) {
-        summary.innerHTML = (count >= REVIEWS_MIN_FOR_RATING)
-            ? starRow(avg, 'hdr-stars') + ' <strong>' + avg.toFixed(1) + '</strong> (' + count + ')'
-            : '<span class="not-rated-label">Not rated</span>';
+        if (portalMode === 'code' && portalPublicReviews === null) {
+            summary.innerHTML = '';   // no reviewsPublic -> no rating summary
+        } else {
+            summary.innerHTML = (count >= REVIEWS_MIN_FOR_RATING)
+                ? starRow(avg, 'hdr-stars') + ' <strong>' + avg.toFixed(1) + '</strong> (' + count + ')'
+                : '<span class="not-rated-label">Not rated</span>';
+        }
     }
 
     // Reviews list on the lookup screen
@@ -2733,6 +3000,63 @@ function submitPortalReview() {
             var m = document.getElementById('reviewMsg');
             if (m) m.textContent = 'Could not save your review. Please try again.';
         });
+}
+
+async function submitPreCheckin() {
+    const name = document.getElementById('pciName').value.trim();
+    const phone = document.getElementById('pciPhone').value.trim();
+    const brand = document.getElementById('pciBrand').value;
+    const model = document.getElementById('pciModel').value.trim();
+    const issue = document.getElementById('pciIssue').value.trim();
+    const prefDate = document.getElementById('pciPreferredDate').value;
+    const errEl = document.getElementById('pciError');
+    errEl.style.display = 'none';
+
+    if (!name) { errEl.textContent = 'Please enter your name'; errEl.style.display = 'block'; return; }
+    if (!phone) { errEl.textContent = 'Please enter your phone number'; errEl.style.display = 'block'; return; }
+    if (!brand) { errEl.textContent = 'Please choose your device brand'; errEl.style.display = 'block'; return; }
+    if (!issue) { errEl.textContent = 'Please describe the issue'; errEl.style.display = 'block'; return; }
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 6) { errEl.textContent = 'Please enter a valid phone number'; errEl.style.display = 'block'; return; }
+
+    // Rate limit: 3 per phone per 24h (kept in this browser only)
+    const rlKey = 'pciRate_' + phoneDigits;
+    let rl = { count: 0, resetAt: 0 };
+    try { rl = JSON.parse(localStorage.getItem(rlKey)) || rl; } catch (e) {}
+    if (Date.now() > rl.resetAt) rl = { count: 0, resetAt: Date.now() + 86400000 };
+    if (rl.count >= 3) {
+        errEl.textContent = 'Too many submissions from this number today. Please visit the workshop directly.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    const id = 'PCI-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+    const submission = {
+        id, name, phone, brand, model, issue,
+        preferredDate: prefDate || null,
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        submittedFromDevice: 'portal'
+    };
+
+    const btn = document.getElementById('pciSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = 'Sending...';
+
+    try {
+        await fbDb.ref('workshops/' + workshopUid + '/preCheckins/' + id).set(submission);
+        rl.count++;
+        try { localStorage.setItem(rlKey, JSON.stringify(rl)); } catch (e) {}
+        document.getElementById('pciSubmitBtn').style.display = 'none';
+        document.getElementById('pciSuccess').style.display = 'block';
+        document.getElementById('pciRefNumber').textContent = id;
+    } catch (e) {
+        errEl.textContent = 'Could not send — check connection and try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send pre-check-in';
+    }
 }
 
 function goBack() {
